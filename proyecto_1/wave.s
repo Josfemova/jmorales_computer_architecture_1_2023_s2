@@ -19,6 +19,18 @@
 .equ LX, 75
 .equ LY, 75
 
+.section .rodata 
+/* Floating point constants */
+D_FRAC_1_PI: .double 0.318309886183790671537767526745028724
+D_FRAC_PI_2: .double 1.57079632679489661923132169163975144
+D_PI: .double 3.14159265358979323846264338327950288
+D_2: .double 2.0
+D_0p5: .double 0.5
+D_0p25: .double 0.25
+D_16: .double 16.0
+D_8: .double 8.0
+D_0p225: .double 0.225
+
 .section .data
 AX: .dword 0x0
 AY: .dword 0x0
@@ -26,6 +38,44 @@ image_in: .fill IMG_SIZE,0x1,0x0
 image_out: .fill IMG_SIZE,0x1,0x0
 
 .section .text
+/*================================================*/
+/*   Floating point trig functions                */
+/*================================================*/
+sin:
+    fld ft0, D_FRAC_PI_2, t0
+    fsub.d fa0, fa0, ft0
+/* Parabolic cosine approximation, as implemented in micromath*/
+cos: /* angle = fa0 */
+    /* fa0 *= 1/(2pi) */
+    fld ft0, D_FRAC_1_PI, t0
+    fld ft1, D_2, t1
+    fdiv.d ft0, ft0, ft1 
+    fmul.d fa0, fa0, ft0
+    /* fa0 -= 0.25 + floor(fa0+0.25) */
+    fld ft0, D_0p25, t0 
+    fadd.d ft1, fa0, ft0     
+    fcvt.w.d t0, ft1, rdn # round down 
+    fcvt.d.w ft1, t0
+    fadd.d ft1, ft0, ft1 
+    fsub.d fa0, fa0, ft1
+    /* fa0 *= 16.0 * abs(x) - 8.0; */
+    fld ft0, D_16, t0
+    fabs.d ft1, fa0 
+    fld ft2, D_8, t1 
+    fmsub.d ft3, ft0, ft1, ft2
+    fmul.d fa0, fa0, ft3 
+    /* fa0 += 0.225 * fa0 * (abs(fa0) - 1.0); */
+    fld ft0, D_0p225, t0 
+    fmul.d ft0, ft0, fa0 
+    /* fa0 += (ft0) * abs(fa0) - ft0); */
+    fabs.d ft1, fa0
+    fmsub.d ft0, ft0, ft1, ft0 
+    fadd.d fa0, fa0, ft0 
+    ret
+/**/
+/*================================================*/
+/*   Main program                                 */
+/*================================================*/
 .global _start
 _start:
     ld a0, 0(sp) # argc
@@ -57,6 +107,7 @@ exit:
     li a0, 0 
     li a7, SYSCALL_EXIT
     ecall 
+
 
 div_round_nearest: /* a0 / a1 */
     slt t0, a0, zero 
