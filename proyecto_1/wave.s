@@ -53,6 +53,28 @@ _start:
     ecall
     j exit 
 
+exit:
+    li a0, 0 
+    li a7, SYSCALL_EXIT
+    ecall 
+
+div_round_nearest: /* a0 / a1 */
+    slt t0, a0, zero 
+    slt t1, a1, zero
+    li t2, 2
+    beq t0, t1, 2f
+    1: # same sign ((a0 + a1/2)/a1)
+        div t0, a1, t2 
+        add t0, a0, t0 
+        div t0, t0, a1 
+        j 1f
+    2: # diff sign ((a0 - a1/2)/a1)
+        div t0, a1, t2 
+        sub t0, a0, t0 
+        div t0, t0, a1 
+    1: #end 
+        mv a0, t0
+        ret
 
 atoi:
     mv t0, a0 # preservar puntero a string
@@ -85,8 +107,4 @@ atoi:
         li a1, OK
         ret
 
-exit:
-    li a0, 0 
-    li a7, SYSCALL_EXIT
-    ecall 
 
