@@ -98,13 +98,15 @@ transform:
     fmul.d ft7, fs6, fs1 
     fdiv.d fa0, ft7, fs4 
     call sin 
+    fmul.d fa0, fa0, fs2
     fadd.d ft0, fa0, fs0
     fcvt.l.d a0, ft0, rne # x'
 
     fmul.d ft7, fs6, fs0 
     fdiv.d fa0, ft7, fs5 
     call sin 
-    fadd.d ft0, fa0, fs0
+    fmul.d fa0, fa0, fs3
+    fadd.d ft0, fa0, fs1
     fcvt.l.d a1, ft0, rne # y'
 
     ld ra, 0(sp) 
@@ -115,21 +117,40 @@ transform:
 _start:
     ld a0, 0(sp) # argc
     /* argv[0] is not relevant */
-    la t1, AX 
-    la t2, AY  
+    li s0, LX 
+    li s1, LY  
     
     ld a0, 16(sp) # argv[1]
     call atoi 
-    mv s1, a0 
+    mv s2, a0 
     ld a0, 24(sp) # argv[2]
     call atoi 
-    mv s2, a0 
+    mv s3, a0 
 
     li a0, FD_STDIN
     la a1, image_in
     la a2, IMG_SIZE
     li a7, SYSCALL_READ
     ecall
+
+
+    li s4, ROWS
+    li s5, COLS
+    li s6, 0 # i 
+    loop_y:
+        mv s7, zero # j
+        loop_x:
+            mv a0, s7 
+            mv a1, s6 
+            mv a2, s2 
+            mv a3, s3
+            mv a4, s0
+            mv a5, s1
+            call transform 
+            add s7, s7, 1
+            blt s7, s5, loop_x  
+        add s6, s6, 1
+        blt s6, s4, loop_y
 
     li a0, FD_STDOUT 
     #la a1, msg
