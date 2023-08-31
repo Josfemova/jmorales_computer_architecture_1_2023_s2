@@ -43,6 +43,12 @@ for k in range(5,205,5):
     frames.append(frame)
     video.write(frame)
 
+# Mostrar video
+for frame in frames:
+    cv2.imshow('frame',frame)
+    # 1/4 de segundo por frame para mostrar 40 frames en 10 segundos 
+    if cv2.waitKey(250) & 0xFF == ord('q'):
+        break    
 
-#cv2.destroyAllWindows()
 video.release()
+cv2.destroyAllWindows()
