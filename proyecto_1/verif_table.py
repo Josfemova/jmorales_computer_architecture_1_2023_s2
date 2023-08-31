@@ -10,4 +10,7 @@ for y in range(0, 480):
         yp  = y + Ay*m.sin(m.tau * x / Ly)
         xp = round(xp)
         yp = round(yp)
-        print("x:{}, y:{} ---- xp:{} ,yp:{}".format(x,y,xp,yp))
+        xpm = xp % 640
+        ypm = yp % 480
+        if (xp == xpm and yp == ypm):
+            print("x:{}, y:{} ---- xp:{} ,yp:{}".format(x,y,xp,yp))

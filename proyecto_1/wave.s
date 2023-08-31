@@ -115,15 +115,22 @@ transform:
 
 .global _start
 _start:
-    ld a0, 0(sp) # argc
+    ld t0, 0(sp) # argc
+    li t1, 5
+    bne t0, t1, exit_err 
+
     /* argv[0] is not relevant */
-    li s0, LX 
-    li s1, LY  
     
-    ld a0, 16(sp) # argv[1]
+    ld a0, 16(sp) # argv[1] Ax
+    call atoi 
+    mv s0, a0 
+    ld a0, 24(sp) # argv[2] Ay
+    call atoi 
+    mv s1, a0 
+    ld a0, 32(sp) # argv[3] Lx
     call atoi 
     mv s2, a0 
-    ld a0, 24(sp) # argv[2]
+    ld a0, 40(sp) # argv[4] Ly
     call atoi 
     mv s3, a0 
 
@@ -133,27 +140,50 @@ _start:
     li a7, SYSCALL_READ
     ecall
 
-
     li s4, ROWS
     li s5, COLS
-    li s6, 0 # i 
+    li s6, 0 # i
+    la s8, image_in  # base address of the input image  
+    la s9, image_out # base address of the output image  
     loop_y:
         mv s7, zero # j
         loop_x:
             mv a0, s7 
             mv a1, s6 
-            mv a2, s2 
-            mv a3, s3
-            mv a4, s0
-            mv a5, s1
+            mv a2, s0 
+            mv a3, s1
+            mv a4, s2
+            mv a5, s3
+
+            /*Apply changes to new image*/
+            
+            mul t0, a1, s5 # calculate positions from base to calc
+            add t0, t0, a0   # x + y*cols
+            add s10, t0, s8   # (uint8_t*) image_in + (x+y*cols)
+
             call transform 
+
+            rem t1, a1, s4 # y' % ROWS
+            rem t0, a0, s5 # x' % COLS
+            bne t1, a1, nosave 
+            bne t0, a0, nosave
+
+            mul t0, a1, s5 # calculate positions from base to calc
+            add t0, t0, a0   # x' + y'*cols
+            add s11, t0, s9 # (uint8_t*) image_out + (x'+y'*cols)
+
+            lb t0, 0(s10)
+            sb t0, 0(s11)
+
+            nosave:
+            /*--------------------------*/
             add s7, s7, 1
             blt s7, s5, loop_x  
         add s6, s6, 1
         blt s6, s4, loop_y
 
     li a0, FD_STDOUT 
-    #la a1, msg
+    la a1, image_out 
     la a2, IMG_SIZE
     li a7, SYSCALL_WRITE
     ecall
@@ -161,6 +191,11 @@ _start:
 
 exit:
     li a0, 0 
+    li a7, SYSCALL_EXIT
+    ecall 
+
+exit_err:
+    li a0, 1 
     li a7, SYSCALL_EXIT
     ecall 
 
