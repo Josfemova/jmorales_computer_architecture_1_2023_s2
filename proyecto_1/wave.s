@@ -33,8 +33,6 @@ D_8: .double 8.0
 D_0p225: .double 0.225
 
 .section .data
-AX: .dword 0x0
-AY: .dword 0x0
 image_in: .fill IMG_SIZE,0x1,0x0
 image_out: .fill IMG_SIZE,0x1,0x0
 
@@ -134,6 +132,7 @@ _start:
     call atoi 
     mv s3, a0 
 
+    /* Read source image as a binary file via STDIN */
     li a0, FD_STDIN
     la a1, image_in
     la a2, IMG_SIZE
@@ -142,11 +141,11 @@ _start:
 
     li s4, ROWS
     li s5, COLS
-    li s6, 0 # i
+    li s6, 0 # i, iterate over rows
     la s8, image_in  # base address of the input image  
     la s9, image_out # base address of the output image  
     loop_y:
-        mv s7, zero # j
+        mv s7, zero # j, iterate over columns 
         loop_x:
             mv a0, s7 
             mv a1, s6 
@@ -156,32 +155,32 @@ _start:
             mv a5, s3
 
             /*Apply changes to new image*/
-            
             mul t0, a1, s5 # calculate positions from base to calc
             add t0, t0, a0   # x + y*cols
             add s10, t0, s8   # (uint8_t*) image_in + (x+y*cols)
 
             call transform 
-
+            
+            /* Only apply transformation if the new coords are within bounds*/
             rem t1, a1, s4 # y' % ROWS
             rem t0, a0, s5 # x' % COLS
             bne t1, a1, nosave 
             bne t0, a0, nosave
 
-            mul t0, a1, s5 # calculate positions from base to calc
-            add t0, t0, a0   # x' + y'*cols
+            mul t0, a1, s5  # calculate positions from base to calc
+            add t0, t0, a0  # x' + y'*cols
             add s11, t0, s9 # (uint8_t*) image_out + (x'+y'*cols)
 
-            lb t0, 0(s10)
-            sb t0, 0(s11)
+            lb t0, 0(s10) # fetch pixel value
+            sb t0, 0(s11) # save value in new coords
 
             nosave:
-            /*--------------------------*/
             add s7, s7, 1
             blt s7, s5, loop_x  
         add s6, s6, 1
         blt s6, s4, loop_y
 
+    /* Write resulting binary data to STDOUT */
     li a0, FD_STDOUT 
     la a1, image_out 
     la a2, IMG_SIZE
@@ -218,29 +217,30 @@ div_round_nearest: /* a0 / a1 */
         mv a0, t0
         ret
 
+/* Simple, base 10 lazy implementation for atoi */
 atoi:
-    mv t0, a0 # preservar puntero a string
+    mv t0, a0 # preserve pointer to the string argument
     mv a0, zero
-    li t1, 0x30 # '1' 
+    li t1, 0x30 # '0' 
     li t2, 0x39 # '9'
     atoi_loop:
-        lb t3, 0(t0) # cargar primer caracter
-        beqz t3, atoi_ok # si es un 0 llegamos al nulo
+        lb t3, 0(t0) # load character
+        beqz t3, atoi_ok # check for null termination
         
 
-        bgt t1, t3, atoi_err
-        bgt t3, t2, atoi_err 
+        bgt t1, t3, atoi_err # check number is >= 0
+        bgt t3, t2, atoi_err # check number is <= 9
 
-        sub t3, t3, t1 # obtener numero actual
+        sub t3, t3, t1 # calculate current number
         
-        /* multiplicar acumulado por 10 */
+        /* multiply accumulated amount by 10 */
         mv t4, a0 
         slli a0, a0, 3
         add a0, a0, t4 
         add a0, a0, t4 
         
-        add a0, a0, t3 # sumar valor actual
-        add t0, t0, 1 # avanzar puntero 1 byte
+        add a0, a0, t3 # add current value to accumulated amount
+        add t0, t0, 1 # increase pointer value
         j atoi_loop
     atoi_err: # error
         li a1, ERR
