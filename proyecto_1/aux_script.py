@@ -5,6 +5,13 @@ from pathlib import Path
 
 # read input image data
 image = cv2.imread("image.png") 
+
+# show input image
+cv2.imshow('frame',image)
+while (cv2.waitKey(250) & 0xFF != ord('n')):
+    pass
+cv2.destroyAllWindows()
+
 # transform input image data into 1 byte grayscale
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 rows,cols = gray.shape
@@ -50,8 +57,12 @@ for k in range(5,205,5):
             for j in range(cols):
                 img_out[i][j] = stdout[j + cols*i]
     # add frames for opencv animation and video writer
-    cv2.imwrite("build/image_result.png",img_out)
-    frame = cv2.imread("build/image_result.png")
+    cv2.imwrite(f"build/image_result{k}.png",img_out)
+    frame = cv2.imread(f"build/image_result{k}.png")
+    # show each image
+    cv2.imshow('frame',frame)
+    while (cv2.waitKey(1) & 0xFF != ord('n')):
+        pass
     frames.append(frame)
     video.write(frame)
 
