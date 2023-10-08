@@ -1,0 +1,3 @@
+SUM,rs3,rs5,rs1,
+DIF,rs8,rs1,rs8,
+DIF,rs8,rs1,10010,
