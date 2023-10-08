@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 const char* functNames[] = {
     "SUM", "DIF", "SLL", "SRR", "XOR", "CIR", "CPV", "AND",
@@ -67,7 +68,6 @@ typedef enum{
     JLT = 13,
     LDM = 14,
     STM = 15
-
 }funct;
 
 typedef enum{
@@ -86,6 +86,7 @@ reg string2reg( char* str) {
     }
     return -1; 
 }
+
 funct string2funct(char* str) {
     for (int i = 0; i < sizeof(functNames) / sizeof(functNames[0]); i++) {
         if (strcmp(str, functNames[i]) == 0) {
@@ -141,12 +142,19 @@ char *assembly2bin(char *assembly_instruction, char *reg, char *reg2, char *reg_
     result[0] = '\0';
 
     
-    
-    
     strcat(result, reg_or_inmm_str);
     strcat(result, reg2_str);
     strcat(result, reg_str);
     strcat(result, opcode_str);
 
     return result;
+}
+
+bool is_line(const char *str) {
+    if (str == NULL || str[0] == '\0') {
+        return false;  // 
+    }
+
+    size_t len = strlen(str);
+    return str[len - 2] == ';';
 }

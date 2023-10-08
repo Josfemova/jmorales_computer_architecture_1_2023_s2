@@ -1,5 +1,6 @@
 // compiler.h
 
+#include <stdbool.h>
 #ifndef COMPILER_H
 #define COMPILER_H
 
@@ -7,5 +8,5 @@
 
 char* int2bin(int num, int numBits);
 char *assembly2bin(char *assembly_instruction, char *reg, char *reg_or_inmm1, char *reg_or_inmm2);
-
+bool is_line(const char *str);
 #endif

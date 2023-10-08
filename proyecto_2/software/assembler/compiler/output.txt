@@ -1,3 +1,41 @@
-0000000000000000000100101000110000
-0000000000000000100000001010000001
-1001000001010000001
+line is: SUM,rs3,rs5,rs1;
+
+tokens 4 
+part0 SUM 
+part1 rs3 
+part2 rs5 
+part3 rs1 
+lines 1 
+line is: DIF,rs8
+
+tokens 2 
+part0 DIF 
+part1 rs8
+ 
+part2  
+part3  
+lines 1 
+line is: DIF,rs8;
+
+tokens 2 
+part0 DIF 
+part1 rs8 
+part2  
+part3  
+lines 2 
+line is: Hello;
+
+tokens 1 
+part0 Hello 
+part1  
+part2  
+part3  
+lines 3 
+line is: DIF,rs8,rs1,rs8;
+
+tokens 4 
+part0 DIF 
+part1 rs8 
+part2 rs1 
+part3 rs8 
+lines 4 
