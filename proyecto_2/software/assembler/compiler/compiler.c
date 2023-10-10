@@ -12,6 +12,12 @@ const char *functNames[] = {
     "STM", "CLIR", "CUIR", "JLL", "LDM", "JLRL",
     "JIEQ", "JINE", "JIGT", "JILT", "JIGE", "JILE"
 };
+const char *opNames[] = {
+    "oSUM", "oDIF", "oAND", "oOR", "oXOR", "oSLL", "oSLR", "oSAR",
+    "oSUMI", "oDIFI", "oANDI", "oORI", "oXORI", "oSLLI", "oSLRI", "oSARI",
+    "oSTM", "oCLIR", "oCUIR", "oJLL", "oLDM", "oJLRL",
+    "oJIEQ", "oJINE", "oJIGT", "oJILT", "oJIGE", "oJILE"
+};
 const char* regNames[] = {
     "rd","rs1","rs2","rs3","rs4","rs5","rs6","rs7","rs8","rs9",
     "rs10","rs11","rs12","rs13","rs14","rs15","rs16","rs17","rs18",
@@ -57,38 +63,68 @@ typedef enum{
   rs30 = 30,
   rs31 = 31
 }reg;
-typedef enum{
-    SUM = 0b000,
-    DIF = 0b001,
-    AND = 0b010,
-    OR = 0b011,
-    XOR = 0b100,
-    SLL = 0b101,
-    SLR = 0b110,
-    SAR = 0b111,//ops tipo A->op=000
-    SUMI = 0b000,
-    DIFI = 0b001,
-    ANDI = 0b010,
-    ORI = 0b011,
-    XORI = 0b100,
-    SLLI = 0b101,
-    SLRI = 0b110,
-    SARI = 0b111,//ops tipo B->op=001
-    STM = 0b000, //ops tipo C->op=010
-    CLIR = 0b000, //ops tipo D->op=011
-    CUIR = 0b001,
-    JLL = 0b010,
-    LDM = 0b000,//ops tipo F->op=101
-    JLRL = 0b010,
-    JIEQ = 0b000,//ops tipo G->op=110
-    JINE = 0b001,
-    JIGT = 0b010,
-    JILT = 0b011,
-    JIGE = 0b100,
-    JILE = 0b101
+const int func3[]={
+    0b000,
+    0b001,
+    0b010,
+    0b011,
+    0b100,
+    0b101,
+    0b110,
+    0b111,//ops tipo A->op=000
+    0b000,
+    0b001,
+    0b010,
+    0b011,
+    0b100,
+    0b101,
+    0b110,
+    0b111,//ops tipo B->op=001
+    0b000, //ops tipo C->op=010
+    0b000, //ops tipo D->op=011
+    0b001,
+    0b010,
+    0b000,//ops tipo F->op=101
+    0b010,
+    0b000,//ops tipo G->op=110
+    0b001,
+    0b010,
+    0b011,
+    0b100,
+    0b101
 
-}func3;
+};
+const int op[]={
+    0b000,
+    0b000,
+    0b000,
+    0b000,
+    0b000,
+    0b000,
+    0b000,
+    0b000,//ops tipo A->op=000
+    0b001,
+    0b001,
+    0b001,
+    0b001,
+    0b001,
+    0b001,
+    0b001,
+    0b001,//ops tipo B->op=001
+    0b010, //ops tipo C->op=010
+    0b011, //ops tipo D->op=011
+    0b011,
+    0b011,
+    0b101,//ops tipo F->op=101
+    0b101,
+    0b110,//ops tipo G->op=110
+    0b110,
+    0b110,
+    0b110,
+    0b110,
+    0b110
 
+};
 
 reg string2reg( char* str) {
     for (int i = 0; i < sizeof(regNames) / sizeof(regNames[0]); i++) {
@@ -99,10 +135,18 @@ reg string2reg( char* str) {
     return -1; 
 }
 
-func3 string2funct(char* str) {
+int string2funct(char* str) {
     for (int i = 0; i < sizeof(functNames) / sizeof(functNames[0]); i++) {
         if (strcmp(str, functNames[i]) == 0) {
-            return (func3)i;
+            return func3[i];
+        }
+    }
+    return -1; 
+}
+int string2op(char* str) {
+    for (int i = 0; i < sizeof(opNames) / sizeof(opNames[0]); i++) {
+        if (strcmp(str, opNames[i]) == 0) {
+            return op[i];
         }
     }
     return -1; 
@@ -131,38 +175,59 @@ char* int2bin(int num, int numBits) {
 }
 
 char *handle_instruction(char* parts[], int token_counter){
-   /* printf("tokens %d -", token_counter);
-    printf("part0 %s -", parts[0]);
-    printf("part1 %s -", parts[1]);
-    printf("part2 %s -", parts[2]);
-    printf("part3 %s \n", parts[3]);*/
+   
     
     char* binaryString;
+    
+    // get operation number from instruction string
+    size_t totalLength = strlen("o") + strlen(parts[0]) + 1; //para terminar en null
+    char* operation_str = (char*)malloc(totalLength);
+    if (operation_str == NULL) {
+        fprintf(stderr, "Memory allocation failed.\n");
+        return NULL; 
+    }
 
-    if (token_counter == 4){
-        if(string2reg(parts[3]) == -1){
-            binaryString = typeB_assembly2bin(parts[0], parts[1], parts[2], parts[3]);
-        }else{
-            binaryString = typeA_assembly2bin(parts[0], parts[1], parts[2], parts[3]);
-        }
-        
+    operation_str[0] = '\0';
+    
+    strcat(operation_str, "o");
+    strcat(operation_str, parts[0]);
+
+    int operation = string2op(operation_str);
+    printf("op %d ,",operation);
+    printf("opstr %s ",operation_str);
+    //elegir traduccion segun el tipo de instruccion
+    if (operation == 0b000){
+        binaryString = typeA_assembly2bin(parts[0], parts[1], parts[2], parts[3]);
         lineCounter++;
+        printf("Type A \n");
     }
-    else if (token_counter == 3){
-        binaryString = typeC_assembly2bin(parts[0], parts[1], parts[2]);
+    else if(operation == 0b001){
+        binaryString = typeB_assembly2bin(parts[0], parts[1], parts[2], parts[3]);
         lineCounter++;
-    }
-    else if(token_counter==2){
-        //jmp a tag
-        binaryString="es un jump a tag";
-        //binaryString = typeD_assembly2bin(parts[0], parts[1]);
+        printf("Type B \n");
 
     }
-    else if (token_counter == 1){
-        //es un tag
-        binaryString="Es un tag";
-        //binaryString = typeF_assembly2bin(parts[0], lineCounter+1);
+    else if (operation == 0b010){
+        binaryString = typeC_assembly2bin(parts[0], parts[1], parts[2], parts[3]);
+        lineCounter++;
+        printf("Type C \n");
     }
+    else if (operation == 0b011){
+        //binaryString = typeC_assembly2bin(parts[0], parts[1], parts[2]);
+        lineCounter++;
+        printf("Type D \n");
+    }
+    else if (operation == 0b101){
+        //binaryString = typeC_assembly2bin(parts[0], parts[1], parts[2]);
+        lineCounter++;
+        printf("Type F \n");
+    }
+    else if (operation == 0b110){
+        //binaryString = typeC_assembly2bin(parts[0], parts[1], parts[2]);
+        lineCounter++;
+        printf("Type G \n");
+    }
+    
     else{
         binaryString="No se pudo interpretar esta instruccion";
     }
@@ -176,11 +241,7 @@ char *typeD_assembly2bin(char *assembly_instruction, char *tag){
     return tagPositions[position];
 
 }
-char *typeC_assembly2bin(char *assembly_instruction, char *rd, char *reg2){
-    //
-    char* result = "instruccion tipo c";
-    return result;
-}
+
 char *typeF_assembly2bin(char *tag, int position){
     // Guardar las posiciones de los jumps
     tagNames[tagCounter] = tag;
@@ -220,7 +281,7 @@ char *typeA_assembly2bin(char *assembly_instruction, char *rd, char *reg1, char 
     return result;
 }
 char *typeB_assembly2bin(char *assembly_instruction, char *rd, char *reg1, char *inmm){
-    // Para SUM, DIF, AND, OR, XOR, SLL, SLR, SAR
+    // Para SUMI, DIFI, ANDI, ORI, XORI, SLLI, SLRI, SARI
     const char* opcode_str = "001";
     const char* func3_str = int2bin(string2funct(assembly_instruction),3);
     const char* reg_str = int2bin(string2reg(rd),5);
@@ -245,7 +306,35 @@ char *typeB_assembly2bin(char *assembly_instruction, char *rd, char *reg1, char 
     strcat(result, reg_str);
     strcat(result, reg1_str);
     strcat(result, inmm_str);
+    return result;
+}
+char *typeC_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, char *inmm){
+    // Para SUMI, DIFI, ANDI, ORI, XORI, SLLI, SLRI, SARI
+    const char* opcode_str = "010";
+    const char* func3_str = int2bin(string2funct(assembly_instruction),3);
+    const char* reg1_str = int2bin(string2reg(reg1),5);
+    const char* reg2_str = int2bin(string2reg(reg2),5);
+    int inmm_int = atoi(inmm);
+    const char* inmm_str = int2bin(inmm_int, 16);
 
+    size_t totalLength = strlen(opcode_str) + strlen(func3_str) + 
+                    strlen(reg2_str) + strlen(inmm_str) + 
+                    strlen(reg1_str) + 1; //para terminar en null
+
+    char* result = (char*)malloc(totalLength);
+    if (result == NULL) {
+        fprintf(stderr, "Memory allocation failed.\n");
+        return NULL; 
+    }
+
+    result[0] = '\0';
+    //01000000000000001010000100011111
+    strcat(result, opcode_str);
+    strcat(result, func3_str);
+    strncat(result, inmm_str, 5);
+    strcat(result, reg1_str);
+    strcat(result, reg2_str);
+    strcat(result, &inmm_str[5]);
     return result;
 }
 

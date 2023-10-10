@@ -1,7 +1,5 @@
 SUM,rd,rs5,rs1;
-
-Hello;
+SUM,rd,rs5,rs1;
 DIF,rd,rs1,rs8;
-SUM,rd,rs3;
-XOR,rd,rs5,10;
-JMP,Hello;
+SUMI,rd,rs5,10;
+STM,rd,rs20,287;
