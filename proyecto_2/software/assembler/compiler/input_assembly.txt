@@ -1,5 +1,7 @@
-SUM,rs3,rs5,rs1;
-DIF,rs8
-DIF,rs8;
+SUM,rd,rs5,rs1;
+
 Hello;
-DIF,rs8,rs1,rs8;
+DIF,rd,rs1,rs8;
+SUM,rd,rs3;
+XOR,rd,rs5,10;
+JMP,Hello;
