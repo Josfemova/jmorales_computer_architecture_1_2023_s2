@@ -38,7 +38,7 @@ module stage_decode (
 
 
   // señales internas del stage
-  wire [3:0] imm_src;
+  wire [ 3:0] imm_src;
   wire [31:0] rd1;
   wire [31:0] rd2;
   wire [31:0] imm_out;
@@ -50,7 +50,7 @@ module stage_decode (
   wire [4:0] rs1;
   wire [4:0] rs2;
   wire [4:0] rd;
-  
+
   assign rs1 = de_instr[15:11];
   assign rs2 = de_instr[20:16];
   assign rd  = de_instr[10:6];
