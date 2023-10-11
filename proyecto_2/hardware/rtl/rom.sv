@@ -7,7 +7,7 @@ module rom_2port
 )
 (
 	// se agregan enables para el pipeline
-	input clk_a, clk_b, en_a, en_b
+	input clk_a, clk_b, en_a, en_b, flush_a, flush_b,
 	input [(WIDTH-1):0] addr_a, addr_b,
 	output logic [(WIDTH-1):0] rd_a, rd_b
 );
@@ -19,11 +19,13 @@ module rom_2port
 
 	always @(posedge clk_a)
 	begin
-		if (en_a) rd_a <= rom[addr_a[WIDTH-1:2]];
+		if(flush_a) rd_a <=0;
+		else if (en_a) rd_a <= rom[addr_a[WIDTH-1:2]];
 	end
 
 	always @(posedge clk_b)
 	begin
-		if (en_b) rd_b <= rom[addr_b[WIDTH-1:2]];
+		if(flush_b) rd_b <=0;
+		else if (en_b) rd_b <= rom[addr_b[WIDTH-1:2]];
 	end
 endmodule

@@ -8,7 +8,7 @@ module control_unit
     output mem_write, //! enable de write a memoria 
     output jump, //! indica que se tiene una instr de salto 
     output jump_cond, //! indica que se tiene una instr de salto condicionado
-    output [2:0] jump_cond_type //! especifica tipo de salto condicional
+    output [2:0] jump_cond_type, //! especifica tipo de salto condicional
 
     output [2:0] alu_control, //! selecciona operacion de alu
     output alu_src, //! selecciona si op2 es rs2
@@ -58,7 +58,7 @@ assign jump_cond_type = func3; // solo importa para tipo g
 assign alu_src = (op[1:0] == 2'b01); // aplica para tipo b o f
 
 always @(*) begin
-    case (op_t)
+    case (op)
         OP_A: begin
             alu_control = func3; 
             imm_src = 4'b0; // no importa
@@ -66,7 +66,7 @@ always @(*) begin
         end 
         OP_B: begin 
             alu_control = func3;
-            imm_src = (func3[2] == 1'b1) 4'b0010 : 4'b0000; // se extiende en 0 para shifts
+            imm_src = (func3[2] == 1'b1) ? 4'b0010 : 4'b0000; // se extiende en 0 para shifts
             result_src = RESULT_SRC_ALURES;
         end 
         OP_C: begin // solo STM
