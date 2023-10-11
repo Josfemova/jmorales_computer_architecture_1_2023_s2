@@ -1,4 +1,4 @@
-module fetch_stage(
+module stage_instruction_fetch(
     input clk, 
     input if_stall, de_stall,
     input ex_pc_src // selecciona pc source 
