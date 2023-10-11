@@ -1,10 +1,12 @@
 module stage_decode (
     input clk,
+    input ex_clear,
+    
+    // inputs de stage previo
     input [31:0] de_instr,
     input [31:0] de_pc,
     input [31:0] de_pc_plus4,
-    // input hazard unit
-    input ex_flush,
+    
     // inputs de stage de writeback
     input [31:0] wb_result,
     input wb_reg_write,
@@ -95,7 +97,7 @@ module stage_decode (
   assign de_rs2 = rs2;
 
   always @(posedge clk) begin
-    if (ex_flush) begin
+    if (ex_clear) begin
       // outputs de control unit
       ex_reg_write      <= 0;
       ex_mem_write      <= 0;
