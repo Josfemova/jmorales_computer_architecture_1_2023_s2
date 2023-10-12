@@ -121,6 +121,7 @@ const int op[]={
     0b110
 
 };
+
 void reverse_string(char* str) {
     int length = strlen(str);
     int i, j;
@@ -131,6 +132,7 @@ void reverse_string(char* str) {
         str[j] = temp;
     }
 }
+
 
 reg string2reg( char* str) {
     for (int i = 0; i < sizeof(regNames) / sizeof(regNames[0]); i++) {
@@ -157,6 +159,7 @@ int string2op(char* str) {
     }
     return -1; 
 }
+
 
 char* int2bin(int num, int numBits) {
     if (numBits <= 0) {
@@ -191,6 +194,7 @@ char* int2bin(int num, int numBits) {
 
     return binaryString;
 }
+
 
 char *handle_instruction(char* parts[], int token_counter){
    
@@ -246,6 +250,7 @@ char *handle_instruction(char* parts[], int token_counter){
 
 
 
+
 char *typeA_assembly2bin(char *assembly_instruction, char *rd, char *reg1, char *reg2){
     // Para SUM, DIF, AND, OR, XOR, SLL, SLR, SAR
     const char* opcode_str = "000";
@@ -276,6 +281,7 @@ char *typeA_assembly2bin(char *assembly_instruction, char *rd, char *reg1, char 
 
     return result;
 }
+
 char *typeB_assembly2bin(char *assembly_instruction, char *rd, char *reg1, char *inmm){
     // Para SUMI, DIFI, ANDI, ORI, XORI, SLLI, SLRI, SARI
     
@@ -304,6 +310,7 @@ char *typeB_assembly2bin(char *assembly_instruction, char *rd, char *reg1, char 
     strcat(result, inmm_str);
     return result;
 }
+
 char *typeC_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, char *inmm){
     // Para SUMI, DIFI, ANDI, ORI, XORI, SLLI, SLRI, SARI
     const char* opcode_str = "010";
@@ -335,6 +342,7 @@ char *typeC_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
     strcat(result, &inmm_str[5]);
     return result;
 }
+
 char *typeD_assembly2bin(char *assembly_instruction, char *rd, char *inmm){
     // Para CLIR, CUIR, JLL
     const char* opcode_str = "011";
@@ -372,7 +380,9 @@ char *typeD_assembly2bin(char *assembly_instruction, char *rd, char *inmm){
     return result;
 
 }
+
 char *typeF_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, char *inmm){
+    //Para JIEQ, JINE, JIGT, JILT, JIGE, JILE
     const char* opcode_str = "101";
     const char* func3_str = int2bin(string2funct(assembly_instruction),3);
     const char* reg_str = int2bin(string2reg(rd),5);
@@ -409,6 +419,7 @@ char *typeF_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
     strcat(result, inmm_str);
     return result;
 }
+
 char *typeG_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, char *inmm){
     const char* opcode_str = "110";
     const char* func3_str = int2bin(string2funct(assembly_instruction),3);
@@ -443,6 +454,7 @@ char *typeG_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
     
 }
 
+
 int save_label_address(char *tag, int line){
     //printf("\ntagcounter %d tag %s \n",tagCounter, tag);
     tagNames[tagCounter] = (char*)malloc(strlen(tag) + 1); // +1 for the null terminator
@@ -468,6 +480,7 @@ int find_position_by_tag(char* tag) {
     // Return a sentinel value to indicate that the tag was not found
     return -1;
 }
+
 bool is_line(const char *str) {
     if (str == NULL || str[0] == '\0') {
         return false;  // 

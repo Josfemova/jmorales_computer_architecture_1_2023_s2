@@ -15,8 +15,9 @@ LDM,rd,rs1,8;
 JLRL,rd,rs1,8;
 JIEQ,rs3,rs7,idk;
 JINE,rs3,rs7,idk;
-JIGT,rs3,rs7,idk;
+JIGT,rs3,rs7,wow;
 JILT,rs3,rs7,idk;
+wow;
 JIGE,rs3,rs7,idk;
 JILE,rs3,rs7,idk;
 
