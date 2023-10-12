@@ -19,10 +19,5 @@ JIGT,rs3,rs7,idk;
 JILT,rs3,rs7,idk;
 JIGE,rs3,rs7,idk;
 JILE,rs3,rs7,idk;
-fadfdfsd
-DIFda
-sdsddd re
-sdsddd
 
-DIF,rd,rs1,rs8;
 

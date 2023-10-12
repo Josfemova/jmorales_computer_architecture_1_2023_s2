@@ -121,6 +121,16 @@ const int op[]={
     0b110
 
 };
+void reverse_string(char* str) {
+    int length = strlen(str);
+    int i, j;
+
+    for (i = 0, j = length - 1; i < j; i++, j--) {
+        char temp = str[i];
+        str[i] = str[j];
+        str[j] = temp;
+    }
+}
 
 reg string2reg( char* str) {
     for (int i = 0; i < sizeof(regNames) / sizeof(regNames[0]); i++) {
@@ -227,7 +237,8 @@ char *handle_instruction(char* parts[], int token_counter){
     else{
         binaryString="No se pudo interpretar esta instruccion";
     }
-    printf("%d %s\n", lineCounter,binaryString);
+    //printf("%d %s\n", lineCounter,binaryString);
+    printf("%s\n",binaryString);
     
     //printf("lines %d \n", lines);
 
@@ -286,7 +297,6 @@ char *typeB_assembly2bin(char *assembly_instruction, char *rd, char *reg1, char 
     }
 
     result[0] = '\0';
-
     strcat(result, opcode_str);
     strcat(result, func3_str);
     strcat(result, reg_str);
@@ -301,7 +311,7 @@ char *typeC_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
     const char* reg1_str = int2bin(string2reg(reg1),5);
     const char* reg2_str = int2bin(string2reg(reg2),5);
     int inmm_int = atoi(inmm);
-    const char* inmm_str = int2bin(inmm_int, 16);
+    char* inmm_str = int2bin(inmm_int, 16);
 
     size_t totalLength = strlen(opcode_str) + strlen(func3_str) + 
                     strlen(reg2_str) + strlen(inmm_str) + 
@@ -314,6 +324,8 @@ char *typeC_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
     }
 
     result[0] = '\0';
+
+    reverse_string(inmm_str);
     //01000000000000001010000100011111
     strcat(result, opcode_str);
     strcat(result, func3_str);
@@ -337,7 +349,7 @@ char *typeD_assembly2bin(char *assembly_instruction, char *rd, char *inmm){
     else{
         //inmm es un label
         int label_pos = find_position_by_tag(inmm);
-        inmm_str = int2bin(label_pos-lineCounter,21);
+        inmm_str = int2bin(4*(label_pos-lineCounter),21);
         //printf("\nlabel_pos %d, inmm %s, lineCounter %d, inmm_srt %s\n", label_pos, inmm, lineCounter, inmm_str);
         
     }
@@ -374,7 +386,7 @@ char *typeF_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
     else{
         //inmm es un label
         int label_pos = find_position_by_tag(inmm);
-        inmm_str = int2bin(label_pos-lineCounter,16);
+        inmm_str = int2bin(4*(label_pos-lineCounter),16);
         //printf("\nlabel_pos %d, inmm_srt %s\n", label_pos-lineCounter, inmm_str);
         
     }
@@ -389,7 +401,7 @@ char *typeF_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
     }
 
     result[0] = '\0';
-
+    
     strcat(result, opcode_str);
     strcat(result, func3_str);
     strcat(result, reg_str);
@@ -403,7 +415,7 @@ char *typeG_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
     const char* reg1_str = int2bin(string2reg(reg1),5);
     const char* reg2_str = int2bin(string2reg(reg2),5);
     int label_pos = find_position_by_tag(inmm);
-    const char* inmm_str = int2bin(label_pos-lineCounter,16);
+    char* inmm_str = int2bin(4*(label_pos-lineCounter),18);
     //printf("\nlabel_pos %d, inmm %s\n", label_pos-lineCounter, inmm_str);
     
     
@@ -418,13 +430,15 @@ char *typeG_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
     }
 
     result[0] = '\0';
+    reverse_string(inmm_str);
+    //printf("\nlabel_pos %d, inmm %s\n", label_pos-lineCounter, inmm_str);
     //01000000000000001010000100011111
     strcat(result, opcode_str);
     strcat(result, func3_str);
-    strncat(result, inmm_str, 5);
+    strncat(result, inmm_str+2, 5);
     strcat(result, reg1_str);
     strcat(result, reg2_str);
-    strcat(result, &inmm_str[5]);
+     strncat(result, inmm_str+7, 15);
     return result;
     
 }
