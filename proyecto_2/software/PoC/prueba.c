@@ -1,6 +1,11 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <inttypes.h>
 
+
+/**
+ * Función que me transforma un int a binario (string)
+*/
 char* int2bin(int num, int numBits) {
     if (numBits <= 0) {
         fprintf(stderr, "Invalid number of bits.\n");
@@ -23,9 +28,11 @@ char* int2bin(int num, int numBits) {
     return binaryString;
 }
 
-
-int32_t suma_fraccional(int32_t num1, int16_t num2){
-    uint32_t mascara =  0x0001FFFF;
+/**
+ * Suma de los bits que representan la parte fraccional del numero de punto fijo
+*/
+int32_t suma_fraccional(int32_t num1, int32_t num2){
+    uint32_t mascara =  0x0000FFFF;
     num1 = num1 & mascara;
     num2 = num2 & mascara;
     int32_t resultado = num1 + num2;
@@ -40,10 +47,10 @@ int32_t suma_fraccional(int32_t num1, int16_t num2){
 /*
 Suma que toma los bits que representa la parte entera y los suma
 */
-int_fast32_t suma_entera(int_fast32_t num1, int32_t num2){
-    int_fast32_t num_aux_1= num1>>16; // Elimina los bits de la parte fraccionaria para el número 1
-    int_fast32_t num_aux_2= num2 >>16;// Elimina los bit de la parte fraccionaria para el número 2 
-    int_fast32_t suma_entero = num_aux_1 + num_aux_2; 
+int32_t suma_entera(int32_t num1, int32_t num2){
+    int32_t num_aux_1= num1>>16; // Elimina los bits de la parte fraccionaria para el número 1
+    int32_t num_aux_2= num2 >>16;// Elimina los bit de la parte fraccionaria para el número 2 
+    int32_t suma_entero = num_aux_1 + num_aux_2; 
     char* string = int2bin(suma_entera,5);
     printf("entera %s \n",string);
     return suma_entero;
@@ -51,40 +58,80 @@ int_fast32_t suma_entera(int_fast32_t num1, int32_t num2){
 /**
  * Esta función se encarga de realizar la suma de la parte fraccionaria 
 */
-int_fast32_t suma_punto_fijo(int_fast32_t num_1, int_fast32_t num_2){
-    int_fast32_t resultado_f= suma_fraccional(num_1,num_2);
-    int_fast32_t resultado_int = suma_entera(num_1,num_2);
+int32_t suma_punto_fijo(int32_t num_1, int32_t num_2){
+    int32_t resultado_f= suma_fraccional(num_1,num_2);
+    int32_t resultado_int = suma_entera(num_1,num_2);
     resultado_int = resultado_int << 16;
     int32_t resultado_final = resultado_int + resultado_f; 
     return resultado_final;                                
 }
-
-int_fast32_t high(int_fast32_t num1, int_fast32_t num2){
-    int_fast32_t num_aux_1= num1>>16; // Elimina los bits de la parte fraccionaria para el número 1
-    int_fast32_t num_aux_2= num2 >>16;// Elimina los bit de la parte fraccionaria para el número 2 
+/**
+ * Obtiene el valor high en para la multiplicación
+*/
+int32_t high(int32_t num1, int32_t num2){
+    int32_t num_aux_1= num1>>16; // Elimina los bits de la parte fraccionaria para el número 1
+    int32_t num_aux_2= num2 >>16;// Elimina los bit de la parte fraccionaria para el número 2 
     return num_aux_1 * num_aux_2;
 }
-int_fast32_t low(int_fast32_t num1, int_fast32_t num2){
+/**
+ * Obtiene el valor low para la multiplicación
+*/
+int32_t low(int32_t num1, int32_t num2){
     uint32_t mascara =  0x0000FFFF;
     num1 = num1 & mascara;
     num2 = num2 & mascara;
     return num1*num2;
 }
-int_fast32_t mid(int_fast32_t num1, int_fast32_t num2){
-    int_fast32_t a= num1>>16; // Elimina los bits de la parte fraccionaria para el número 1
-    int_fast32_t c= num2 >>16;// Elimina los bit de la parte fraccionaria para el número 2 
+/**
+ * Obtiene el valor medio para la multiplicacion
+*/
+int32_t mid(int32_t num1, int32_t num2){
+    int32_t a= num1>>16; // Elimina los bits de la parte fraccionaria para el número 1
+    int32_t c= num2 >>16;// Elimina los bit de la parte fraccionaria para el número 2 
     uint32_t mascara =  0x0000FFFF;
     num1 = num1 & mascara;
     num2 = num2 & mascara;
     return (a*num2)+(c*num1);
 }
-int_fast32_t mult_punto_fijo(int_fast32_t num1, int_fast32_t num2){
-    int_fast32_t high_ = high(num1,num2);
-    int_fast32_t low_ = low(num1,num2);
-    int_fast32_t mid_ = mid(num1,num2);
+/**
+ * Funcion a llamar para hacer la multiplicación de dos números en punto fijo
+*/
+int32_t mult_punto_fijo(int32_t num1, int32_t num2){
+    int32_t high_ = high(num1,num2);
+    int32_t low_ = low(num1,num2);
+    int32_t mid_ = mid(num1,num2);
     high_ = high_ <<16;
     low_ = low_ >>16;
     return high_+mid_+low_;
+
+}
+void leer_archivo(){
+// Abre el archivo de texto
+    FILE *file = fopen("input.txt", "r");
+    if (file == NULL) {
+        perror("No se puede abrir el archivo");
+        return 1;
+    }
+
+    // Variables para almacenar las líneas y el número decimal
+    char line[100]; // Ajusta el tamaño según tus necesidades
+    double decimalNumber;
+
+    while (fgets(line, sizeof(line), file) != NULL) {
+        // Lee una línea del archivo
+        if (sscanf(line, "%lf", &decimalNumber) == 1) {
+            // Convierte el número decimal a punto fijo Q4.16
+            int32_t q4_16 = (int32_t)(decimalNumber * (1 << 16));
+            //Aqui se llaman las funciones aritmeticas necesarias
+            int32_t num_2 = 0b00011000000000000000;
+            int32_t resultado = mult_punto_fijo(q4_16, num_2);
+            printf(int2bin(resultado, 21));
+        }
+    }
+
+    // Cierra el archivo
+    fclose(file);
+
 
 }
 /*
@@ -92,13 +139,16 @@ PREGUNTAS:
 - Signo en la multiplicación
 - Overflow, tamaño de registro
 -Valores iniciales para el algoritmo 
+- Q7.24 bit sobrante de signo 
 */
 int main(){
-    int_fast32_t num_1 = 0b00011000000000000000; // bit de signo + 4 bits enteros +16 fracionales
-    int_fast32_t num_2 = 0b00110100000000000000;
-    int_fast32_t resultado_final = mult_punto_fijo(num_1, num_2);
+    leer_archivo();
+    /*int32_t num_1 = 0b000011000000000000000; // bit de signo + 4 bits enteros +16 fracionales
+    int32_t num_2 = 0b111001100000000000000 ; //0b11001100000000000000 0b00110100000000000000
+    int32_t resultado_final =suma_punto_fijo(num_1,num_2);
     
-    printf(int2bin(resultado_final, 21));
+    printf(int2bin(resultado_final, 21));*/
+    
 
 
     return 0;
