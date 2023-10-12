@@ -14,10 +14,7 @@ module core_top (
   // ======== IF ============ /
   wire if_stall;
   wire [31:0] if_instr_rd;  // de la memoria rom 
-
   wire [31:0] if_pc_next_instr_mem;  // a addr de rom
-  wire [31:0] de_pc;
-  wire [31:0] de_pc_plus4;
 
   // ======== DE ============ /
   wire de_clear;
@@ -77,17 +74,13 @@ module core_top (
 
   // ========= Hazard unit ========/ 
   // salidas hazard unit
-  wire if_stall;
-  wire de_stall;
-  wire de_flush;
-  wire ex_flush;
   wire [1:0] ex_op1_forward;
   wire [1:0] ex_op2_forward;
 
   assign instr_memory_addr = if_pc_next_instr_mem;
   assign if_instr_rd = instr_memory_data;
   assign instr_memory_enable = ~if_stall;
-  assign instr_memory_flush = de_flush;
+  assign instr_memory_flush = de_clear;
 
   stage_instruction_fetch instf (
       .clk(clk),
@@ -214,8 +207,8 @@ module core_top (
       .wb_reg_write(wb_reg_write),
       .if_stall(if_stall),
       .de_stall(de_stall),
-      .de_flush(de_flush),
-      .ex_flush(ex_flush),
+      .de_flush(de_clear),
+      .ex_flush(ex_clear),
       .ex_op1_forward(ex_op1_forward),
       .ex_op2_forward(ex_op2_forward)
   );

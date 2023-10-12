@@ -106,7 +106,7 @@ module stage_execute (
       mem_result_src <= 0;
 
       // outputs del data path
-      mem_alu_result <= 0;
+      mem_alu_result_proxy <= 0;
       mem_write_data <= 0;
       mem_pc_plus_4  <= 0;
       mem_imm_ext    <= 0;

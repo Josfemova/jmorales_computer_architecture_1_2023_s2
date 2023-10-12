@@ -20,10 +20,10 @@ module imm_extend (
   // upper solo se permite para inmediato de instr tipo c como Copy to Reg
   always @(*) begin
     case (imm_src)
-      3'b0000, 3'b0001: imm_out = {{16{sign}}, imm_type_bf};  // op tipo b y f
-      3'b0100, 3'b0101: imm_out = {{16{sign}}, imm_type_c};  // op tipo c
-      3'b1000, 3'b1001: imm_out = {{14{sign}}, imm_type_g};  // op tipo g
-      3'b1100, 3'b1101:
+      4'b0000, 4'b0001: imm_out = {{16{sign}}, imm_type_bf};  // op tipo b y f
+      4'b0100, 4'b0101: imm_out = {{16{sign}}, imm_type_c};  // op tipo c
+      4'b1000, 4'b1001: imm_out = {{14{sign}}, imm_type_g};  // op tipo g
+      4'b1100, 4'b1101:
       imm_out = {{11{sign}}, imm_type_d};  // lower, op tipo d. Zero extended no se usa
       default: imm_out = {imm_type_c, {11{1'b0}}};  // upper, op tipo d
     endcase

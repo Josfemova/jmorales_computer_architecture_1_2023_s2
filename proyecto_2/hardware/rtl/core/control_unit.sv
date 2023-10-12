@@ -42,7 +42,6 @@ module control_unit (
   } func3_f;
 
   typedef enum bit [1:0] {
-    RESULT_SRC_DEFAULT = 2'b00,
     RESULT_SRC_ALURES = 2'b00,
     RESULT_SRC_MEMRD = 2'b01,
     RESULT_SRC_PCPLUS4 = 2'b10,
@@ -51,7 +50,7 @@ module control_unit (
 
   assign reg_write = ~(op[1:0] == 2'b10);  // aplica para todos excepto tipo c y tipo g
   assign mem_write = (op == OP_C);
-  assign jump = ((op == OP_D) || (op == op_F));
+  assign jump = ((op == OP_D) || (op == OP_F));
   assign jump_cond = (op == OP_G);
   assign jump_cond_type = func3;  // solo importa para tipo g
   assign alu_src = (op[1:0] == 2'b01);  // aplica para tipo b o f
@@ -71,7 +70,7 @@ module control_unit (
       OP_C: begin  // solo STM
         alu_control = 3'b0;  // suma dir a escribir 
         imm_src = 4'b100;  // usa inmediato con signo extendido
-        result_src = RESULT_SRC_DEFAULT;  // no necesita result
+        result_src = RESULT_SRC_ALURES;  // no necesita result
       end
       OP_D: begin  // CLIR, CUIR y JLL
         alu_control = 3'b0;  // suma 
@@ -101,7 +100,7 @@ module control_unit (
       OP_G: begin
         alu_control = 3'b1;  // resta para hacer comp
         imm_src = 4'b1100;  // inmediato con extensión de signo, [18:2] 
-        result_src = RESULT_SRC_DEFAULT;  // no necesita result
+        result_src = RESULT_SRC_ALURES;  // no necesita result
       end
       /*OP_H: begin 
             
@@ -109,7 +108,7 @@ module control_unit (
       default: begin
         alu_control = 3'b00;
         imm_src = 4'b000;
-        result_src = 2'b00;
+        result_src = RESULT_SRC_ALURES;
       end
     endcase
   end

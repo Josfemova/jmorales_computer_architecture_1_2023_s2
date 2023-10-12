@@ -13,8 +13,8 @@ module register_file
 reg [WIDTH-1:0] registers [REGISTERS-1:0];
 
 // asegurar que x0 siempre sea 0
-assign RD1 = (a1 == 0)? 0 : registers[a1];
-assign RD2 = (a2 == 0)? 0 : registers[a2];
+assign rd1 = (a1 == 0)? 0 : registers[a1];
+assign rd2 = (a2 == 0)? 0 : registers[a2];
 
 always @(posedge clk) begin
     if(we3) registers[a3] <=wd3;

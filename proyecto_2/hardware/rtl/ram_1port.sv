@@ -3,7 +3,7 @@ module ram_1port #(
     LENGTH = 256 * 6
 ) (
     input clk,
-    we,
+    input we,
     input [(WIDTH-1):0] addr,
     input [(WIDTH-1):0] wd,
     output reg [(WIDTH-1):0] rd

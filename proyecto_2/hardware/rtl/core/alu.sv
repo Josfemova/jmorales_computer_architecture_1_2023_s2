@@ -11,10 +11,10 @@ typedef enum bit [2:0] {
 
 
 module alu #(
-    parameter WIDTH = 8
+    parameter WIDTH = 32
 ) (
-    input signed [WIDTH-1:0] op1,
-    input signed [WIDTH-1:0] op2,
+    input [WIDTH-1:0] op1,
+    input [WIDTH-1:0] op2,
     input bit [2:0] alu_control,
     output logic [3:0] flags,
     output logic [WIDTH-1:0] result
@@ -25,13 +25,12 @@ module alu #(
   wire carry_in;
   wire [WIDTH:0] sum_res;
   wire [WIDTH-1:0] sum_op2;
-
   assign carry_in = alu_control[0];
   assign sum_op2 = (alu_control[0] == 0) ? op2 : ~op2;
   assign sum_res = op1 + sum_op2 + carry_in;
 
-  assign negative = (result[31] == 1) ? 1 : 0;
-  assign zero = (result == 0) ? 1 : 0;
+  assign negative = (result[31] == 1);
+  assign zero = (result == 0);
 
   always @(*) begin
     overflow = 0;

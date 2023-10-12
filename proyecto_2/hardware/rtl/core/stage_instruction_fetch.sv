@@ -19,7 +19,7 @@ module stage_instruction_fetch (
   wire [31:0] if_pc_next;
   wire [31:0] if_pc;
 
-  assign if_pc_plus4 = pc + 4;
+  assign if_pc_plus4 = if_pc + 4;
   assign if_pc_next  = (ex_pc_src == 0) ? if_pc_plus4 : ex_pc_target;
   assign if_pc_next_instr_mem = if_pc_next;
 
@@ -31,7 +31,7 @@ module stage_instruction_fetch (
   // solo rutear la info que viene de la rom, la rom recibe de_stall y de_flush
   assign de_instr = if_instr_rd;
   always @(posedge clk) begin
-    if (de_flush) begin
+    if (de_clear) begin
       de_pc <= 0;
       de_pc_plus4 <= 0;
     end else if (~de_stall) begin

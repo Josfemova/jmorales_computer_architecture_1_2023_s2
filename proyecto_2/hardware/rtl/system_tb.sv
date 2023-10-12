@@ -1,17 +1,13 @@
-module top(
-    input clk, 
-    input reset,
-    output [5:0] instr
-);
+module system_tb;
 
+logic clk;
+logic reset;
 
 logic [31:0] instr_memory_data;
 logic [31:0] data_memory_data;
 logic [31:0] instr_memory_addr;
 logic [31:0] data_memory_addr;
 logic [31:0] data_memory_wd;
-
-assign instr = instr_memory_data[5:0];
 
 logic data_memory_we;
 logic instr_memory_flush;
@@ -52,4 +48,23 @@ ram_1port ram(
     .rd(data_memory_data)
 );
 
-endmodule 
+initial begin
+    reset <= 1; #20; reset<=0;
+end
+
+always begin
+    clk <= 1; #5 ; clk <= 0; #5;
+end
+
+
+always @(posedge clk) begin
+    if(instr_memory_addr == 32'h10) begin 
+        $display("Simulation ended");
+        $stop;
+    end
+    
+end
+
+
+
+endmodule

@@ -30,7 +30,7 @@ module stage_memory (
 );
 
   always @(posedge clk) begin
-    if (reset) begin
+    if (wb_clear) begin
       wb_reg_write <= 0;
       wb_result_src <= 0;
       wb_alu_result <= 0;
