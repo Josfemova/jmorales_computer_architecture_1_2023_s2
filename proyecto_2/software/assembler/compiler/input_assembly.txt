@@ -1,5 +1,9 @@
+help;
 SUM,rd,rs5,rs1;
 SUM,rd,rs5,rs1;
 DIF,rd,rs1,rs8;
+hello;
+idk;
 SUMI,rd,rs5,10;
 STM,rd,rs20,287;
+hola;

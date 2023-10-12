@@ -16,5 +16,6 @@ char *typeD_assembly2bin(char *assembly_instruction, char *tag);
 
 int find_element_i(const char *target);
 bool is_line(const char *str);
+int save_label_address(char *tag, int line);
 char *handle_instruction(char* parts[], int token_counter);
 #endif

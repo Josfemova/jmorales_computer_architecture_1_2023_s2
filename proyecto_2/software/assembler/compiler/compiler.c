@@ -12,12 +12,7 @@ const char *functNames[] = {
     "STM", "CLIR", "CUIR", "JLL", "LDM", "JLRL",
     "JIEQ", "JINE", "JIGT", "JILT", "JIGE", "JILE"
 };
-const char *opNames[] = {
-    "oSUM", "oDIF", "oAND", "oOR", "oXOR", "oSLL", "oSLR", "oSAR",
-    "oSUMI", "oDIFI", "oANDI", "oORI", "oXORI", "oSLLI", "oSLRI", "oSARI",
-    "oSTM", "oCLIR", "oCUIR", "oJLL", "oLDM", "oJLRL",
-    "oJIEQ", "oJINE", "oJIGT", "oJILT", "oJIGE", "oJILE"
-};
+
 const char* regNames[] = {
     "rd","rs1","rs2","rs3","rs4","rs5","rs6","rs7","rs8","rs9",
     "rs10","rs11","rs12","rs13","rs14","rs15","rs16","rs17","rs18",
@@ -25,8 +20,9 @@ const char* regNames[] = {
     "rs28","rs29","rs30","rs31"
 };
 char* tagNames[100];
-char* tagPositions[100];
+int tagPositions[100];
 int tagCounter = 0;
+
 int lineCounter =-1;
 
 typedef enum{
@@ -144,8 +140,8 @@ int string2funct(char* str) {
     return -1; 
 }
 int string2op(char* str) {
-    for (int i = 0; i < sizeof(opNames) / sizeof(opNames[0]); i++) {
-        if (strcmp(str, opNames[i]) == 0) {
+    for (int i = 0; i < sizeof(functNames) / sizeof(functNames[0]); i++) {
+        if (strcmp(str, functNames[i]) == 0) {
             return op[i];
         }
     }
@@ -179,23 +175,12 @@ char *handle_instruction(char* parts[], int token_counter){
     
     char* binaryString;
     
-    // get operation number from instruction string
-    size_t totalLength = strlen("o") + strlen(parts[0]) + 1; //para terminar en null
-    char* operation_str = (char*)malloc(totalLength);
-    if (operation_str == NULL) {
-        fprintf(stderr, "Memory allocation failed.\n");
-        return NULL; 
-    }
-
-    operation_str[0] = '\0';
+    int operation = string2op(parts[0]);
     
-    strcat(operation_str, "o");
-    strcat(operation_str, parts[0]);
-
-    int operation = string2op(operation_str);
-    printf("op %d ,",operation);
-    printf("opstr %s ",operation_str);
+    //printf("op %d ,",operation);
+    //printf("opstr %s ",parts[0]);
     //elegir traduccion segun el tipo de instruccion
+    
     if (operation == 0b000){
         binaryString = typeA_assembly2bin(parts[0], parts[1], parts[2], parts[3]);
         lineCounter++;
@@ -236,20 +221,9 @@ char *handle_instruction(char* parts[], int token_counter){
     //printf("lines %d \n", lines);
 
 }
-char *typeD_assembly2bin(char *assembly_instruction, char *tag){
-    int position = find_element_i(tag);
-    return tagPositions[position];
 
-}
 
-char *typeF_assembly2bin(char *tag, int position){
-    // Guardar las posiciones de los jumps
-    tagNames[tagCounter] = tag;
-    tagPositions[tagCounter]= int2bin(position,5);
-    tagCounter++;
-    return tag;
-    
-}
+
 char *typeA_assembly2bin(char *assembly_instruction, char *rd, char *reg1, char *reg2){
     // Para SUM, DIF, AND, OR, XOR, SLL, SLR, SAR
     const char* opcode_str = "000";
@@ -337,14 +311,46 @@ char *typeC_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
     strcat(result, &inmm_str[5]);
     return result;
 }
+char *typeD_assembly2bin(char *assembly_instruction, char *tag){
+    //int position = find_element_i(tag);
+    //return tagPositions[position];
 
-int find_element_i(const char *target) {
-    for (int i = 0; i < 100; i++) {
-        if (strcmp(target, tagNames[i]) == 0) {
-            return i; // Return the position if found
+}
+char *typeF_assembly2bin(char *tag, int position){
+    // Guardar las posiciones de los jumps
+    //tagNames[tagCounter] = tag;
+    //tagPositions[tagCounter]= int2bin(position,5);
+    //tagCounter++;
+    //return tag;
+    
+}
+
+int save_label_address(char *tag, int line){
+    //printf("\ntagcounter %d tag %s \n",tagCounter, tag);
+    tagNames[tagCounter] = (char*)malloc(strlen(tag) + 1); // +1 for the null terminator
+    if (tagNames[tagCounter] == NULL) {
+        exit(1);
+    }
+    strcpy(tagNames[tagCounter], tag);
+    tagPositions[tagCounter] = line;
+    tagCounter++;
+    for (int i = 0; i < 5; i++) { // Adjust the loop range based on the number of elements
+        //printf("Tag Name: %s, Position: %d\n", tagNames[i], tagPositions[i]);
+    }
+    
+    //printf("-------\n");
+    return tagCounter;
+}
+
+
+int find_position_by_tag(char* tag) {
+    for (int i = 0; i < tagCounter; i++) {
+        if (strcmp(tag, tagNames[i]) == 0) {
+            return tagPositions[i];
         }
     }
-    return -1; // Return -1 if not found
+    // Return a sentinel value to indicate that the tag was not found
+    return -1;
 }
 bool is_line(const char *str) {
     if (str == NULL || str[0] == '\0') {
