@@ -14,7 +14,7 @@ module alu #(
     parameter WIDTH = 8
 ) (
     input signed [WIDTH-1:0] op1,
-    op2,
+    input signed [WIDTH-1:0] op2,
     input bit [2:0] alu_control,
     output logic [3:0] flags,
     output logic [WIDTH-1:0] result

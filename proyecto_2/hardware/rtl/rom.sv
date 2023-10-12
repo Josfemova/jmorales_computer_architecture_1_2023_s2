@@ -5,15 +5,15 @@ module rom_2port #(
 ) (
     // se agregan enables para el pipeline
     input clk_a,
-    clk_b,
-    en_a,
-    en_b,
-    flush_a,
-    flush_b,
+    input clk_b,
+    input en_a,
+    input en_b,
+    input flush_a,
+    input flush_b,
     input [(WIDTH-1):0] addr_a,
-    addr_b,
+    input [(WIDTH-1):0] addr_b,
     output logic [(WIDTH-1):0] rd_a,
-    rd_b
+    output logic [(WIDTH-1):0] rd_b
 );
   reg [(WIDTH-1):0] rom[(LENGTH-1):0];
 
