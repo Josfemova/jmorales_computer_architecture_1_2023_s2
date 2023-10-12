@@ -1,6 +1,6 @@
 module stage_memory (
     input clk,
-    input mem_clear,
+    input wb_clear,
 
     // inputs de control unit
     input mem_reg_write,

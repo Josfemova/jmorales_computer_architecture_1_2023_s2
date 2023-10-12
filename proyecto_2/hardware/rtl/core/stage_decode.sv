@@ -58,7 +58,7 @@ module stage_decode (
   assign rd  = de_instr[10:6];
 
   register_file reg_file (
-      .clk(clk),
+      .clk(~clk), // recibe clk negado
       .we3(wb_reg_write),
       .a1 (rs1),
       .a2 (rs2),

@@ -19,11 +19,8 @@ module stage_execute (
     input [31:0] ex_rd2,
 
     input [4:0] ex_rd,
-    //input [4:0] ex_rs1,
-    //input [4:0] ex_rs2,
-
+    
     // inputs de otras etapas
-    //input [31:0] mem_alu_result, // se tiene a nivel interno
     input [31:0] wb_result,
 
     // inputs de hazard unit
