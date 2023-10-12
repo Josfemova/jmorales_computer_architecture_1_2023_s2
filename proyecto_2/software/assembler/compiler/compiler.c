@@ -161,12 +161,24 @@ char* int2bin(int num, int numBits) {
         exit(1); // Handle memory allocation failure
     }
 
+    // Determine the most significant bit
+    int signBit = (num < 0) ? 1 : 0;
+
+    // If it's negative, take two's complement
+    if (num < 0) {
+        num = (1 << numBits) + num;
+    }
+
     for (int i = 0; i < numBits; i++) {
         int bit = (num >> (numBits - 1 - i)) & 1;
         binaryString[i] = bit ? '1' : '0';
     }
 
     binaryString[numBits] = '\0'; // Null-terminate the string
+
+    // Apply the sign bit
+    binaryString[0] = (signBit == 1) ? '1' : binaryString[0];
+
     return binaryString;
 }
 
@@ -184,34 +196,32 @@ char *handle_instruction(char* parts[], int token_counter){
     if (operation == 0b000){
         binaryString = typeA_assembly2bin(parts[0], parts[1], parts[2], parts[3]);
         lineCounter++;
-        printf("Type A \n");
+        //printf("Type A \n");
     }
     else if(operation == 0b001 || operation == 0b101){
         binaryString = typeB_assembly2bin(parts[0], parts[1], parts[2], parts[3]);
         lineCounter++;
-        printf("Type B/F \n");
-        //falta manejo de JLRL
-
+        //printf("Type B \n");
     }
     else if (operation == 0b010){
         binaryString = typeC_assembly2bin(parts[0], parts[1], parts[2], parts[3]);
         lineCounter++;
-        printf("Type C \n");
+        //printf("Type C \n");
     }
     else if (operation == 0b011){
         binaryString = typeD_assembly2bin(parts[0], parts[1], parts[2]);
         lineCounter++;
-        printf("Type D \n");
+        //printf("Type D \n");
     }
-    // else if (operation == 0b101){
-    //     //binaryString = typeC_assembly2bin(parts[0], parts[1], parts[2]);
-    //     lineCounter++;
-    //     printf("Type F \n");
-    // }
+     else if (operation == 0b101){
+        binaryString = typeF_assembly2bin(parts[0], parts[1], parts[2], parts[3]);
+        lineCounter++;
+        //printf("Type F \n");
+     }
     else if (operation == 0b110){
         binaryString = typeG_assembly2bin(parts[0], parts[1], parts[2],parts[3]);
         lineCounter++;
-        printf("Type G \n");
+        //printf("Type G \n");
     }
     
     else{
@@ -256,8 +266,8 @@ char *typeA_assembly2bin(char *assembly_instruction, char *rd, char *reg1, char 
     return result;
 }
 char *typeB_assembly2bin(char *assembly_instruction, char *rd, char *reg1, char *inmm){
-    // Para SUMI, DIFI, ANDI, ORI, XORI, SLLI, SLRI, SARI, LDM, JLRL
-    //falta manejo de JLRL
+    // Para SUMI, DIFI, ANDI, ORI, XORI, SLLI, SLRI, SARI
+    
     const char* opcode_str = "001";
     const char* func3_str = int2bin(string2funct(assembly_instruction),3);
     const char* reg_str = int2bin(string2reg(rd),5);
@@ -350,6 +360,43 @@ char *typeD_assembly2bin(char *assembly_instruction, char *rd, char *inmm){
     return result;
 
 }
+char *typeF_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, char *inmm){
+    const char* opcode_str = "101";
+    const char* func3_str = int2bin(string2funct(assembly_instruction),3);
+    const char* reg_str = int2bin(string2reg(rd),5);
+    const char* reg1_str = int2bin(string2reg(reg1),5);
+    const char* inmm_str;
+
+    if(strcmp(func3_str, "010")){
+        const int inmm_int = atoi(inmm);
+        inmm_str = int2bin(inmm_int,16);
+    }
+    else{
+        //inmm es un label
+        int label_pos = find_position_by_tag(inmm);
+        inmm_str = int2bin(label_pos-lineCounter,16);
+        //printf("\nlabel_pos %d, inmm_srt %s\n", label_pos-lineCounter, inmm_str);
+        
+    }
+    size_t totalLength = strlen(opcode_str) + strlen(func3_str) + 
+                    strlen(reg_str) + strlen(inmm_str) + 
+                    strlen(reg1_str) + 1; //para terminar en null
+
+    char* result = (char*)malloc(totalLength);
+    if (result == NULL) {
+        fprintf(stderr, "Memory allocation failed.\n");
+        return NULL; 
+    }
+
+    result[0] = '\0';
+
+    strcat(result, opcode_str);
+    strcat(result, func3_str);
+    strcat(result, reg_str);
+    strcat(result, reg1_str);
+    strcat(result, inmm_str);
+    return result;
+}
 char *typeG_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, char *inmm){
     const char* opcode_str = "110";
     const char* func3_str = int2bin(string2funct(assembly_instruction),3);
@@ -357,7 +404,7 @@ char *typeG_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
     const char* reg2_str = int2bin(string2reg(reg2),5);
     int label_pos = find_position_by_tag(inmm);
     const char* inmm_str = int2bin(label_pos-lineCounter,16);
-    //printf("\nlabel_pos %d, inmm %s, lineCounter %d, inmm_srt %s\n", label_pos, inmm, lineCounter, inmm_str);
+    //printf("\nlabel_pos %d, inmm %s\n", label_pos-lineCounter, inmm_str);
     
     
     size_t totalLength = strlen(opcode_str) + strlen(func3_str) + 
@@ -394,8 +441,6 @@ int save_label_address(char *tag, int line){
     // for (int i = 0; i < 5; i++) { // Adjust the loop range based on the number of elements
     //     printf("Tag Name: %s, Position: %d\n", tagNames[i], tagPositions[i]);
     // }
-    int example= find_position_by_tag("help");
-    printf("%d-------\n", example);
     return tagCounter;
 }
 
