@@ -7,6 +7,7 @@
 #define BUFFER_SIZE 2205
 #define ATENUACION 0b00000000100110011001100110011001
 #define ATENUACION_M 0b00000000011001100110011001100110
+#define ATENUACION_DIV 00000010100000000000000000000000
 
 
 
@@ -136,7 +137,7 @@ void initializeBuffer(CircularBuffer* buffer) {
 /**
  * CONTROL DE BUFFER CIRCULAR y calculo de la insercion
 */
-int32_t insertar_reverberacion(int32_t num, CircularBuffer* buffer) {
+int32_t insertar_rever_aux(int32_t num, CircularBuffer* buffer) {
     // Aqui se agrega las sumas y las multiplicaciones
     //desarrolla la parte de (1-a)*x(n)
     int32_t result = mult_punto_fijo(num, ATENUACION_M);
@@ -150,6 +151,28 @@ int32_t insertar_reverberacion(int32_t num, CircularBuffer* buffer) {
 
     // Agrega el nuevo resultado al buffer circular
     buffer->data[buffer->head] = result;
+    buffer->head = (buffer->head + 1) % BUFFER_SIZE;
+
+    return result;
+}
+/**
+ * Calculo de la reduccion
+*/
+int32_t reducc_rever_aux(int32_t num, CircularBuffer* buffer) {
+    // Aqui se agrega las sumas y las multiplicaciones
+
+    // Calcula el valor de x(n-k) utilizando el buffer
+    int index = (buffer->head + BUFFER_SIZE - 2205) % BUFFER_SIZE;
+    //Desarrolla la parte de x(n-k)*a
+    int32_t result = mult_punto_fijo((buffer->data[index]), ATENUACION);
+    //Convierto a -a*x(n-k)
+    result = suma_punto_fijo(0, result);
+    // realizo la resta (x(n)-ax(n-k))
+    result = suma_punto_fijo(num,result);
+    //multiplico la suma por 1/(1-a)
+    result = mult_punto_fijo(result, ATENUACION_DIV);
+    // Agrega el valor de entrada usado al buffer circular
+    buffer->data[buffer->head] = num;
     buffer->head = (buffer->head + 1) % BUFFER_SIZE;
 
     return result;
@@ -169,20 +192,30 @@ double puntoFijoADecimal(int32_t puntoFijo) {
 /**
  * Funcionque escribe el resultado en el txt de salida
 */
-void escribir_salida(double salida){
-    FILE *archivo = fopen("salida.txt", "a");
-    if (archivo == NULL) {
-        printf("No se pudo abrir el archivo.\n");
-        return 1;
+void escribir_salida(double salida, int flag){
+    if (flag ==0) //Si está en 0 se debe guardar la insercion
+    {
+         FILE *archivo = fopen("insercion.txt", "a");
+        if (archivo == NULL) {
+            printf("No se pudo abrir el archivo.\n");
+            return 1;
+        }
+        fprintf(archivo, "%lf\n", salida);
+        fclose(archivo);
+    }else{ //si está en 1 se guarda la reduccion
+         FILE *archivo = fopen("reduccion.txt", "a");
+        if (archivo == NULL) {
+            printf("No se pudo abrir el archivo.\n");
+            return 1;
+        }
+        fprintf(archivo, "%lf\n", salida);
+        fclose(archivo);
     }
-    fprintf(archivo, "%lf\n", salida);
-    fclose(archivo);
 }
 /**
- * Desde aqui se hace el procesamiento del archivo
+ * Desde aqui se hace el procesamiento del archivo para la insercion
 */
-void leer_archivo(){
-// Abre el archivo de texto
+void insercion_reverberacion(){
     FILE *file = fopen("input.txt", "r");
     if (file == NULL) {
         perror("No se puede abrir el archivo");
@@ -190,11 +223,8 @@ void leer_archivo(){
     }
     CircularBuffer buffer ={0};
     initializeBuffer(&buffer);
-
-    // Variables para almacenar las líneas y el número decimal
-    char line[100]; // Ajusta el tamaño según tus necesidades
+    char line[10];
     double decimalNumber;
-
     while (fgets(line, sizeof(line), file) != NULL) {
         // Lee una línea del archivo
         if (sscanf(line, "%lf", &decimalNumber) == 1) {
@@ -202,19 +232,41 @@ void leer_archivo(){
             int32_t q7_24 = (int32_t)(decimalNumber * (1 << 24));
             printf(int2bin(q7_24, 32));
             // AQUI SE ENVIA GENERAR EL ALGORTIMO
-            int32_t resultado = insertar_reverberacion(q7_24, &buffer);
+            int32_t resultado = insertar_rever_aux(q7_24, &buffer);
             //AQUI SE GUARDA EN OTRO TXT
             double salida = puntoFijoADecimal(resultado); // convierte el numero a doble (solo para fines de C)
-            escribir_salida(salida);
+            escribir_salida(salida,0);
         }
     }
-
-    // Cierra el archivo
     fclose(file);
-
-
+}
+void reduccion_reverberacion(){
+    FILE *file = fopen("input.txt", "r");
+    if (file == NULL) {
+        perror("No se puede abrir el archivo");
+        return 1;
+    }
+    CircularBuffer buffer ={0};
+    initializeBuffer(&buffer);
+    char line[10];
+    double decimalNumber;
+    while (fgets(line, sizeof(line), file) != NULL) {
+        // Lee una línea del archivo
+        if (sscanf(line, "%lf", &decimalNumber) == 1) {
+            //AQUI SE CONVIERTE LO LEIDO DEL ARCHIVO TXT A PUNTO FIJO
+            int32_t q7_24 = (int32_t)(decimalNumber * (1 << 24));
+            printf(int2bin(q7_24, 32));
+            // AQUI SE ENVIA GENERAR EL ALGORTIMO
+            int32_t resultado = reducc_rever_aux(q7_24, &buffer);
+            //AQUI SE GUARDA EN OTRO TXT
+            double salida = puntoFijoADecimal(resultado); // convierte el numero a doble (solo para fines de C)
+            escribir_salida(salida,1);
+        }
+    }
+    fclose(file);
 }
 int main(){
-    leer_archivo();
+    insercion_reverberacion();
+    reduccion_reverberacion();
     return 0;
 }
