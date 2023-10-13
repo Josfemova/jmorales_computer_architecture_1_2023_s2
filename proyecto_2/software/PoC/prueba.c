@@ -32,15 +32,15 @@ char* int2bin(int num, int numBits) {
  * Suma de los bits que representan la parte fraccional del numero de punto fijo
 */
 int32_t suma_fraccional(int32_t num1, int32_t num2){
-    uint32_t mascara =  0x00FFFFFF;
+    uint32_t mascara =  0x0000FFFF;
     num1 = num1 & mascara;
     num2 = num2 & mascara;
     int32_t resultado = num1 + num2;
-    char* string = int2bin(resultado,25);
+    char* string = int2bin(resultado,17);
     printf("fracionaria %s \n",string);
-    char* string_1 = int2bin(num1,24);
+    char* string_1 = int2bin(num1,16);
     printf("Num1: %s \n",string_1);
-    char* string_2 = int2bin(num2,24);
+    char* string_2 = int2bin(num2,16);
     printf("NUm:2 %s \n",string_2);
     return resultado;
 }
@@ -48,10 +48,10 @@ int32_t suma_fraccional(int32_t num1, int32_t num2){
 Suma que toma los bits que representa la parte entera y los suma
 */
 int32_t suma_entera(int32_t num1, int32_t num2){
-    int32_t num_aux_1= num1>>24; // Elimina los bits de la parte fraccionaria para el número 1
-    int32_t num_aux_2= num2 >>24;// Elimina los bit de la parte fraccionaria para el número 2 
+    int32_t num_aux_1= num1>>16; // Elimina los bits de la parte fraccionaria para el número 1
+    int32_t num_aux_2= num2 >>16;// Elimina los bit de la parte fraccionaria para el número 2 
     int32_t suma_entero = num_aux_1 + num_aux_2; 
-    char* string = int2bin(suma_entera,7);
+    char* string = int2bin(suma_entera,5);
     printf("entera %s \n",string);
     return suma_entero;
 }
@@ -61,34 +61,36 @@ int32_t suma_entera(int32_t num1, int32_t num2){
 int32_t suma_punto_fijo(int32_t num_1, int32_t num_2){
     int32_t resultado_f= suma_fraccional(num_1,num_2);
     int32_t resultado_int = suma_entera(num_1,num_2);
-    resultado_int = resultado_int << 24;
-    int32_t resultado_final = resultado_int + resultado_f; 
+    resultado_int = resultado_int << 16;
+    int32_t resultado_final = resultado_int + resultado_f;
     return resultado_final;                                
 }
 /**
  * Obtiene el valor high en para la multiplicación
 */
 int32_t high(int32_t num1, int32_t num2){
-    int32_t num_aux_1= num1>>24; // Elimina los bits de la parte fraccionaria para el número 1
-    int32_t num_aux_2= num2 >>24;// Elimina los bit de la parte fraccionaria para el número 2 
+    int32_t num_aux_1= num1>>16; // Elimina los bits de la parte fraccionaria para el número 1
+    int32_t num_aux_2= num2 >>16;// Elimina los bit de la parte fraccionaria para el número 2 
     return num_aux_1 * num_aux_2;
 }
 /**
  * Obtiene el valor low para la multiplicación
 */
 int32_t low(int32_t num1, int32_t num2){
-    uint32_t mascara =  0x00FFFFFF;
+    uint32_t mascara =  0x0000FFFF;
     num1 = num1 & mascara;
     num2 = num2 & mascara;
+    printf(int2bin(num2, 22));
+    printf("\n");
     return num1*num2;
 }
 /**
  * Obtiene el valor medio para la multiplicacion
 */
 int32_t mid(int32_t num1, int32_t num2){
-    int32_t a= num1>>24; // Elimina los bits de la parte fraccionaria para el número 1
-    int32_t c= num2 >>24;// Elimina los bit de la parte fraccionaria para el número 2 
-    uint32_t mascara =  0x00FFFFFF;
+    int32_t a= num1>>16; // Elimina los bits de la parte fraccionaria para el número 1
+    int32_t c= num2 >>16;// Elimina los bit de la parte fraccionaria para el número 2 
+    uint32_t mascara =  0x0000FFFF;
     num1 = num1 & mascara;
     num2 = num2 & mascara;
     return (a*num2)+(c*num1);
@@ -100,10 +102,18 @@ int32_t mult_punto_fijo(int32_t num1, int32_t num2){
     int32_t high_ = high(num1,num2);
     int32_t low_ = low(num1,num2);
     int32_t mid_ = mid(num1,num2);
-    high_ = high_ <<24;
-    low_ = low_ >>24;
+    high_ = high_ <<16;
+    low_ = low_ >>16;
     return high_+mid_+low_;
 
+}
+// Función para convertir de punto fijo Q7.24 a decimal
+double puntoFijoADecimal(int32_t puntoFijo) {
+    int parteEntera = puntoFijo >> 16; // 7 bits para la parte entera
+    int mascaraFraccional = (1 << 16) - 1; // 24 bits para la parte fraccional
+    double parteFraccional = (double)(puntoFijo & mascaraFraccional) / (1 << 16);
+
+    return parteEntera + parteFraccional;
 }
 void leer_archivo(){
 // Abre el archivo de texto
@@ -121,11 +131,13 @@ void leer_archivo(){
         // Lee una línea del archivo
         if (sscanf(line, "%lf", &decimalNumber) == 1) {
             // Convierte el número decimal a punto fijo Q7.24
-            int32_t q7_24 = (int32_t)(decimalNumber * (1 << 24));
+            int32_t q7_24 = (int32_t)(decimalNumber * (1 << 16));
             //Aqui se llaman las funciones aritmeticas necesarias
-            int32_t num_2 = 0b0001100000000000000000000000;
+            int32_t num_2 = 0b0000011000000000000000;
             int32_t resultado = suma_punto_fijo(q7_24, num_2);
-            printf(int2bin(resultado, 32));
+            printf(int2bin(q7_24, 22));
+            double numero= puntoFijoADecimal(resultado);
+            printf(" \nsalida: %lf", numero);
         }
     }
 
