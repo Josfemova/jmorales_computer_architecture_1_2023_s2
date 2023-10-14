@@ -3,8 +3,8 @@
 
 import wave
 
-input_file = "acousticGuitarMono_441k8seg.wav"
-output_file = "guitarMono_441k_8s_Headerless.txt"
+input_file = "audio_Mono441k7seg.wav"
+output_file = "audio_output.txt"
 
 with wave.open(input_file, 'rb') as wav_in:
     params = wav_in.getparams()
@@ -35,12 +35,12 @@ for val in normalized_float_data:
   #PARTE ENTERA ----------------------------------------------------------------
   integer = int(abs(val))
   binary = binary + str(integer) #se suma el entero (uno o cero)
-  
-  #PARTE DECIMAL ---------------------------------------------------------------
   decimal = abs(val) - int(abs(val))
+
+  #PARTE DECIMAL ---------------------------------------------------------------
   sum = 0
-  for i in range(16): # el 16 es porque usamos Q5.16. Lo que haremos es convertir int a binario
-      if sum + 2**(-(i+1)) < decimal: 
+  for i in range(16): # el 16 es porque usamos Q5.16
+      if sum + 2**(-(i+1)) < decimal:
           sum += 2**(-(i+1))
           binary = binary + "1"
       else:
@@ -48,7 +48,7 @@ for val in normalized_float_data:
   while len(binary)<21: # 5 + 16 = 21
     binary+="0"
     print(len(binary))
-  qformatData.append(binary) # agrego cada int convertido a binario a la lista definitiva
+  qformatData.append(binary)
 
 """Escritura en un txt de los numeros con Q5.16--------------------------------"""
 
