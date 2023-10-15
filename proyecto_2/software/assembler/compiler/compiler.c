@@ -6,121 +6,89 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-const char *functNames[] = {
-    "SUM", "DIF", "AND", "OR", "XOR", "SLL", "SLR", "SAR",
-    "SUMI", "DIFI", "ANDI", "ORI", "XORI", "SLLI", "SLRI", "SARI",
-    "STM", "CLIR", "CUIR", "JLL", "LDM", "JLRL",
-    "JIEQ", "JINE", "JIGT", "JILT", "JIGE", "JILE"
-};
 
-const char* regNames[] = {
-    "rd","rs1","rs2","rs3","rs4","rs5","rs6","rs7","rs8","rs9",
-    "rs10","rs11","rs12","rs13","rs14","rs15","rs16","rs17","rs18",
-    "rs19","rs20","rs21","rs22","rs23","rs24","rs25","rs26","rs27",
-    "rs28","rs29","rs30","rs31"
-};
 char* tagNames[100];
 int tagPositions[100];
 int tagCounter = 0;
-
 int lineCounter =-1;
 
-typedef enum{
-  rd = 0, 
-  rs1 = 1,
-  rs2 = 2,
-  rs3 = 3,
-  rs4 = 4,
-  rs5 = 5,
-  rs6 = 6,
-  rs7 = 7,
-  rs8 = 8,
-  rs9 = 9,
-  rs10 = 10,
-  rs11 = 11,
-  rs12 = 12,
-  rs13 = 13,
-  rs14 = 14,
-  rs15 = 15,
-  rs16 = 16,
-  rs17 = 17,
-  rs18 = 18,
-  rs19 = 19,
-  rs20 = 20,
-  rs21 = 21,
-  rs22 = 22,
-  rs23 = 23,
-  rs24 = 24,
-  rs25 = 25,
-  rs26 = 26,
-  rs27 = 27,
-  rs28 = 28,
-  rs29 = 29,
-  rs30 = 30,
-  rs31 = 31
-}reg;
-const int func3[]={
-    0b000,
-    0b001,
-    0b010,
-    0b011,
-    0b100,
-    0b101,
-    0b110,
-    0b111,//ops tipo A->op=000
-    0b000,
-    0b001,
-    0b010,
-    0b011,
-    0b100,
-    0b101,
-    0b110,
-    0b111,//ops tipo B->op=001
-    0b000, //ops tipo C->op=010
-    0b000, //ops tipo D->op=011
-    0b001,
-    0b010,
-    0b000,//ops tipo F->op=101
-    0b010,
-    0b000,//ops tipo G->op=110
-    0b001,
-    0b010,
-    0b011,
-    0b100,
-    0b101
-
+typedef struct {
+    char* func_name;
+    unsigned int op;
+    unsigned int func3;
+}instructions;
+const instructions inst[] ={
+    {.func_name="SUM", .func3=0b000, .op = 0b000},
+    {.func_name="DIF", .func3=0b001, .op = 0b000},
+    {.func_name="AND", .func3=0b010, .op = 0b000},
+    {.func_name="OR", .func3=0b011, .op = 0b000},
+    {.func_name="XOR", .func3=0b100, .op = 0b000},
+    {.func_name="SLL", .func3=0b101, .op = 0b000},
+    {.func_name="SLR", .func3=0b110, .op = 0b000},
+    {.func_name="SAR", .func3=0b111, .op = 0b000},
+    {.func_name="SUMI", .func3=0b000, .op = 0b001},
+    {.func_name="DIFI", .func3=0b001, .op = 0b001},
+    {.func_name="ANDI", .func3=0b010, .op = 0b001},
+    {.func_name="ORI", .func3=0b011, .op = 0b001},
+    {.func_name="XORI", .func3=0b100, .op = 0b001},
+    {.func_name="SLLI", .func3=0b101, .op = 0b001},
+    {.func_name="SLRI", .func3=0b110, .op = 0b001},
+    {.func_name="SARI", .func3=0b111, .op = 0b001},
+    {.func_name="STM", .func3=0b000, .op = 0b010},
+    {.func_name="CLIR", .func3=0b000, .op = 0b011},
+    {.func_name="CUIR", .func3=0b001, .op = 0b011},
+    {.func_name="JLL", .func3=0b010, .op = 0b011},
+    {.func_name="LDM", .func3=0b000, .op = 0b101},
+    {.func_name="JLRL", .func3=0b010, .op = 0b101},
+    {.func_name="JIEQ", .func3=0b000, .op = 0b110},
+    {.func_name="JINE", .func3=0b001, .op = 0b110},
+    {.func_name="JIGT", .func3=0b010, .op = 0b110},
+    {.func_name="JILT", .func3=0b011, .op = 0b110},
+    {.func_name="JIGE", .func3=0b100, .op = 0b110},
+    {.func_name="JILE", .func3=0b101, .op = 0b110},
 };
-const int op[]={
-    0b000,
-    0b000,
-    0b000,
-    0b000,
-    0b000,
-    0b000,
-    0b000,
-    0b000,//ops tipo A->op=000
-    0b001,
-    0b001,
-    0b001,
-    0b001,
-    0b001,
-    0b001,
-    0b001,
-    0b001,//ops tipo B->op=001
-    0b010, //ops tipo C->op=010
-    0b011, //ops tipo D->op=011
-    0b011,
-    0b011,
-    0b101,//ops tipo F->op=101
-    0b101,
-    0b110,//ops tipo G->op=110
-    0b110,
-    0b110,
-    0b110,
-    0b110,
-    0b110
-
+typedef struct {
+    char* name;
+    unsigned int val;
+}reg_spec;
+const reg_spec regs[] = {
+    {.name = "x0", .val = 0},
+    {.name = "zero",.val = 0},
+    {.name = "x1"  ,.val = 1},
+    {.name = "lr"  ,.val = 0},
+    {.name = "x2"  ,.val = 2},
+    {.name = "x3"  ,.val = 3},
+    {.name = "x4"  ,.val = 4},
+    {.name = "x5"  ,.val = 5},
+    {.name = "x6"  ,.val = 6},
+    {.name = "x7"  ,.val = 7},
+    {.name = "x8"  ,.val = 8},
+    {.name = "x9"  ,.val = 9},
+    {.name = "x10" ,.val = 10},
+    {.name = "x11" ,.val = 11},
+    {.name = "x12" ,.val = 12},
+    {.name = "x13" ,.val = 13},
+    {.name = "x14" ,.val = 14},
+    {.name = "x15" ,.val = 15},
+    {.name = "x16" ,.val = 16},
+    {.name = "x17" ,.val = 17},
+    {.name = "x18" ,.val = 18},
+    {.name = "x19" ,.val = 19},
+    {.name = "x20" ,.val = 10},
+    {.name = "x21" ,.val = 21},
+    {.name = "x22" ,.val = 22},
+    {.name = "x23" ,.val = 23},
+    {.name = "x24" ,.val = 24},
+    {.name = "x25" ,.val = 25},
+    {.name = "x26" ,.val = 26},
+    {.name = "x27" ,.val = 27},
+    {.name = "x28" ,.val = 28},
+    {.name = "x29" ,.val = 29},
+    {.name = "x30" ,.val = 30},
+    {.name = "x31" ,.val = 31}
 };
+
+//funciones
 
 void reverse_string(char* str) {
     int length = strlen(str);
@@ -132,34 +100,34 @@ void reverse_string(char* str) {
         str[j] = temp;
     }
 }
-
-
-reg string2reg( char* str) {
-    for (int i = 0; i < sizeof(regNames) / sizeof(regNames[0]); i++) {
-        if (strcmp(str, regNames[i]) == 0) {
-            return (reg)i;
+unsigned int string2reg(char* regName) {
+    for (size_t i = 0; i < sizeof(regs) / sizeof(regs[0]); i++) {
+        if (strcmp(regName, regs[i].name) == 0) {
+            return regs[i].val;
         }
     }
-    return -1; 
+    
+    return (unsigned int)-1; 
 }
 
-int string2funct(char* str) {
-    for (int i = 0; i < sizeof(functNames) / sizeof(functNames[0]); i++) {
-        if (strcmp(str, functNames[i]) == 0) {
-            return func3[i];
+unsigned int string2funct(char* funcName) {
+    for (size_t i = 0; i < sizeof(inst) / sizeof(inst[0]); i++) {
+        if (strcmp(funcName, inst[i].func_name) == 0) {
+            return inst[i].func3;
         }
     }
-    return -1; 
-}
-int string2op(char* str) {
-    for (int i = 0; i < sizeof(functNames) / sizeof(functNames[0]); i++) {
-        if (strcmp(str, functNames[i]) == 0) {
-            return op[i];
-        }
-    }
-    return -1; 
+    return (unsigned int)-1; 
 }
 
+unsigned int string2op(char* funcName) {
+    for (size_t i = 0; i < sizeof(inst) / sizeof(inst[0]); i++) {
+        if (strcmp(funcName, inst[i].func_name) == 0) {
+            return inst[i].op;
+        }
+    }
+    
+    return (unsigned int)-1; 
+}
 
 char* int2bin(int num, int numBits) {
     if (numBits <= 0) {
@@ -247,9 +215,6 @@ char *handle_instruction(char* parts[], int token_counter){
     //printf("lines %d \n", lines);
 
 }
-
-
-
 
 char *typeA_assembly2bin(char *assembly_instruction, char *rd, char *reg1, char *reg2){
     // Para SUM, DIF, AND, OR, XOR, SLL, SLR, SAR
@@ -385,8 +350,8 @@ char *typeF_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
     //Para JIEQ, JINE, JIGT, JILT, JIGE, JILE
     const char* opcode_str = "101";
     const char* func3_str = int2bin(string2funct(assembly_instruction),3);
-    const char* reg_str = int2bin(string2reg(rd),5);
-    const char* reg1_str = int2bin(string2reg(reg1),5);
+    const char* reg_str = int2bin(string2reg(reg1),5);
+    const char* reg1_str = int2bin(string2reg(reg2),5);
     const char* inmm_str;
 
     if(strcmp(func3_str, "010")){
