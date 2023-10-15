@@ -10,8 +10,6 @@
 
 import wave
 
-paramsIn = []
-
 def audio_to_q1_14(input_file, Qformat_file):
   # Abre el archivo WAV y toma sus datos de audio
     with wave.open(input_file, 'rb') as wav_in:
