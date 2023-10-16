@@ -74,7 +74,7 @@ const reg_spec regs[] = {
     {.name = "x17" ,.val = 17},
     {.name = "x18" ,.val = 18},
     {.name = "x19" ,.val = 19},
-    {.name = "x20" ,.val = 10},
+    {.name = "x20" ,.val = 20},
     {.name = "x21" ,.val = 21},
     {.name = "x22" ,.val = 22},
     {.name = "x23" ,.val = 23},
