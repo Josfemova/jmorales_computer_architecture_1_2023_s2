@@ -10,7 +10,8 @@ module control_unit (
     output [2:0] jump_cond_type,  //! especifica tipo de salto condicional
 
     output logic [2:0] alu_control,  //! selecciona operacion de alu
-    output alu_src,  //! selecciona si op2 es rs2
+    output alu_src_op1,  //! selecciona si op1 es rs1
+    output alu_src_op2,  //! selecciona si op2 es rs2
 
     //! [0] indica si es sin signo
     //! [1] indica si es upper 
@@ -50,10 +51,11 @@ module control_unit (
 
   assign reg_write = ~(op[1:0] == 2'b10);  // aplica para todos excepto tipo c y tipo g
   assign mem_write = (op == OP_C);
-  assign jump = (((op == OP_D) && (func3 == JLL)) || (op == OP_F));
+  assign jump = (((op == OP_D) && (func3 == JLL)) || ((op == OP_F) && (func3 == JLRL)));
   assign jump_cond = (op == OP_G);
   assign jump_cond_type = func3;  // solo importa para tipo g
-  assign alu_src = (op == OP_C) || (op[1:0] == 2'b01);  // aplica para tipo c,b o f
+  assign alu_src_op1 = (op != OP_D);  // solo queremos que sea uno cuando haya que forzar un 0
+  assign alu_src_op2 = (op != OP_A) && (op != OP_G);  // aplica para tipo b,c,d e o f
 
   always @(*) begin
     case (op)
@@ -77,11 +79,11 @@ module control_unit (
         case (func3)
           CLIR: begin
             imm_src = 4'b1100;
-            result_src = RESULT_SRC_IMM;
+            result_src = RESULT_SRC_ALURES;
           end
           CUIR: begin
             imm_src = 4'b1110;
-            result_src = RESULT_SRC_IMM;
+            result_src = RESULT_SRC_ALURES;
           end
           default: begin
             imm_src = 4'b1100;

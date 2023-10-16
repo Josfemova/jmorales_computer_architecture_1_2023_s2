@@ -9,7 +9,8 @@ module stage_execute (
     input ex_jump_cond,
     input [2:0] ex_jump_cond_type,
     input [2:0] ex_alu_control,
-    input ex_alu_src,
+    input ex_alu_src_op1,
+    input ex_alu_src_op2,
     input [1:0] ex_result_src,
 
     // inputs del data path
@@ -51,6 +52,7 @@ module stage_execute (
 
 
   // señales internas del stage
+  logic [31:0] pre_op1;
   logic [31:0] op1;
   logic [31:0] write_data;
   logic [31:0] op2;
@@ -63,9 +65,9 @@ module stage_execute (
 
   always @(*) begin
     case (ex_op1_forward)
-      2'b01:   op1 = wb_result;
-      2'b10:   op1 = mem_alu_result_proxy;
-      default: op1 = ex_rd1;
+      2'b01:   pre_op1 = wb_result;
+      2'b10:   pre_op1 = mem_alu_result_proxy;
+      default: pre_op1 = ex_rd1;
     endcase
 
     case (ex_op2_forward)
@@ -92,8 +94,8 @@ module stage_execute (
       .result(alu_result)
   );
 
-  assign op2 = (ex_alu_src) ? ex_imm_ext : write_data;
-
+  assign op1 = (ex_alu_src_op1) ? pre_op1 : 32'b0;
+  assign op2 = (ex_alu_src_op2) ? ex_imm_ext : write_data;
 
   assign mem_alu_result = mem_alu_result_proxy;
   assign ex_pc_target = ex_pc + ex_imm_ext;

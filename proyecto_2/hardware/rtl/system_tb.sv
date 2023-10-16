@@ -65,7 +65,7 @@ module system_tb;
 
 
   always @(posedge clk) begin
-    if (instr_memory_addr == 32'h40) begin
+    if (data_memory_addr == 32'h28c) begin
       $display("Simulation ended");
       $stop;
     end

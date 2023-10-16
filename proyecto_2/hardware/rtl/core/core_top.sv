@@ -33,7 +33,8 @@ module core_top (
   wire ex_jump_cond;
   wire [2:0] ex_jump_cond_type;
   wire [2:0] ex_alu_control;
-  wire ex_alu_src;
+  wire ex_alu_src_op1;
+  wire ex_alu_src_op2;
   wire [1:0] ex_result_src;
   wire [31:0] ex_pc;
   wire [31:0] ex_pc_plus_4;
@@ -81,7 +82,8 @@ module core_top (
   assign if_instr_rd = instr_memory_data;
   assign instr_memory_enable = ~if_stall;
   assign instr_memory_flush = de_clear;
-
+  assign mem_clear = reset;
+  assign wb_clear = reset;
   stage_instruction_fetch instf (
       .clk(clk),
       .reset(reset),
@@ -112,7 +114,8 @@ module core_top (
       .ex_jump_cond(ex_jump_cond),
       .ex_jump_cond_type(ex_jump_cond_type),
       .ex_alu_control(ex_alu_control),
-      .ex_alu_src(ex_alu_src),
+      .ex_alu_src_op1(ex_alu_src_op1),
+      .ex_alu_src_op2(ex_alu_src_op2),
       .ex_result_src(ex_result_src),
       .ex_pc(ex_pc),
       .ex_pc_plus_4(ex_pc_plus_4),
@@ -136,7 +139,8 @@ module core_top (
       .ex_jump_cond(ex_jump_cond),
       .ex_jump_cond_type(ex_jump_cond_type),
       .ex_alu_control(ex_alu_control),
-      .ex_alu_src(ex_alu_src),
+      .ex_alu_src_op1(ex_alu_src_op1),
+      .ex_alu_src_op2(ex_alu_src_op2),
       .ex_result_src(ex_result_src),
       .ex_pc(ex_pc),
       .ex_pc_plus_4(ex_pc_plus_4),
