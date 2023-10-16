@@ -180,7 +180,7 @@ char *handle_instruction(char* parts[], int token_counter){
         lineCounter++;
         //printf("Type A \n");
     }
-    else if(operation == 0b001 || operation == 0b101){
+    else if(operation == 0b001){
         binaryString = typeB_assembly2bin(parts[0], parts[1], parts[2], parts[3]);
         lineCounter++;
         //printf("Type B \n");
@@ -351,7 +351,6 @@ char *typeD_assembly2bin(char *assembly_instruction, char *rd, char *inmm){
 }
 
 char *typeF_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, char *inmm){
-    //Para JIEQ, JINE, JIGT, JILT, JIGE, JILE
     const char* opcode_str = "101";
     const char* func3_str = int2bin(string2funct(assembly_instruction),3);
     const char* reg_str = int2bin(string2reg(reg1),5);
@@ -391,6 +390,7 @@ char *typeF_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
 }
 
 char *typeG_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, char *inmm){
+    //Para JIEQ, JINE, JIGT, JILT, JIGE, JILE
     const char* opcode_str = "110";
     const char* func3_str = int2bin(string2funct(assembly_instruction),3);
     const char* reg1_str = int2bin(string2reg(reg1),5);
