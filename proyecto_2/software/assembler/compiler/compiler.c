@@ -175,40 +175,35 @@ char *handle_instruction(char* parts[], int token_counter){
     //printf("opstr %s ",parts[0]);
     //elegir traduccion segun el tipo de instruccion
     
+    lineCounter++;
     if (operation == 0b000){
         binaryString = typeA_assembly2bin(parts[0], parts[1], parts[2], parts[3]);
-        lineCounter++;
         //printf("Type A \n");
     }
     else if(operation == 0b001){
         binaryString = typeB_assembly2bin(parts[0], parts[1], parts[2], parts[3]);
-        lineCounter++;
         //printf("Type B \n");
     }
     else if (operation == 0b010){
         // registros en orden invertido
         binaryString = typeC_assembly2bin(parts[0], parts[2], parts[1], parts[3]);
-        lineCounter++;
         //printf("Type C \n");
     }
     else if (operation == 0b011){
         binaryString = typeD_assembly2bin(parts[0], parts[1], parts[2]);
-        lineCounter++;
         //printf("Type D \n");
     }
      else if (operation == 0b101){
         binaryString = typeF_assembly2bin(parts[0], parts[1], parts[2], parts[3]);
-        lineCounter++;
         //printf("Type F \n");
      }
     else if (operation == 0b110){
         binaryString = typeG_assembly2bin(parts[0], parts[1], parts[2],parts[3]);
-        lineCounter++;
         //printf("Type G \n");
     }
-    
     else{
-        binaryString="No se pudo interpretar esta instruccion";
+        fprintf(stderr,"No se pudo interpretar esta instruccion");
+        exit(1);
     }
     //printf("%d %s\n", lineCounter,binaryString);
     printf("%s\n",binaryString);
