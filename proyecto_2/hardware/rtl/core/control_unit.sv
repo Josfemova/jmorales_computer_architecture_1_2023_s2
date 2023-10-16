@@ -53,7 +53,7 @@ module control_unit (
   assign jump = (((op == OP_D) && (func3 == JLL)) || (op == OP_F));
   assign jump_cond = (op == OP_G);
   assign jump_cond_type = func3;  // solo importa para tipo g
-  assign alu_src = (op[1:0] == 2'b01);  // aplica para tipo b o f
+  assign alu_src = (op == OP_C) || (op[1:0] == 2'b01);  // aplica para tipo c,b o f
 
   always @(*) begin
     case (op)

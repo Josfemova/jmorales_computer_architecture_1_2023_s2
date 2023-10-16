@@ -13,7 +13,7 @@ module imm_extend (
   wire [17:0] imm_type_g;
 
   assign imm_type_bf = imm_in[25-:16];
-  assign imm_type_c  = {imm_in[25-:11], imm_in[10-:5]};
+  assign imm_type_c  = {imm_in[25-:11], imm_in[4-:5]};
   assign imm_type_d  = imm_in[25-:21];
   assign imm_type_g  = {imm_type_c, 2'b00};  // alineado a 4
 
