@@ -186,7 +186,8 @@ char *handle_instruction(char* parts[], int token_counter){
         //printf("Type B \n");
     }
     else if (operation == 0b010){
-        binaryString = typeC_assembly2bin(parts[0], parts[1], parts[2], parts[3]);
+        // registros en orden invertido
+        binaryString = typeC_assembly2bin(parts[0], parts[2], parts[1], parts[3]);
         lineCounter++;
         //printf("Type C \n");
     }
