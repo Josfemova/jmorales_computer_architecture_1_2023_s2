@@ -61,7 +61,7 @@ module stage_execute (
   logic [31:0] alu_result;
   reg [31:0] mem_alu_result_proxy;
 
-
+  
 
   always @(*) begin
     case (ex_op1_forward)

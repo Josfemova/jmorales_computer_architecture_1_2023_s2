@@ -8,8 +8,6 @@ module rom_2port #(
     input clk_b,
     input en_a,
     input en_b,
-    input flush_a,
-    input flush_b,
     input [(WIDTH-1):0] addr_a,
     input [(WIDTH-1):0] addr_b,
     output logic [(WIDTH-1):0] rd_a,
@@ -19,15 +17,15 @@ module rom_2port #(
 
   initial begin
     $readmemb(INIT_FILE, rom);
+    rd_a = 0;
+    rd_b = 0;
   end
 
   always @(posedge clk_a) begin
-    if (flush_a) rd_a <= 0;
-    else if (en_a) rd_a <= rom[addr_a[WIDTH-1:2]];
+    if (en_a) rd_a <= rom[addr_a[WIDTH-1:2]];
   end
 
   always @(posedge clk_b) begin
-    if (flush_b) rd_b <= 0;
-    else if (en_b) rd_b <= rom[addr_b[WIDTH-1:2]];
+    if (en_b) rd_b <= rom[addr_b[WIDTH-1:2]];
   end
 endmodule

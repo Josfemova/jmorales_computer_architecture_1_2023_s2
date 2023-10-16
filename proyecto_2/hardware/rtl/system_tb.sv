@@ -8,11 +8,9 @@ module system_tb;
   logic [31:0] instr_memory_addr;
   logic [31:0] data_memory_addr;
   logic [31:0] data_memory_wd;
-  logic [31:0] data_memory_data2;
-
-  logic data_memory_we;
-  logic instr_memory_flush;
+  logic [31:0] dummy;
   logic instr_memory_enable;
+  logic data_memory_we;
 
   core_top dut (
       .clk(clk),
@@ -23,23 +21,20 @@ module system_tb;
       .data_memory_addr(data_memory_addr),
       .data_memory_wd(data_memory_wd),
       .data_memory_we(data_memory_we),
-      .instr_memory_flush(instr_memory_flush),
       .instr_memory_enable(instr_memory_enable)
   );
 
   rom_2port #(
       .INIT_FILE("../../../rtl/simple_test.txt")
   ) rom (
-      .clk_a(clk),
-      .clk_b(clk),
-      .en_a(instr_memory_enable),
-      .en_b(1'b0),
-      .flush_a(instr_memory_flush),
-      .flush_b(1'b0),
+      .clk_a (clk),
+      .clk_b (clk),
+      .en_a  (instr_memory_enable),
+      .en_b  (1'b0),
       .addr_a(instr_memory_addr),
       .addr_b(32'b0),
-      .rd_a(instr_memory_data),
-      .rd_b(data_memory_data2)
+      .rd_a  (instr_memory_data),
+      .rd_b  (dummy)
   );
 
   ram_1port ram (
@@ -57,9 +52,9 @@ module system_tb;
   end
 
   always begin
-    clk <= 1;
-    #5;
     clk <= 0;
+    #5;
+    clk <= 1;
     #5;
   end
 

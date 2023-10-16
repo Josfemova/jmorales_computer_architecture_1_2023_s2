@@ -31,12 +31,13 @@ module stage_instruction_fetch (
 
   // señales de siguiente etapa
   // solo rutear la info que viene de la rom, la rom recibe de_stall y de_flush
-  assign de_instr = if_instr_rd;
   always @(posedge clk) begin
     if (de_clear) begin
+      de_instr <= 0;
       de_pc <= 0;
       de_pc_plus4 <= 0;
     end else if (~de_stall) begin
+      de_instr = if_instr_rd;
       de_pc <= if_pc;
       de_pc_plus4 <= if_pc_plus4;
     end

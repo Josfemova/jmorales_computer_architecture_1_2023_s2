@@ -7,7 +7,6 @@ module core_top (
     output [31:0] data_memory_addr,
     output [31:0] data_memory_wd,
     output data_memory_we,
-    output instr_memory_flush,
     output instr_memory_enable
 );
 
@@ -81,7 +80,6 @@ module core_top (
   assign instr_memory_addr = if_pc_next_instr_mem;
   assign if_instr_rd = instr_memory_data;
   assign instr_memory_enable = ~if_stall;
-  assign instr_memory_flush = de_clear;
   assign mem_clear = reset;
   assign wb_clear = reset;
   stage_instruction_fetch instf (
@@ -163,7 +161,7 @@ module core_top (
       .ex_pc_target(ex_pc_target)
   );
 
-  assign data_memory_addr = mem_alu_result;
+assign data_memory_addr = mem_alu_result;
   assign data_memory_wd   = mem_write_data;
   assign data_memory_we   = mem_mem_write;
 

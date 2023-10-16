@@ -1,23 +1,23 @@
 start;
-    CLIR,x1,0x56; # semilla
-    CLIR,x2,0x100; # addr
-    STM,x1,x2,0;
-    CLIR,x3,0; # i
-    CLIR,x4,100; # iteraciones
+    CLIR,x1,0x56; # semilla ---0
+    CLIR,x2,0x100; # addr ---4
+    STM,x1,x2,0; # ---8
+    CLIR,x3,0; # i ---c
+    CLIR,x4,100; # iteraciones---10
     loop;
-        SUMI,x3,x3,1;
-        SUM,x20,zero,x2; # pasar a reg de arg0
-        JLL,x31,gen_numero; # saltar
-        SUMI,x2,x2,4; # addr +4
-        STM,x20,x2,0; # almacenar palabra
-        JILT,x3,x4,loop;
+        SUMI,x3,x3,1; #---14
+        SUM,x20,zero,x2; # pasar a reg de arg0 ---18
+        JLL,x31,gen_numero; # saltar ---1c
+        SUMI,x2,x2,4; # addr +4 ---20
+        STM,x20,x2,0; # almacenar palabra ---24
+        JILT,x3,x4,loop; #---28
 end;
-    JLL,zero,end;
+    JLL,zero,end; #---2c
 
 gen_numero;
-    LDM,x15,x20,0; # cargar valor actual
+    LDM,x15,x20,0; # cargar valor actual #--30
 
-    ANDI,x16,x15,0x10; #x^4
+    ANDI,x16,x15,0x10; #x^4  ---34
     SLLI,x16,x16,0x3;
     ANDI,x17,x15,0x08; #x^5
     SLLI,x17,x17,0x4;
