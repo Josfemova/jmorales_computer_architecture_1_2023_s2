@@ -1,0 +1,11 @@
+main;
+SUMI,x2,x0,5;
+SUMI,x3,x0,12;
+SUMI,x7,x3,-9;
+OR,x4,x7,x2;
+AND,x5,x3,x4;
+SUM,x5,x5,x4;
+CUIR,x1,23;
+CLIR,x2,23;
+STM,x3,x1,0;
+LDM,x4,x1,0;

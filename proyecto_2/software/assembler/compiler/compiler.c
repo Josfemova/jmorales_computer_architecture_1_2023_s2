@@ -237,12 +237,12 @@ char *typeA_assembly2bin(char *assembly_instruction, char *rd, char *reg1, char 
 
     result[0] = '\0';
 
-    strcat(result, opcode_str);
-    strcat(result, func3_str);
-    strcat(result, reg_str);
-    strcat(result, reg1_str);
-    strcat(result, reg2_str);
     strcat(result, func11_str);
+    strcat(result, reg2_str);
+    strcat(result, reg1_str);
+    strcat(result, reg_str);
+    strcat(result, func3_str);
+    strcat(result, opcode_str);
 
     return result;
 }
@@ -268,11 +268,11 @@ char *typeB_assembly2bin(char *assembly_instruction, char *rd, char *reg1, char 
     }
 
     result[0] = '\0';
-    strcat(result, opcode_str);
-    strcat(result, func3_str);
-    strcat(result, reg_str);
-    strcat(result, reg1_str);
     strcat(result, inmm_str);
+    strcat(result, reg1_str);
+    strcat(result, reg_str);
+    strcat(result, func3_str);
+    strcat(result, opcode_str);
     return result;
 }
 
@@ -299,12 +299,12 @@ char *typeC_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
 
     reverse_string(inmm_str);
     //01000000000000001010000100011111
-    strcat(result, opcode_str);
-    strcat(result, func3_str);
-    strncat(result, inmm_str, 5);
-    strcat(result, reg1_str);
-    strcat(result, reg2_str);
     strcat(result, &inmm_str[5]);
+    strcat(result, reg2_str);
+    strcat(result, reg1_str);
+    strncat(result, inmm_str, 5);
+    strcat(result, func3_str);
+    strcat(result, opcode_str);
     return result;
 }
 
@@ -337,10 +337,10 @@ char *typeD_assembly2bin(char *assembly_instruction, char *rd, char *inmm){
 
     result[0] = '\0';
 
-    strcat(result, opcode_str);
-    strcat(result, func3_str);
-    strcat(result, reg_str);
     strcat(result, inmm_str);
+    strcat(result, reg_str);
+    strcat(result, func3_str);
+    strcat(result, opcode_str);
 
     return result;
 
@@ -377,11 +377,11 @@ char *typeF_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
 
     result[0] = '\0';
     
-    strcat(result, opcode_str);
-    strcat(result, func3_str);
-    strcat(result, reg_str);
-    strcat(result, reg1_str);
     strcat(result, inmm_str);
+    strcat(result, reg1_str);
+    strcat(result, reg_str);
+    strcat(result, func3_str);
+    strcat(result, opcode_str);
     return result;
 }
 
@@ -409,12 +409,12 @@ char *typeG_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
     reverse_string(inmm_str);
     //printf("\nlabel_pos %d, inmm %s\n", label_pos-lineCounter, inmm_str);
     //01000000000000001010000100011111
-    strcat(result, opcode_str);
-    strcat(result, func3_str);
-    strncat(result, inmm_str+2, 5);
-    strcat(result, reg1_str);
+    strncat(result, inmm_str+7, 15);
     strcat(result, reg2_str);
-     strncat(result, inmm_str+7, 15);
+    strcat(result, reg1_str);
+    strncat(result, inmm_str+2, 5);
+    strcat(result, func3_str);
+    strcat(result, opcode_str);
     return result;
     
 }
