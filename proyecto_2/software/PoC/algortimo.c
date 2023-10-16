@@ -7,9 +7,9 @@
  * VALORES QUE SE PUEDEN USAR COMO CONSTANTES CON PERMISO DEL PROFESOR
 */
 #define BUFFER_SIZE 2205 // K
-#define ATENUACION 0b0000001001100110011001 // a
-#define ATENUACION_M 0b0000000110011001100110 //(1-a)
-#define ATENUACION_DIV 0b0000101000000000000000 //1/(1-a)
+#define ATENUACION 0b0010011001100110 // a
+#define ATENUACION_M 0b0001100110011001 //(1-a)
+#define ATENUACION_DIV 0b1010000000000000 //1/(1-a)
 
 /*###############OPEREACIONES NECESARIAS PARA EL ISA##############
 * SUMA 
@@ -27,7 +27,7 @@
  * Suma de los bits que representan la parte fraccional del numero de punto fijo
 */
 int32_t suma_fraccional(int32_t num1, int32_t num2){
-    uint32_t mascara =  0x0000FFFF;
+    uint32_t mascara =  0x00003FFF;
     num1 = num1 & mascara;
     num2 = num2 & mascara;
     int32_t resultado = num1 + num2;
@@ -37,8 +37,8 @@ int32_t suma_fraccional(int32_t num1, int32_t num2){
 Suma que toma los bits que representa la parte entera y los suma
 */
 int32_t suma_entera(int32_t num1, int32_t num2){
-    int32_t num_aux_1= num1>>16; // Elimina los bits de la parte fraccionaria para el número 1
-    int32_t num_aux_2= num2 >>16;// Elimina los bit de la parte fraccionaria para el número 2 
+    int32_t num_aux_1= num1>>14; // Elimina los bits de la parte fraccionaria para el número 1
+    int32_t num_aux_2= num2 >>14;// Elimina los bit de la parte fraccionaria para el número 2 
     int32_t suma_entero = num_aux_1 + num_aux_2; 
     return suma_entero;
 }
@@ -48,7 +48,7 @@ int32_t suma_entera(int32_t num1, int32_t num2){
 int32_t suma_punto_fijo(int32_t num_1, int32_t num_2){
     int32_t resultado_f= suma_fraccional(num_1,num_2);
     int32_t resultado_int = suma_entera(num_1,num_2);
-    resultado_int = resultado_int << 16;
+    resultado_int = resultado_int << 14;
     int32_t resultado_final = resultado_int + resultado_f;
     return resultado_final;                                
 }
@@ -56,15 +56,15 @@ int32_t suma_punto_fijo(int32_t num_1, int32_t num_2){
  * Obtiene el valor high en para la multiplicación
 */
 int32_t high(int32_t num1, int32_t num2){
-    int32_t num_aux_1= num1>>16; // Elimina los bits de la parte fraccionaria para el número 1
-    int32_t num_aux_2= num2 >>16;// Elimina los bit de la parte fraccionaria para el número 2 
+    int32_t num_aux_1= num1>>14; // Elimina los bits de la parte fraccionaria para el número 1
+    int32_t num_aux_2= num2 >>14;// Elimina los bit de la parte fraccionaria para el número 2 
     return num_aux_1 * num_aux_2;
 }
 /**
  * Obtiene el valor low para la multiplicación
 */
 int32_t low(int32_t num1, int32_t num2){
-    uint32_t mascara =  0x0000FFFF;
+    uint32_t mascara =  0x00003FFF;
     num1 = num1 & mascara;
     num2 = num2 & mascara;
     return num1*num2;
@@ -73,9 +73,9 @@ int32_t low(int32_t num1, int32_t num2){
  * Obtiene el valor medio para la multiplicacion
 */
 int32_t mid(int32_t num1, int32_t num2){
-    int32_t a= num1>>16; // Elimina los bits de la parte fraccionaria para el número 1
-    int32_t c= num2 >>16;// Elimina los bit de la parte fraccionaria para el número 2 
-    uint32_t mascara =  0x0000FFFF;
+    int32_t a= num1>>14; // Elimina los bits de la parte fraccionaria para el número 1
+    int32_t c= num2 >>14;// Elimina los bit de la parte fraccionaria para el número 2 
+    uint32_t mascara =  0x00003FFF;
     num1 = num1 & mascara;
     num2 = num2 & mascara;
     return (a*num2)+(c*num1);
@@ -87,8 +87,8 @@ int32_t mult_punto_fijo(int32_t num1, int32_t num2){
     int32_t high_ = high(num1,num2);
     int32_t low_ = low(num1,num2);
     int32_t mid_ = mid(num1,num2);
-    high_ = high_ <<16;
-    low_ = low_ >>16;
+    high_ = high_ <<14;
+    low_ = low_ >>14;
     return high_+mid_+low_;
 
 }
@@ -160,9 +160,9 @@ void print(CircularBuffer* buffer){
 }
 // Función para convertir de punto fijo Q5.16 a decimal
 double puntoFijoADecimal(int32_t puntoFijo) {
-    int parteEntera = puntoFijo >> 16; // 5 bits para la parte entera
-    int mascaraFraccional = (1 << 16) - 1; // 16 bits para la parte fraccional
-    double parteFraccional = (double)(puntoFijo & mascaraFraccional) / (1 << 16);
+    int parteEntera = puntoFijo >> 14; // 5 bits para la parte entera
+    int mascaraFraccional = (1 << 14) - 1; // 16 bits para la parte fraccional
+    double parteFraccional = (double)(puntoFijo & mascaraFraccional) / (1 << 14);
 
     return parteEntera + parteFraccional;
 }
@@ -193,28 +193,33 @@ void escribir_salida(double salida, int flag){
  * Desde aqui se hace el procesamiento del archivo para la insercion
 */
 void insercion_reverberacion(){
-    FILE *file = fopen("input.txt", "r");
-    if (file == NULL) {
+    FILE *file_ = fopen("input.txt", "r");
+    if (file_ == NULL) {
         perror("No se puede abrir el archivo");
         return 1;
     }
     CircularBuffer buffer ={0};
     initializeBuffer(&buffer);
-    char line[10];
+    char line[20];
     double decimalNumber;
-    while (fgets(line, sizeof(line), file) != NULL) {
+    while (fgets(line, sizeof(line), file_) != NULL) {
         // Lee una línea del archivo
         if (sscanf(line, "%lf", &decimalNumber) == 1) {
             //AQUI SE CONVIERTE LO LEIDO DEL ARCHIVO TXT A PUNTO FIJO
-            int32_t q5_16 = (int32_t)(decimalNumber * (1 << 16));
+            int32_t q1_14 = strtol(line, NULL, 2);
+            int32_t mascara = 0x7FFF;
+            q1_14 = q1_14 & mascara;
+            if (line[0] == '1') {
+                q1_14 = (~q1_14); // Complemento a dos
+            }
             // AQUI SE ENVIA GENERAR EL ALGORTIMO
-            int32_t resultado = insertar_rever_aux(q5_16, &buffer);
+            int32_t resultado = insertar_rever_aux(q1_14, &buffer);
             //AQUI SE GUARDA EN OTRO TXT
             double salida = puntoFijoADecimal(resultado); // convierte el numero a doble (solo para fines de C)
             escribir_salida(salida,0);
         }
     }
-    fclose(file);
+    fclose(file_);
 }
 /**
  * Desde aqui se hace el procesamiento del archivo para la reduccion
@@ -227,15 +232,20 @@ void reduccion_reverberacion(){
     }
     CircularBuffer buffer ={0};
     initializeBuffer(&buffer);
-    char line[10];
+    char line[20];
     double decimalNumber;
     while (fgets(line, sizeof(line), file) != NULL) {
         // Lee una línea del archivo
         if (sscanf(line, "%lf", &decimalNumber) == 1) {
             //AQUI SE CONVIERTE LO LEIDO DEL ARCHIVO TXT A PUNTO FIJO
-            int32_t q5_16 = (int32_t)(decimalNumber * (1 << 16));
+            int32_t q1_14 = strtol(line, NULL, 2);
+            int32_t mascara = 0x7FFF;
+            q1_14 = q1_14 & mascara;
+            if (line[0] == '1') {
+                q1_14 = (~q1_14); // Complemento a dos
+            }
             // AQUI SE ENVIA GENERAR EL ALGORTIMO
-            int32_t resultado = reducc_rever_aux(q5_16, &buffer);
+            int32_t resultado = reducc_rever_aux(q1_14, &buffer);
             //AQUI SE GUARDA EN OTRO TXT
             double salida = puntoFijoADecimal(resultado); // convierte el numero a doble (solo para fines de C)
             escribir_salida(salida,1);
