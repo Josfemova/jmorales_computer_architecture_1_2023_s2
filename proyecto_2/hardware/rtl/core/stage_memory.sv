@@ -28,13 +28,13 @@ module stage_memory (
     output reg [31:0] wb_imm_ext,
     output reg [ 4:0] wb_rd
 );
-
+  // memoria sync
+  assign wb_read_result = mem_read_result;
   always @(posedge clk) begin
     if (wb_clear) begin
       wb_reg_write <= 0;
       wb_result_src <= 0;
       wb_alu_result <= 0;
-      wb_read_result <= 0;
       wb_pc_plus_4 <= 0;
       wb_imm_ext <= 0;
       wb_rd <= 0;
@@ -42,7 +42,6 @@ module stage_memory (
       wb_reg_write <= mem_reg_write;
       wb_result_src <= mem_result_src;
       wb_alu_result <= mem_alu_result;
-      wb_read_result <= mem_read_result;
       wb_pc_plus_4 <= mem_pc_plus_4;
       wb_imm_ext <= mem_imm_ext;
       wb_rd <= mem_rd;

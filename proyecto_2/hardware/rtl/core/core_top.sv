@@ -161,7 +161,7 @@ module core_top (
       .ex_pc_target(ex_pc_target)
   );
 
-assign data_memory_addr = mem_alu_result;
+  assign data_memory_addr = mem_alu_result;
   assign data_memory_wd   = mem_write_data;
   assign data_memory_we   = mem_mem_write;
 
