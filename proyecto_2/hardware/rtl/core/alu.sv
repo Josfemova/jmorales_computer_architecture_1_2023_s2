@@ -29,7 +29,7 @@ module alu #(
   assign sum_op2 = (alu_control[0] == 0) ? op2 : ~op2;
   assign sum_res = op1 + sum_op2 + carry_in;
 
-  assign negative = (result[31] == 1);
+  assign negative = (result[WIDTH-1] == 1);
   assign zero = (result == 0);
 
   always @(*) begin

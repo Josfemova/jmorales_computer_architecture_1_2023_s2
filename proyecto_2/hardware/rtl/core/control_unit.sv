@@ -9,14 +9,14 @@ module control_unit (
     output jump_cond,  //! indica que se tiene una instr de salto condicionado
     output [2:0] jump_cond_type,  //! especifica tipo de salto condicional
 
-    output [2:0] alu_control,  //! selecciona operacion de alu
+    output logic [2:0] alu_control,  //! selecciona operacion de alu
     output alu_src,  //! selecciona si op2 es rs2
 
     //! [0] indica si es sin signo
     //! [1] indica si es upper 
     //! [2:3] indican el tipo de operación (entre las que usan inmediato)
-    output [3:0] imm_src,
-    output [1:0] result_src  //! selector de resultado final
+    output logic [3:0] imm_src,
+    output logic [1:0] result_src  //! selector de resultado final
 );
 
   typedef enum bit [2:0] {
@@ -50,7 +50,7 @@ module control_unit (
 
   assign reg_write = ~(op[1:0] == 2'b10);  // aplica para todos excepto tipo c y tipo g
   assign mem_write = (op == OP_C);
-  assign jump = ((op == OP_D) || (op == OP_F));
+  assign jump = (((op == OP_D) && (func3 == JLL)) || (op == OP_F));
   assign jump_cond = (op == OP_G);
   assign jump_cond_type = func3;  // solo importa para tipo g
   assign alu_src = (op[1:0] == 2'b01);  // aplica para tipo b o f

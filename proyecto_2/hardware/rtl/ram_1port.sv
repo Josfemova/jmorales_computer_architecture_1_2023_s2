@@ -8,7 +8,7 @@ module ram_1port #(
     input [(WIDTH-1):0] wd,
     output reg [(WIDTH-1):0] rd
 );
-  reg [(WIDTH-1):0] mem[(LENGTH-1):0];
+  reg [(WIDTH-1):0] mem[(LENGTH-1):0] = '{default: 0};
 
   always @(posedge clk) begin
     rd <= mem[addr[WIDTH-1:2]];

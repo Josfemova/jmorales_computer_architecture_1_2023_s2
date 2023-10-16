@@ -84,6 +84,7 @@ module core_top (
 
   stage_instruction_fetch instf (
       .clk(clk),
+      .reset(reset),
       .de_clear(de_clear),
       .if_stall(if_stall),
       .de_stall(de_stall),
@@ -127,6 +128,7 @@ module core_top (
 
   stage_execute ex (
       .clk(clk),
+      .reset(reset),
       .mem_clear(mem_clear),
       .ex_reg_write(ex_reg_write),
       .ex_mem_write(ex_mem_write),
@@ -164,7 +166,6 @@ module core_top (
   assign mem_read_result  = data_memory_data;
 
   stage_memory mem (
-
       .clk(clk),
       .wb_clear(wb_clear),
       .mem_reg_write(mem_reg_write),
@@ -194,6 +195,7 @@ module core_top (
   );
 
   hazard_unit hazard_u (
+      .reset(reset),
       .de_rs1(de_rs1),
       .de_rs2(de_rs2),
       .ex_rs1(ex_rs1),

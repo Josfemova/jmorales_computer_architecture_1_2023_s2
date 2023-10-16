@@ -1,12 +1,12 @@
 module stage_decode (
     input clk,
     input ex_clear,
-    
+
     // inputs de stage previo
     input [31:0] de_instr,
     input [31:0] de_pc,
     input [31:0] de_pc_plus4,
-    
+
     // inputs de stage de writeback
     input [31:0] wb_result,
     input wb_reg_write,
@@ -40,29 +40,29 @@ module stage_decode (
 
 
   // señales internas del stage
-  wire [ 3:0] imm_src;
-  wire [31:0] rd1;
-  wire [31:0] rd2;
-  wire [31:0] imm_out;
-  wire reg_write, mem_write, jump, jump_cond, alu_src;
-  wire [1:0] result_src;
-  wire [2:0] jump_cond_type;
-  wire [2:0] alu_control;
+  logic [ 3:0] imm_src;
+  logic [31:0] rd1;
+  logic [31:0] rd2;
+  logic [31:0] imm_out;
+  logic reg_write, mem_write, jump, jump_cond, alu_src;
+  logic [1:0] result_src;
+  logic [2:0] jump_cond_type;
+  logic [2:0] alu_control;
 
-  wire [4:0] rs1;
-  wire [4:0] rs2;
-  wire [4:0] rd;
+  logic [4:0] rs1;
+  logic [4:0] rs2;
+  logic [4:0] rd;
 
   assign rs1 = de_instr[15:11];
   assign rs2 = de_instr[20:16];
   assign rd  = de_instr[10:6];
 
   register_file reg_file (
-      .clk(~clk), // recibe clk negado
+      .clk(~clk),  // recibe clk negado
       .we3(wb_reg_write),
-      .a1 (rs1),
-      .a2 (rs2),
-      .a3 (wb_rd),
+      .a1(rs1),
+      .a2(rs2),
+      .a3(wb_rd),
       .wd3(wb_result),
       // outputs
       .rd1(rd1),

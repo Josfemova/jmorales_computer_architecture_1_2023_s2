@@ -1,7 +1,7 @@
 module imm_extend (
-    input  [25:0] imm_in,   //! datos en seco provenientes de instrucción
-    input  [ 3:0] imm_src,  //! selecciona src de imm, 0 si es reg, 1 si es imm
-    output [31:0] imm_out   //! inmediato de salida
+    input [25:0] imm_in,  //! datos en seco provenientes de instrucción
+    input [3:0] imm_src,  //! selecciona src de imm, 0 si es reg, 1 si es imm
+    output logic [31:0] imm_out  //! inmediato de salida
 );
 
   wire sign;  //! signo, por defecto se extiende el signo (por eso el check a 0)
@@ -25,7 +25,7 @@ module imm_extend (
       4'b1000, 4'b1001: imm_out = {{14{sign}}, imm_type_g};  // op tipo g
       4'b1100, 4'b1101:
       imm_out = {{11{sign}}, imm_type_d};  // lower, op tipo d. Zero extended no se usa
-      default: imm_out = {imm_type_c, {11{1'b0}}};  // upper, op tipo d
+      default: imm_out = {imm_type_d, {11{1'b0}}};  // upper, op tipo d
     endcase
   end
 

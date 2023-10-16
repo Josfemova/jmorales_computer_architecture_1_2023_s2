@@ -12,7 +12,7 @@ module ram_2port_1rd1wr #(
 );
 
   // Declare the RAM variable
-  reg [DATA_WIDTH-1:0] ram[LENGTH-1:0];
+  reg [DATA_WIDTH-1:0] ram[LENGTH-1:0] = '{default:0};
 
   always @(posedge w_clk) begin
     // Write

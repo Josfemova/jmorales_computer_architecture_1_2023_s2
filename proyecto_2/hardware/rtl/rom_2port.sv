@@ -1,7 +1,7 @@
 module rom_2port #(
     parameter WIDTH = 32,
     LENGTH = 256,
-    INIT_FILE = "simple_test.txt"
+    INIT_FILE = "../rtl/simple_test.txt"
 ) (
     // se agregan enables para el pipeline
     input clk_a,
@@ -18,7 +18,7 @@ module rom_2port #(
   reg [(WIDTH-1):0] rom[(LENGTH-1):0];
 
   initial begin
-    $readmemb(INIT_FILE,rom);
+    $readmemb(INIT_FILE, rom);
   end
 
   always @(posedge clk_a) begin

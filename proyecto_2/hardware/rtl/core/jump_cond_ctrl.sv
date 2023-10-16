@@ -2,7 +2,7 @@ module jump_cond_ctrl (
     input jump_cond,
     input [2:0] jump_cond_type,
     input [3:0] alu_flags,
-    output jump_cond_true
+    output logic jump_cond_true
 );
 
   typedef enum bit [2:0] {
