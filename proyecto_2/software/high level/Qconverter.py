@@ -1,16 +1,16 @@
-"""Restricciones:
-  1. El audio debe durar 7 segundos
-  2. El audio debe ser Mono
-  3. El audio debe tener una frecuencia de muestreo de 44100 Hz
-  4. El audio debe tener una resolución de 8 bits
-  5. El audio debe ser WAV
-  6. El audio debe estar en la misma carpeta que el programa
-  7. El audio debe llamarse "audio_Mono441k7seg.wav"
+"""
+Restricciones:
+  1. Los audios deben durar 7 segundos
+  2. Los audios deben ser Mono
+  3. Los audios deben tener una frecuencia de muestreo de 44100 Hz
+  4. Los audios deben tener una resolución de 8 bits
+  5. Los audios deben ser WAV
+  6. Los audios deben estar en la misma carpeta que el programa
 """
 
 import wave
 
-def audio_to_q1_14(input_file, Qformat_file):
+def audio_to_q114(input_file, Qformat_file):
   # Abre el archivo WAV y toma sus datos de audio
     with wave.open(input_file, 'rb') as wav_in:
         paramsIn = wav_in.getparams()
@@ -52,7 +52,7 @@ def audio_to_q1_14(input_file, Qformat_file):
             txt_out.write(value + "\n")
     return paramsIn
 
-def q1_14_to_audio(Qformat_file, reconstructed_file, paramsIn):
+def q114_to_audio(Qformat_file, reconstructed_file, paramsIn):
   # Lee los datos del TXT generado antes
     with open(Qformat_file, 'r') as txt_in:
         qformat_data = [line.strip() for line in txt_in]
@@ -74,9 +74,27 @@ def q1_14_to_audio(Qformat_file, reconstructed_file, paramsIn):
         wav_out.setparams(paramsIn)
         wav_out.writeframes(binary_data)
 
-# EJECUCION
-input_file = "audio_Mono441k7seg.wav"
-Qformat_file = "audio_Q114.txt"
-reconstructed_file = "reconstructed_audio.wav"
-paramsInput = audio_to_q1_14(input_file, Qformat_file)
-q1_14_to_audio(Qformat_file, reconstructed_file, paramsInput)
+"""TO DO: SOLO LEER BINARIO Y DE UNA VEZ PASARLO A .WAV, cuando este lo de C """
+def float_to_binary_and_audio_reconstruction(input_file, reconstructed_file, paramsInput):
+    with open(input_file, 'r') as txt_in:
+        float_data = [float(line.strip()) for line in txt_in]
+
+    int_data = [(int((value + 1) * 127.5)) for value in float_data]
+    binary_data = bytearray(int_data)
+
+    with wave.open(reconstructed_file, 'wb') as wav_out:
+        wav_out.setparams(paramsInput)
+        wav_out.writeframes(binary_data)
+
+"""---------------LLAMAR A ESTAS FUNCIONES-------------------------------------"""
+
+def generate_txt_Q114():
+    input_file = "audio_Mono441k7seg.wav"
+    Qformat_file = "audio_Q114.txt"
+    reconstructed_file = "reconstructed_audio.wav"
+    paramsInput = audio_to_q114(input_file, Qformat_file)
+    q114_to_audio(Qformat_file, reconstructed_file, paramsInput)
+
+def reconstruct_modified_audios():
+  paramsInput = audio_to_q114("audio_Mono441k7seg.wav", "audio_Q114.txt")
+  float_to_binary_and_audio_reconstruction("insercion.txt", "reverbed_audio.wav", paramsInput)
