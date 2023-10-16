@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-
+char** dummy_ptr;
 char* tagNames[100];
 int tagPositions[100];
 int tagCounter = 0;
@@ -255,7 +255,8 @@ char *typeB_assembly2bin(char *assembly_instruction, char *rd, char *reg1, char 
     const char* func3_str = int2bin(string2funct(assembly_instruction),3);
     const char* reg_str = int2bin(string2reg(rd),5);
     const char* reg1_str = int2bin(string2reg(reg1),5);
-    int inmm_int = atoi(inmm);
+    //int inmm_int = atoi(inmm);
+    int inmm_int = (int) strtol(inmm, dummy_ptr,0);
     const char* inmm_str = int2bin(inmm_int, 16);
 
     size_t totalLength = strlen(opcode_str) + strlen(func3_str) + 
@@ -283,7 +284,8 @@ char *typeC_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
     const char* func3_str = int2bin(string2funct(assembly_instruction),3);
     const char* reg1_str = int2bin(string2reg(reg1),5);
     const char* reg2_str = int2bin(string2reg(reg2),5);
-    int inmm_int = atoi(inmm);
+    //int inmm_int = atoi(inmm);
+    int inmm_int = (int) strtol(inmm, dummy_ptr,0);
     char* inmm_str = int2bin(inmm_int, 16);
 
     size_t totalLength = strlen(opcode_str) + strlen(func3_str) + 
@@ -317,7 +319,8 @@ char *typeD_assembly2bin(char *assembly_instruction, char *rd, char *inmm){
     const char* inmm_str;
 
     if(strcmp(func3_str, "010")){
-        const int inmm_int = atoi(inmm);
+        //const int inmm_int = atoi(inmm);
+        int inmm_int = (int) strtol(inmm, dummy_ptr,0);
         inmm_str = int2bin(inmm_int,21);
     }
     else{
@@ -356,7 +359,8 @@ char *typeF_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
     const char* inmm_str;
 
     if(strcmp(func3_str, "010")){
-        const int inmm_int = atoi(inmm);
+        //const int inmm_int = atoi(inmm);
+        int inmm_int = (int) strtol(inmm, dummy_ptr,0);
         inmm_str = int2bin(inmm_int,16);
     }
     else{
