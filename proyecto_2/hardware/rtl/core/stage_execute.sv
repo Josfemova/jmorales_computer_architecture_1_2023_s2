@@ -11,6 +11,7 @@ module stage_execute (
     input [2:0] ex_alu_control,
     input ex_alu_src_op1,
     input ex_alu_src_op2,
+    input ex_pc_target_src,
     input [1:0] ex_result_src,
 
     // inputs del data path
@@ -98,7 +99,8 @@ module stage_execute (
   assign op2 = (ex_alu_src_op2) ? ex_imm_ext : write_data;
 
   assign mem_alu_result = mem_alu_result_proxy;
-  assign ex_pc_target = ex_pc + ex_imm_ext;
+ 
+  assign ex_pc_target = (ex_pc_target_src)? alu_result : ex_pc + ex_imm_ext;
   assign ex_pc_src = ((ex_jump_cond & jump_cond_true) | (ex_jump)) & (~reset);
 
   always @(posedge clk) begin

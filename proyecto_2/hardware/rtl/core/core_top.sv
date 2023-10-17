@@ -34,6 +34,7 @@ module core_top (
   wire [2:0] ex_alu_control;
   wire ex_alu_src_op1;
   wire ex_alu_src_op2;
+  wire ex_pc_target_src;
   wire [1:0] ex_result_src;
   wire [31:0] ex_pc;
   wire [31:0] ex_pc_plus_4;
@@ -82,6 +83,7 @@ module core_top (
   assign instr_memory_enable = ~if_stall;
   assign mem_clear = reset;
   assign wb_clear = reset;
+
   stage_instruction_fetch instf (
       .clk(clk),
       .reset(reset),
@@ -114,6 +116,7 @@ module core_top (
       .ex_alu_control(ex_alu_control),
       .ex_alu_src_op1(ex_alu_src_op1),
       .ex_alu_src_op2(ex_alu_src_op2),
+      .ex_pc_target_src(ex_pc_target_src),
       .ex_result_src(ex_result_src),
       .ex_pc(ex_pc),
       .ex_pc_plus_4(ex_pc_plus_4),
@@ -139,6 +142,7 @@ module core_top (
       .ex_alu_control(ex_alu_control),
       .ex_alu_src_op1(ex_alu_src_op1),
       .ex_alu_src_op2(ex_alu_src_op2),
+      .ex_pc_target_src(ex_pc_target_src),
       .ex_result_src(ex_result_src),
       .ex_pc(ex_pc),
       .ex_pc_plus_4(ex_pc_plus_4),

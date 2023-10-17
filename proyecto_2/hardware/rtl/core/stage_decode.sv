@@ -21,6 +21,7 @@ module stage_decode (
     output reg [2:0] ex_alu_control,
     output reg ex_alu_src_op1,
     output reg ex_alu_src_op2,
+    output reg ex_pc_target_src,
     output reg [1:0] ex_result_src,
 
     // outputs del data path
@@ -51,6 +52,7 @@ module stage_decode (
   logic jump_cond;
   logic alu_src_op1;
   logic alu_src_op2;
+  logic pc_target_src;
   logic [1:0] result_src;
   logic [2:0] jump_cond_type;
   logic [2:0] alu_control;
@@ -89,6 +91,7 @@ module stage_decode (
       .alu_control(alu_control),
       .alu_src_op1(alu_src_op1),
       .alu_src_op2(alu_src_op2),
+      .pc_target_src(pc_target_src),
       .imm_src(imm_src),
       .result_src(result_src)
   );
@@ -114,6 +117,7 @@ module stage_decode (
       ex_alu_control    <= 0;
       ex_alu_src_op1    <= 0;
       ex_alu_src_op2    <= 0;
+      ex_pc_target_src  <= 0;
       ex_result_src     <= 0;
 
       // outputs del data path
@@ -135,6 +139,7 @@ module stage_decode (
       ex_alu_control    <= alu_control;
       ex_alu_src_op1    <= alu_src_op1;
       ex_alu_src_op2    <= alu_src_op2;
+      ex_pc_target_src  <= pc_target_src;
       ex_result_src     <= result_src;
 
       // outputs del data path

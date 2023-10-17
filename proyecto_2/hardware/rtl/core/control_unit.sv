@@ -12,6 +12,7 @@ module control_unit (
     output logic [2:0] alu_control,  //! selecciona operacion de alu
     output alu_src_op1,  //! selecciona si op1 es rs1
     output alu_src_op2,  //! selecciona si op2 es rs2
+    output pc_target_src,  //! selecciona si op2 es rs2
 
     //! [0] indica si es sin signo
     //! [1] indica si es upper 
@@ -56,6 +57,7 @@ module control_unit (
   assign jump_cond_type = func3;  // solo importa para tipo g
   assign alu_src_op1 = (op != OP_D);  // solo queremos que sea uno cuando haya que forzar un 0
   assign alu_src_op2 = (op != OP_A) && (op != OP_G);  // aplica para tipo b,c,d e o f
+  assign pc_target_src = (op == OP_F); // source de pc target es ALURES si es JLRL
 
   always @(*) begin
     case (op)
@@ -66,7 +68,7 @@ module control_unit (
       end
       OP_B: begin
         alu_control = func3;
-        imm_src = (func3[2] == 1'b1) ? 4'b0010 : 4'b0000;  // se extiende en 0 para shifts
+        imm_src = ((func3 == 3'b101) || (func3 == 3'b110)) ? 4'b0001 : 4'b0000;  // se extiende en 0 para shifts
         result_src = RESULT_SRC_ALURES;
       end
       OP_C: begin  // solo STM
@@ -97,11 +99,11 @@ module control_unit (
       OP_F: begin
         alu_control = 3'b0;  // suma dir de ldm o registro de jump + label
         imm_src = 4'b0000;  // inmediato con extensión de signo
-        result_src = (func3 == LDM) ? RESULT_SRC_MEMRD : RESULT_SRC_PCPLUS4;
+        result_src = (func3 == LDM) ? RESULT_SRC_MEMRD : RESULT_SRC_ALURES;
       end
       OP_G: begin
         alu_control = 3'b1;  // resta para hacer comp
-        imm_src = 4'b1100;  // inmediato con extensión de signo, [18:2] 
+        imm_src = 4'b1000;  // inmediato con extensión de signo, [18:2] 
         result_src = RESULT_SRC_ALURES;  // no necesita result
       end
       /*OP_H: begin 
