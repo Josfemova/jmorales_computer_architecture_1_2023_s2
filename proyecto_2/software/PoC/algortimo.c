@@ -120,7 +120,15 @@ int32_t insertar_rever_aux(int32_t num, CircularBuffer* buffer) {
     int32_t result = mult_punto_fijo(num, ATENUACION_M);
 
     // Calcula el valor de y(x-k) utilizando el buffer
-    int index = (buffer->head -1 + BUFFER_SIZE) % BUFFER_SIZE;
+    int32_t index=0;
+    // Calcula el valor de x(n-k) utilizando el buffer
+    if (buffer->head == BUFFER_SIZE-1)
+    {
+        index = 0;
+    }else{
+        index = buffer->head+1;
+    }
+    
     //Desarrolla la parte de y(n-k)*a
     int32_t result_aux = mult_punto_fijo((buffer->data[index]), ATENUACION);
     //suma los resultados de las multiplicaciones
@@ -137,13 +145,18 @@ int32_t insertar_rever_aux(int32_t num, CircularBuffer* buffer) {
 */
 int32_t reducc_rever_aux(int32_t num, CircularBuffer* buffer) {
     // Aqui se agrega las sumas y las multiplicaciones
-
+    int32_t index=0;
     // Calcula el valor de x(n-k) utilizando el buffer
-    int index = (buffer->head -1 + BUFFER_SIZE) % BUFFER_SIZE;
+    if (buffer->head == BUFFER_SIZE-1)
+    {
+        index = 0;
+    }else{
+        index = buffer->head+1;
+    }
     //Desarrolla la parte de x(n-k)*a
     int32_t result = mult_punto_fijo((buffer->data[index]), ATENUACION);
     //Convierto a -a*x(n-k)
-    result = suma_punto_fijo(0, result);
+    result = ~result;
     // realizo la resta (x(n)-ax(n-k))
     result = suma_punto_fijo(num,result);
     //multiplico la suma por 1/(1-a)
@@ -159,6 +172,36 @@ int32_t reducc_rever_aux(int32_t num, CircularBuffer* buffer) {
 */
 void print(CircularBuffer* buffer){
     printf("ejemplo: %d\n", buffer->data[0]);
+}
+/*
+Esta funcion escribe el valor en binario en el txt
+*/
+void int16ToBinary(int32_t num) {
+    FILE *file = fopen("insercion.txt", "a");
+    if (file == NULL) {
+        perror("Error al abrir el archivo");
+        return;
+    }
+    if (num <0)
+    {
+        fprintf(file, "%d", 1);
+    }else{
+        fprintf(file, "%d", 0);
+    }
+    for (int i = 14; i >= 0; i--) {
+        int32_t mask = 1 << i;
+        if (num<0)
+        {
+            int32_t bit = (num & mask) ? 0 : 1;
+            fprintf(file, "%d", bit); 
+        }else{
+            int32_t bit = (num & mask) ? 1 : 0;
+            fprintf(file, "%d", bit); 
+        }
+    }
+    fprintf(file, "%s", "\n");
+
+    fclose(file);
 }
 // Función para convertir de punto fijo Q5.16 a decimal
 double puntoFijoADecimal(int32_t puntoFijo) {
@@ -215,8 +258,10 @@ void insercion_reverberacion(){
                 q1_14 = (~q1_14); // Complemento a dos
             }
             // AQUI SE ENVIA GENERAR EL ALGORTIMO
-            int32_t resultado = insertar_rever_aux(q1_14, &buffer);
+            int32_t resultado = insertar_rever_aux(q1_14,&buffer);
             //AQUI SE GUARDA EN OTRO TXT
+            
+            //int16ToBinary(resultado);
             double salida = puntoFijoADecimal(resultado); // convierte el numero a doble (solo para fines de C)
             escribir_salida(salida,0);
         }
@@ -227,7 +272,7 @@ void insercion_reverberacion(){
  * Desde aqui se hace el procesamiento del archivo para la reduccion
 */
 void reduccion_reverberacion(){
-    FILE *file = fopen("input.txt", "r");
+    FILE *file = fopen("insercion.txt", "r");
     if (file == NULL) {
         perror("No se puede abrir el archivo");
         return 1;
@@ -257,6 +302,6 @@ void reduccion_reverberacion(){
 }
 int main(){
     insercion_reverberacion();
-    reduccion_reverberacion();
+    //reduccion_reverberacion();
     return 0;
 }
