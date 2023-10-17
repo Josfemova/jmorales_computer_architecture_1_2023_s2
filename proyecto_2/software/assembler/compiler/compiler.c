@@ -53,9 +53,7 @@ typedef struct {
 }reg_spec;
 const reg_spec regs[] = {
     {.name = "x0", .val = 0},
-    {.name = "zero",.val = 0},
     {.name = "x1"  ,.val = 1},
-    {.name = "lr"  ,.val = 0},
     {.name = "x2"  ,.val = 2},
     {.name = "x3"  ,.val = 3},
     {.name = "x4"  ,.val = 4},
@@ -85,7 +83,40 @@ const reg_spec regs[] = {
     {.name = "x28" ,.val = 28},
     {.name = "x29" ,.val = 29},
     {.name = "x30" ,.val = 30},
-    {.name = "x31" ,.val = 31}
+    {.name = "x31" ,.val = 31},
+    // aliases
+    {.name = "zero", .val = 0},
+    {.name = "lr"  ,.val = 1},
+    {.name = "sp"  ,.val = 2},
+    {.name = "g0"  ,.val = 3},
+    {.name = "g1"  ,.val = 4},
+    {.name = "g2"  ,.val = 5},
+    {.name = "g3"  ,.val = 6},
+    {.name = "g4"  ,.val = 7},
+    {.name = "g5"  ,.val = 8},
+    {.name = "g6"  ,.val = 9},
+    {.name = "g7" ,.val = 10},
+    {.name = "t0" ,.val = 11},
+    {.name = "t1" ,.val = 12},
+    {.name = "t2" ,.val = 13},
+    {.name = "t3" ,.val = 14},
+    {.name = "t4" ,.val = 15},
+    {.name = "t5" ,.val = 16},
+    {.name = "t7" ,.val = 17},
+    {.name = "t8" ,.val = 18},
+    {.name = "t9" ,.val = 19},
+    {.name = "t0" ,.val = 20},
+    {.name = "t10" ,.val = 21},
+    {.name = "t11" ,.val = 22},
+    {.name = "t12" ,.val = 23},
+    {.name = "arg0" ,.val = 24},
+    {.name = "arg1" ,.val = 25},
+    {.name = "arg2" ,.val = 26},
+    {.name = "arg3" ,.val = 27},
+    {.name = "arg4" ,.val = 28},
+    {.name = "arg5" ,.val = 29},
+    {.name = "arg6" ,.val = 30},
+    {.name = "arg7" ,.val = 31}
 };
 
 //funciones
