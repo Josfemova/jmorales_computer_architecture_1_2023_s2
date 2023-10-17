@@ -382,19 +382,9 @@ char *typeF_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
     const char* reg_str = int2bin(string2reg(reg1),5);
     const char* reg1_str = int2bin(string2reg(reg2),5);
     const char* inmm_str;
-
-    if(strcmp(func3_str, "010")){
-        //const int inmm_int = atoi(inmm);
-        int inmm_int = (int) strtol(inmm, dummy_ptr,0);
-        inmm_str = int2bin(inmm_int,16);
-    }
-    else{
-        //inmm es un label
-        int label_pos = find_position_by_tag(inmm);
-        inmm_str = int2bin(4*(label_pos-lineCounter),16);
-        //printf("\nlabel_pos %d, inmm_srt %s\n", label_pos-lineCounter, inmm_str);
-        
-    }
+    //const int inmm_int = atoi(inmm);
+    int inmm_int = (int) strtol(inmm, dummy_ptr,0);
+    inmm_str = int2bin(inmm_int,16);
     size_t totalLength = strlen(opcode_str) + strlen(func3_str) + 
                     strlen(reg_str) + strlen(inmm_str) + 
                     strlen(reg1_str) + 1; //para terminar en null
