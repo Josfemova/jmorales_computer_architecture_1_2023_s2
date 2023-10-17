@@ -309,7 +309,7 @@ char *typeB_assembly2bin(char *assembly_instruction, char *rd, char *reg1, char 
 }
 
 char *typeC_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, char *inmm){
-    // Para SUMI, DIFI, ANDI, ORI, XORI, SLLI, SLRI, SARI
+    // Para STM
     const char* opcode_str = "010";
     const char* func3_str = int2bin(string2funct(assembly_instruction),3);
     const char* reg1_str = int2bin(string2reg(reg1),5);
@@ -334,12 +334,12 @@ char *typeC_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
 
     result[0] = '\0';
 
-    reverse_string(inmm_str);
+    //reverse_string(inmm_str);
     //01000000000000001010000100011111
-    strcat(result, &inmm_str[5]);
+    strncat(result, inmm_str, 11);
     strcat(result, reg2_str);
     strcat(result, reg1_str);
-    strncat(result, inmm_str, 5);
+    strncat(result, inmm_str+11, 5);
     strcat(result, func3_str);
     strcat(result, opcode_str);
     return result;
@@ -428,9 +428,8 @@ char *typeG_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
     const char* reg1_str = int2bin(string2reg(reg1),5);
     const char* reg2_str = int2bin(string2reg(reg2),5);
     int label_pos = find_position_by_tag(inmm);
-    char* inmm_str = int2bin(4*(label_pos-lineCounter),18);
-    //printf("\nlabel_pos %d, inmm %s\n", label_pos-lineCounter, inmm_str);
-    
+    int inmm_calc = 4*(label_pos-lineCounter);
+    char* inmm_str = int2bin(inmm_calc,18);
     
     size_t totalLength = strlen(opcode_str) + strlen(func3_str) + 
                     strlen(reg2_str) + strlen(inmm_str) + 
@@ -442,14 +441,13 @@ char *typeG_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
         return NULL; 
     }
 
+    //reverse_string(inmm_str);
+    
     result[0] = '\0';
-    reverse_string(inmm_str);
-    //printf("\nlabel_pos %d, inmm %s\n", label_pos-lineCounter, inmm_str);
-    //01000000000000001010000100011111
-    strncat(result, inmm_str+7, 15);
+    strncat(result, inmm_str, 11);
     strcat(result, reg2_str);
     strcat(result, reg1_str);
-    strncat(result, inmm_str+2, 5);
+    strncat(result, inmm_str+11, 5);
     strcat(result, func3_str);
     strcat(result, opcode_str);
     return result;
