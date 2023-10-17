@@ -4,7 +4,7 @@
 
 start:
     CLIR,x1,0x56; # semilla ---0
-    CLIR,x2,0x100; # addr ---4
+    CLIR,x2,0x1000; # addr ---4
     STM,x1,x2,0; # ---8
     CLIR,x3,0; # i ---c
     CLIR,x4,100; # iteraciones---10
