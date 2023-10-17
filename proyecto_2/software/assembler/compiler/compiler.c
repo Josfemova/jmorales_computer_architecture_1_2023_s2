@@ -283,6 +283,10 @@ char *typeB_assembly2bin(char *assembly_instruction, char *rd, char *reg1, char 
     const char* reg1_str = int2bin(string2reg(reg1),5);
     //int inmm_int = atoi(inmm);
     int inmm_int = (int) strtol(inmm, dummy_ptr,0);
+    if((inmm_int == 0) && strcmp(inmm, "0") && strcmp(inmm, "0x0")){
+        fprintf(stderr, "Unrecognized symbol as inmediate %s \n", inmm);
+        exit(1);
+    }
     const char* inmm_str = int2bin(inmm_int, 16);
 
     size_t totalLength = strlen(opcode_str) + strlen(func3_str) + 
@@ -312,6 +316,10 @@ char *typeC_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
     const char* reg2_str = int2bin(string2reg(reg2),5);
     //int inmm_int = atoi(inmm);
     int inmm_int = (int) strtol(inmm, dummy_ptr,0);
+    if((inmm_int == 0) && strcmp(inmm, "0") && strcmp(inmm, "0x0")){
+        fprintf(stderr, "Unrecognized symbol as inmediate %s \n", inmm);
+        exit(1);
+    }
     char* inmm_str = int2bin(inmm_int, 16);
 
     size_t totalLength = strlen(opcode_str) + strlen(func3_str) + 
@@ -347,6 +355,10 @@ char *typeD_assembly2bin(char *assembly_instruction, char *rd, char *inmm){
     if(strcmp(func3_str, "010")){
         //const int inmm_int = atoi(inmm);
         int inmm_int = (int) strtol(inmm, dummy_ptr,0);
+        if((inmm_int == 0) && strcmp(inmm, "0") && strcmp(inmm, "0x0")){
+            fprintf(stderr, "Unrecognized symbol as inmediate %s \n", inmm);
+            exit(1);
+        }
         inmm_str = int2bin(inmm_int,21);
     }
     else{
@@ -384,6 +396,10 @@ char *typeF_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
     const char* inmm_str;
     //const int inmm_int = atoi(inmm);
     int inmm_int = (int) strtol(inmm, dummy_ptr,0);
+    if((inmm_int == 0) && strcmp(inmm, "0") && strcmp(inmm, "0x0")){
+        fprintf(stderr, "Unrecognized symbol as inmediate %s \n", inmm);
+        exit(1);
+    }
     inmm_str = int2bin(inmm_int,16);
     size_t totalLength = strlen(opcode_str) + strlen(func3_str) + 
                     strlen(reg_str) + strlen(inmm_str) + 
