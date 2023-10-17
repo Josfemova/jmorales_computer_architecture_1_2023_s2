@@ -107,6 +107,8 @@ void initializeBuffer(CircularBuffer* buffer) {
     for (int i = 0; i < BUFFER_SIZE; i++) {
         buffer->data[i] = 0; //todo el buffer en 0
     }
+    buffer->data[0]=1;
+    buffer->data[BUFFER_SIZE-1] = ATENUACION;
     buffer->head = 0;
 }
 /**
@@ -118,7 +120,7 @@ int32_t insertar_rever_aux(int32_t num, CircularBuffer* buffer) {
     int32_t result = mult_punto_fijo(num, ATENUACION_M);
 
     // Calcula el valor de y(x-k) utilizando el buffer
-    int index = (buffer->head + BUFFER_SIZE - 2205) % BUFFER_SIZE;
+    int index = (buffer->head -1 + BUFFER_SIZE) % BUFFER_SIZE;
     //Desarrolla la parte de y(n-k)*a
     int32_t result_aux = mult_punto_fijo((buffer->data[index]), ATENUACION);
     //suma los resultados de las multiplicaciones
@@ -137,7 +139,7 @@ int32_t reducc_rever_aux(int32_t num, CircularBuffer* buffer) {
     // Aqui se agrega las sumas y las multiplicaciones
 
     // Calcula el valor de x(n-k) utilizando el buffer
-    int index = (buffer->head + BUFFER_SIZE - 2205) % BUFFER_SIZE;
+    int index = (buffer->head -1 + BUFFER_SIZE) % BUFFER_SIZE;
     //Desarrolla la parte de x(n-k)*a
     int32_t result = mult_punto_fijo((buffer->data[index]), ATENUACION);
     //Convierto a -a*x(n-k)
