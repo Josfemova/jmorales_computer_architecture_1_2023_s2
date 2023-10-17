@@ -1,0 +1,9 @@
+#define ROM_BASE 0x0000
+#define RAM_BASE 0x1000
+#define LED_BASE 0x2000
+#define SW_BASE 0x2004
+#define KEY_BASE 0x2008
+#define GPIO0_BASE 0x200c
+#define GPIO1_BASE 0x2010
+#define ROM_ADU1_BASE 0x10000
+#define ROM_AUD2_BASE 0x50000

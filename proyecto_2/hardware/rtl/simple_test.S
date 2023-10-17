@@ -1,19 +1,22 @@
+#include "REGIONS.S"
 #define NOP SUM,zero,zero,zero
 #define JBA(lr) JLRL,zero,lr,0
 #define MOV(rd, rs) SUM,rd,rs,zero
 
 start:
     CLIR,x1,0x56; # semilla ---0
-    CLIR,x2,0x1000; # addr ---4
+    CLIR,x2,RAM_BASE; # addr ---4
     STM,x1,x2,0; # ---8
     CLIR,x3,0; # i ---c
     CLIR,x4,100; # iteraciones---10
-    loop;
+    loop:
         SUMI,x3,x3,1; #---14
         SUM,x24,zero,x2; # pasar a reg de arg0 ---18
         JLL,x31,gen_numero; # saltar ---1c
         SUMI,x2,x2,4; # addr +4 ---20
         STM,x24,x2,0; # almacenar palabra ---24
+        JLL,x31, espera_toggle;
+        STM,x24,t0,0;
         JILT,x3,x4,loop; #---28
 end:
     JLL,zero,end; #---2c
@@ -40,3 +43,16 @@ gen_numero:
 
     MOV(x24,x15); # --- 5c
     JLRL,zero,x31,0; # --- 60
+
+espera_toggle:
+    CLIR, t0, KEY_BASE;
+    LDM, t1,t0,0x0;
+    ANDI,t2,t1,0x1; # Solo quiero el primer bit
+    JINE,t2,zero,espera_toggle; #espera 0
+    espera_1:
+        LDM,t1,t0,0x0;
+        ANDI,t2,t1,0x1; # Solo quiero el primer bit
+        JIEQ,t2,zero,espera_1; #espera 1
+    JBA(x31);
+
+
