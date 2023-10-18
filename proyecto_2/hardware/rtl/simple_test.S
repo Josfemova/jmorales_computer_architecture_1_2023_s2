@@ -2,6 +2,27 @@
 #define NOP SUM,zero,zero,zero
 #define JBA(lr) JLRL,zero,lr,0
 #define MOV(rd, rs) SUM,rd,rs,zero
+#define NOT(rd, rs) XORI, rd, rs, -1
+
+#define DELAY_T 6250
+
+CLIR, t0, GPIO0_VAL_BASE;
+CLIR, t1, GPIO0_DIR_BASE;
+CLIR, t5, LED_BASE;
+CLIR, t2, 0x3; #solo usar primeros dos pines 
+STM, t2, t1, 0; # Solo habilitar dos pines para output
+CLIR, lr,0xFFFFF;
+repeat:
+    LDM, t4, t0, 0;
+    CLIR,t1,DELAY_T;
+    SUM, t2, zero, zero;
+    delay:
+        SUMI, t2, t2, 1;
+        JILT, t2, t1, delay;
+    NOT(lr,lr);
+    STM,lr,t0,0;
+    STM, t4, t5, 0;
+    JLL, zero, repeat;
 
 start:
     CLIR,x1,0x56; # semilla ---0

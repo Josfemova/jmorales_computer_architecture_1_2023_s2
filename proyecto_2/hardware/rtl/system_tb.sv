@@ -20,8 +20,8 @@ module system_tb;
     GPIO1_drv = 1;
   end
 
-  assign GPIO0 = 1'bz;
-  assign GPIO1 = 1'bz;
+  //assign GPIO0 = 1'bz;
+  //assign GPIO1 = 1'bz;
 
   always begin
     KEY <= 2'b11;
