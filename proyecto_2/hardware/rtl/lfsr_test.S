@@ -10,9 +10,10 @@
 #define POP(rs)  LDM, rs, sp, 0; \
                  DIFI, sp, sp, 4; 
 
-#define DELAY_T 6250 # 1ms
+/*1ms*/
+#define DELAY_T 6250 
 
-#define GPIO0_OUTPUTS_MASK 0x5FFFF #implicitamente el resto son inputs
+#define GPIO0_OUTPUTS_MASK 0x5FFFF
 #define READY_PIN_MASK 0x10000
 #define DATA_PIN_MASK 0xFFFF
 #define READY_FLAG_PIN_POS 16
@@ -30,9 +31,13 @@
 setup:
     CLIR, g7, GPIO0_VAL_BASE; # var global 
     CLIR, t0, GPIO0_DIR_BASE;
-    CLIR, t1, GPIO0_OUTPUTS_MASK;
-    STM, t1, t0, 0; # configurar pines de salida 
-    STM, zero, g7,0; # poner todos los pines de salida en 0, INCLUYE A READY
+    CLIR, t1, GPIO0_OUTPUTS_MASK; 
+    STM, t1, t0, 0; # configurar pines de salida
+
+    CLIR, t0, 1;
+    SLLI, t1, t0, ACK_PIN_POS;
+
+    STM, t1, g7,0; # poner todos los pines de salida en 0, INCLUYE A READY
     CLIR, sp, STACK_START; # inicializar sp
 
 start:
@@ -96,10 +101,15 @@ send_data:
      * 2. Escribo 1 a ready si arg1 != 0 a ready
      * 3. Escribo 1 a ack
      */ 
-    CLIR, t0, 1; 
+    SUMI, t0, zero, 1; 
     SLLI, t1, t0, REQUEST_PIN_POS; # mascara request 
     LDM, t2, g7, NO_OFFSET; # Leer GPIOS
     AND, t3, t1, t2;
+    
+    /*SLRI, g6, t3, 16;
+    CLIR, g5, LED_BASE;
+    STM, g6, g5, NO_OFFSET;*/
+    
     JINE, t3, zero, send_data; # si leo un 1, vuelvo a intentar leer 0
 
     /*  Escribir 0 a ACK */

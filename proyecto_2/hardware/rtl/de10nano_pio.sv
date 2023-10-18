@@ -1,11 +1,11 @@
 module de10nano_pio #(
     parameter WIDTH = 32
 ) (
-    output [ 7:0] LED,
-    input  [ 3:0] SW,
-    input  [ 1:0] KEY,
-    inout  [31:0] GPIO0,  // no importa no usar todos
-    inout  [31:0] GPIO1,  // no importa no usar todos
+    output logic [7:0] LED,
+    input [3:0] SW,
+    input [1:0] KEY,
+    inout [31:0] GPIO0,  // no importa no usar todos
+    inout [31:0] GPIO1,  // no importa no usar todos
 
     input clk,
     input we,
@@ -28,9 +28,9 @@ module de10nano_pio #(
   genvar i;
   generate
     for (i = 0; i < 32; i = i + 1) begin : gen_gpio_ctrl
-      assign GPIO0[i]   = (GPIO0_DIR[i]) ? GPIO0_w : 1'bz;
+      assign GPIO0[i]   = (GPIO0_DIR[i]) ? GPIO0_w[i] : 1'bz;
       assign GPIO0_r[i] = (GPIO0_DIR[i]) ? GPIO0_w[i] : GPIO0[i];
-      assign GPIO1[i]   = (GPIO1_DIR[i]) ? GPIO0_w : 1'bz;
+      assign GPIO1[i]   = (GPIO1_DIR[i]) ? GPIO0_w[i] : 1'bz;
       assign GPIO1_r[i] = (GPIO1_DIR[i]) ? GPIO1_w[i] : GPIO1[i];
     end
   endgenerate
