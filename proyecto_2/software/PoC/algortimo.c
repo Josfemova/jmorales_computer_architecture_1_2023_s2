@@ -133,7 +133,6 @@ int32_t insertar_rever_aux(int32_t num, CircularBuffer* buffer) {
     int32_t result_aux = mult_punto_fijo((buffer->data[index]), ATENUACION);
     //suma los resultados de las multiplicaciones
     result = suma_punto_fijo(result, result_aux);
-
     // Agrega el nuevo resultado al buffer circular
     buffer->data[buffer->head] = result;
     buffer->head = (buffer->head + 1) % BUFFER_SIZE;
@@ -167,17 +166,18 @@ int32_t reducc_rever_aux(int32_t num, CircularBuffer* buffer) {
 
     return result;
 }
-/**
- * Funcion que me permite verificar el buffer NO TOMAR EN CUENTA, SE BORRA AL FINAL
-*/
-void print(CircularBuffer* buffer){
-    printf("ejemplo: %d\n", buffer->data[0]);
-}
+
 /*
-Esta funcion escribe el valor en binario en el txt
+Esta funcion escribe el valor en binario en el txt ESTA FUNCIÓN SE PUEDE OBVIAR PARA EFECTOS DE ENSAMBLADOR
 */
-void int16ToBinary(int32_t num) {
-    FILE *file = fopen("insercion.txt", "a");
+void int16ToBinary(int32_t num, int flag) {
+    FILE *file;
+    if (flag ==0)
+    {
+        file = fopen("insercion_bin.txt", "a");
+    }else{
+        file = fopen("reduccion_bin.txt", "a");
+    }
     if (file == NULL) {
         perror("Error al abrir el archivo");
         return;
@@ -203,7 +203,7 @@ void int16ToBinary(int32_t num) {
 
     fclose(file);
 }
-// Función para convertir de punto fijo Q5.16 a decimal
+// Función para convertir de punto fijo Q5.16 a decimal OBVIAR PARA ENSAMBLADOR
 double puntoFijoADecimal(int32_t puntoFijo) {
     int parteEntera = puntoFijo >> 14; // 5 bits para la parte entera
     int mascaraFraccional = (1 << 14) - 1; // 16 bits para la parte fraccional
@@ -212,7 +212,7 @@ double puntoFijoADecimal(int32_t puntoFijo) {
     return parteEntera + parteFraccional;
 }
 /**
- * Funcionque escribe el resultado en el txt de salida SON FUNCIONES DE MANEJO DE ARCHIVOS, SE PUEDE OMITIR
+ * Funcionque escribe el resultado en el txt de salida SON FUNCIONES DE MANEJO DE ARCHIVOS, SE PUEDE OMITIR EN ENSAMBLADOR
 */
 void escribir_salida(double salida, int flag){
     if (flag ==0) //Si está en 0 se debe guardar la insercion
@@ -257,11 +257,12 @@ void insercion_reverberacion(){
             if (line[0] == '1') {
                 q1_14 = (~q1_14); // Complemento a dos
             }
-            // AQUI SE ENVIA GENERAR EL ALGORTIMO
+            // AQUI SE ENVIA GENERAR EL ALGORTIMO ESTO SE GUARDA EN LA SALIDA 
             int32_t resultado = insertar_rever_aux(q1_14,&buffer);
-            //AQUI SE GUARDA EN OTRO TXT
-            
-            //int16ToBinary(resultado);
+            //AQUI SE GUARDA EN OTRO TXT SE PUEDE OMITIR PARA ENSAMBLADOR
+            //Guarda la insercion en binario en un txt
+            int16ToBinary(resultado,0);
+            //Guarda la insercion en flotante en un txt
             double salida = puntoFijoADecimal(resultado); // convierte el numero a doble (solo para fines de C)
             escribir_salida(salida,0);
         }
@@ -272,7 +273,7 @@ void insercion_reverberacion(){
  * Desde aqui se hace el procesamiento del archivo para la reduccion
 */
 void reduccion_reverberacion(){
-    FILE *file = fopen("insercion.txt", "r");
+    FILE *file = fopen("insercion_bin.txt", "r");
     if (file == NULL) {
         perror("No se puede abrir el archivo");
         return 1;
@@ -293,7 +294,9 @@ void reduccion_reverberacion(){
             }
             // AQUI SE ENVIA GENERAR EL ALGORTIMO
             int32_t resultado = reducc_rever_aux(q1_14, &buffer);
-            //AQUI SE GUARDA EN OTRO TXT
+          //GUarda la salida en binario en un txt SE PUEDE OMITIR PARA ENSAMBLADOR
+            int16ToBinary(resultado,1);
+            //GUarda la salida en flotante en otro txt
             double salida = puntoFijoADecimal(resultado); // convierte el numero a doble (solo para fines de C)
             escribir_salida(salida,1);
         }
@@ -302,6 +305,6 @@ void reduccion_reverberacion(){
 }
 int main(){
     insercion_reverberacion();
-    //reduccion_reverberacion();
+    reduccion_reverberacion();
     return 0;
 }
