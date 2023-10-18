@@ -12,17 +12,17 @@ if mi_puerto == None:
     print("No se logró encontrar el microcontrolador")
     exit(1)
 
-ser = Serial(mi_puerto, 115200)
-#while(True):
-#    print(ser.readline())
-while(ser.readline() != b'@START@\r\n'):
-    pass
-
-print("OWO")
+ser = Serial(mi_puerto, 921600)
 while(True):
-    line = ser.readline()
-    if(line == b'@END@\r\n'):
-        print("Adios")
-        break
-    else:
-        print(line.decode('utf-8'), end="")
+    while(ser.readline() != b'@START@\r\n'):
+        pass
+
+    print("OWO")
+    while(True):
+        line = ser.readline()
+        if(line == b'@END@\r\n'):
+            print("Adios")
+            break
+        else:
+           num = int(line.decode('utf-8').split(":")[1], 16)
+           print("{:016b}".format(num))

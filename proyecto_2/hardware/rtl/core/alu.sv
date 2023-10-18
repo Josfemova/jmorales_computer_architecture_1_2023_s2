@@ -45,7 +45,7 @@ module alu #(
       ALU_OP_XOR: result = op1 ^ op2;
       ALU_OP_SLL: result = op1 << op2;  // barrel shifter 
       ALU_OP_SLR: result = op1 >> op2;  // barrel shifter 
-      default: result = 0;
+      default: result = op1 >>> op2; 
     endcase
   end
 

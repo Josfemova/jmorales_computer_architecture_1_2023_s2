@@ -63,7 +63,7 @@ def get_binval():
 
 def print_val(i):
     value = get_binval()
-    print("value {0}: #{1:016b}".format(i,value))
+    print("#{0}:0x{1:04x}".format(i,value))
     display.print("{:04x}".format(value))
 
 def request():
@@ -78,6 +78,8 @@ counter = 0
 while(1):
     while(ready_flag.value):
         pass
+    print("dummy")
+    print("dummy")
     print("@START@")
     counter = 0
     while(not ready_flag.value):
