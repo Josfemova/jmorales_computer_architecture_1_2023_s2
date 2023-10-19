@@ -16,13 +16,15 @@ ser = Serial(mi_puerto, 921600)
 while(True):
     while(ser.readline() != b'@START@\r\n'):
         pass
-
-    print("OWO")
+    print("Comienza transmisión")
+    file = open("/tmp/datos_arqui.txt", "w")
     while(True):
         line = ser.readline()
         if(line == b'@END@\r\n'):
-            print("Adios")
+            print("Termina transmisión")
             break
         else:
-           num = int(line.decode('utf-8').split(":")[1], 16)
-           print("{:016b}".format(num))
+            num = int(line.decode('utf-8').split(":")[1], 16)
+            line  = "{:016b}\n".format(num)
+            print(line, end = "")
+    file.close()

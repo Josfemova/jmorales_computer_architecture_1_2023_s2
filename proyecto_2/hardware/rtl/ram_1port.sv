@@ -1,6 +1,6 @@
 module ram_1port #(
     parameter WIDTH = 32,
-    LENGTH = 256 * 6
+    LENGTH = 2048
 ) (
     input clk,
     input we,
