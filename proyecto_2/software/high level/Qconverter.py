@@ -2,8 +2,8 @@
 Restricciones:
   1. Los audios deben durar 7 segundos
   2. Los audios deben ser Mono
-  3. Los audios deben tener una frecuencia de muestreo de 44100 Hz
-  4. Los audios deben tener una resolución de 8 bits
+  3. Los audios deben tener una frecuencia de muestreo de 16000 Hz
+  4. Los audios deben tener formato de 8 bits, PCM unsigned 
   5. Los audios deben ser WAV
   6. Los audios deben estar en la misma carpeta que el programa
 """

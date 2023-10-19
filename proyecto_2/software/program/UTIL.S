@@ -14,6 +14,10 @@
 #define GPIO1_DIR_BASE 0x2018
 #define ROM_AUD1_BASE 0x10000
 #define ROM_AUD2_BASE 0x50000
+#define SW1_MASK 0x1
+#define SW2_MASK 0x2
+#define SW3_MASK 0x4
+
 
 /* Funciones de utilidad */
 #define NOP SUM,zero,zero,zero

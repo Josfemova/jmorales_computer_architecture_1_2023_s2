@@ -289,7 +289,7 @@ char* typeB_assembly2bin(char* assembly_instruction, char* rd, char* reg1,
   // int inmm_int = atoi(inmm);
   int inmm_int = (int)strtol(inmm, dummy_ptr, 0);
   if ((inmm_int == 0) && strcmp(inmm, "0") && strcmp(inmm, "0x0")) {
-    fprintf(stderr, "Unrecognized symbol as inmediate %s \n", inmm);
+    fprintf(stderr, "Unrecognized symbol as inmediate %s line %d \n", inmm, lineCounter);
     exit(1);
   }
   const char* inmm_str = int2bin(inmm_int, 16);
@@ -323,7 +323,7 @@ char* typeC_assembly2bin(char* assembly_instruction, char* reg1, char* reg2,
   // int inmm_int = atoi(inmm);
   int inmm_int = (int)strtol(inmm, dummy_ptr, 0);
   if ((inmm_int == 0) && strcmp(inmm, "0") && strcmp(inmm, "0x0")) {
-    fprintf(stderr, "Unrecognized symbol as inmediate %s \n", inmm);
+    fprintf(stderr, "Unrecognized symbol as inmediate %s line %d \n", inmm, lineCounter);
     exit(1);
   }
   char* inmm_str = int2bin(inmm_int, 16);
@@ -362,7 +362,7 @@ char* typeD_assembly2bin(char* assembly_instruction, char* rd, char* inmm) {
     // const int inmm_int = atoi(inmm);
     int inmm_int = (int)strtol(inmm, dummy_ptr, 0);
     if ((inmm_int == 0) && strcmp(inmm, "0") && strcmp(inmm, "0x0")) {
-      fprintf(stderr, "Unrecognized symbol as inmediate %s \n", inmm);
+      fprintf(stderr, "Unrecognized symbol as inmediate %s line %d \n", inmm, lineCounter);
       exit(1);
     }
     inmm_str = int2bin(inmm_int, 21);
@@ -403,7 +403,7 @@ char* typeF_assembly2bin(char* assembly_instruction, char* reg1, char* reg2,
   // const int inmm_int = atoi(inmm);
   int inmm_int = (int)strtol(inmm, dummy_ptr, 0);
   if ((inmm_int == 0) && strcmp(inmm, "0") && strcmp(inmm, "0x0")) {
-    fprintf(stderr, "Unrecognized symbol as inmediate %s \n", inmm);
+    fprintf(stderr, "Unrecognized symbol as inmediate %s line %d \n", inmm, lineCounter);
     exit(1);
   }
   inmm_str = int2bin(inmm_int, 16);
