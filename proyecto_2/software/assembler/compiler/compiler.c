@@ -16,36 +16,39 @@ typedef struct {
     char* func_name;
     unsigned int op;
     unsigned int func3;
+    unsigned int func11;
 }instructions;
 const instructions inst[] ={
-    {.func_name="SUM", .func3=0b000, .op = 0b000},
-    {.func_name="DIF", .func3=0b001, .op = 0b000},
-    {.func_name="AND", .func3=0b010, .op = 0b000},
-    {.func_name="OR", .func3=0b011, .op = 0b000},
-    {.func_name="XOR", .func3=0b100, .op = 0b000},
-    {.func_name="SLL", .func3=0b101, .op = 0b000},
-    {.func_name="SLR", .func3=0b110, .op = 0b000},
-    {.func_name="SAR", .func3=0b111, .op = 0b000},
-    {.func_name="SUMI", .func3=0b000, .op = 0b001},
-    {.func_name="DIFI", .func3=0b001, .op = 0b001},
-    {.func_name="ANDI", .func3=0b010, .op = 0b001},
-    {.func_name="ORI", .func3=0b011, .op = 0b001},
-    {.func_name="XORI", .func3=0b100, .op = 0b001},
-    {.func_name="SLLI", .func3=0b101, .op = 0b001},
-    {.func_name="SLRI", .func3=0b110, .op = 0b001},
-    {.func_name="SARI", .func3=0b111, .op = 0b001},
-    {.func_name="STM", .func3=0b000, .op = 0b010},
-    {.func_name="CLIR", .func3=0b000, .op = 0b011},
-    {.func_name="CUIR", .func3=0b001, .op = 0b011},
-    {.func_name="JLL", .func3=0b010, .op = 0b011},
-    {.func_name="LDM", .func3=0b000, .op = 0b101},
-    {.func_name="JLRL", .func3=0b010, .op = 0b101},
-    {.func_name="JIEQ", .func3=0b000, .op = 0b110},
-    {.func_name="JINE", .func3=0b001, .op = 0b110},
-    {.func_name="JIGT", .func3=0b010, .op = 0b110},
-    {.func_name="JILT", .func3=0b011, .op = 0b110},
-    {.func_name="JIGE", .func3=0b100, .op = 0b110},
-    {.func_name="JILE", .func3=0b101, .op = 0b110},
+    {.func_name="SUM",  .func3=0b000, .op = 0b000, .func11 = 0b00000000000},
+    {.func_name="DIF",  .func3=0b001, .op = 0b000, .func11 = 0b00000000000},
+    {.func_name="AND",  .func3=0b010, .op = 0b000, .func11 = 0b00000000000},
+    {.func_name="OR",   .func3=0b011, .op = 0b000, .func11 = 0b00000000000},
+    {.func_name="XOR",  .func3=0b100, .op = 0b000, .func11 = 0b00000000000},
+    {.func_name="SLL",  .func3=0b101, .op = 0b000, .func11 = 0b00000000000},
+    {.func_name="SLR",  .func3=0b110, .op = 0b000, .func11 = 0b00000000000},
+    {.func_name="SAR",  .func3=0b111, .op = 0b000, .func11 = 0b00000000000},
+    {.func_name="MUL",  .func3=0b000, .op = 0b000, .func11 = 0b00000000001},
+    {.func_name="DIV",  .func3=0b100, .op = 0b000, .func11 = 0b00000000001},
+    {.func_name="SUMI", .func3=0b000, .op = 0b001, .func11 = 0b00000000000},
+    {.func_name="DIFI", .func3=0b001, .op = 0b001, .func11 = 0b00000000000},
+    {.func_name="ANDI", .func3=0b010, .op = 0b001, .func11 = 0b00000000000},
+    {.func_name="ORI",  .func3=0b011, .op = 0b001, .func11 = 0b00000000000},
+    {.func_name="XORI", .func3=0b100, .op = 0b001, .func11 = 0b00000000000},
+    {.func_name="SLLI", .func3=0b101, .op = 0b001, .func11 = 0b00000000000},
+    {.func_name="SLRI", .func3=0b110, .op = 0b001, .func11 = 0b00000000000},
+    {.func_name="SARI", .func3=0b111, .op = 0b001, .func11 = 0b00000000000},
+    {.func_name="STM",  .func3=0b000, .op = 0b010, .func11 = 0b00000000000},
+    {.func_name="CLIR", .func3=0b000, .op = 0b011, .func11 = 0b00000000000},
+    {.func_name="CUIR", .func3=0b001, .op = 0b011, .func11 = 0b00000000000},
+    {.func_name="JLL",  .func3=0b010, .op = 0b011, .func11 = 0b00000000000},
+    {.func_name="LDM",  .func3=0b000, .op = 0b101, .func11 = 0b00000000000},
+    {.func_name="JLRL", .func3=0b010, .op = 0b101, .func11 = 0b00000000000},
+    {.func_name="JIEQ", .func3=0b000, .op = 0b110, .func11 = 0b00000000000},
+    {.func_name="JINE", .func3=0b001, .op = 0b110, .func11 = 0b00000000000},
+    {.func_name="JIGT", .func3=0b010, .op = 0b110, .func11 = 0b00000000000},
+    {.func_name="JILT", .func3=0b011, .op = 0b110, .func11 = 0b00000000000},
+    {.func_name="JIGE", .func3=0b100, .op = 0b110, .func11 = 0b00000000000},
+    {.func_name="JILE", .func3=0b101, .op = 0b110, .func11 = 0b00000000000},
 };
 typedef struct {
     char* name;
@@ -141,10 +144,19 @@ unsigned int string2reg(char* regName) {
     return (unsigned int)-1; 
 }
 
-unsigned int string2funct(char* funcName) {
+unsigned int string2funct3(char* funcName) {
     for (size_t i = 0; i < sizeof(inst) / sizeof(inst[0]); i++) {
         if (strcmp(funcName, inst[i].func_name) == 0) {
             return inst[i].func3;
+        }
+    }
+    return (unsigned int)-1; 
+}
+
+unsigned int string2funct11(char* funcName) {
+    for (size_t i = 0; i < sizeof(inst) / sizeof(inst[0]); i++) {
+        if (strcmp(funcName, inst[i].func_name) == 0) {
+            return inst[i].func11;
         }
     }
     return (unsigned int)-1; 
@@ -244,13 +256,13 @@ char *handle_instruction(char* parts[], int token_counter){
 }
 
 char *typeA_assembly2bin(char *assembly_instruction, char *rd, char *reg1, char *reg2){
-    // Para SUM, DIF, AND, OR, XOR, SLL, SLR, SAR
+    // Para SUM, DIF, AND, OR, XOR, SLL, SLR, SAR, MUL, DIV
     const char* opcode_str = "000";
-    const char* func3_str = int2bin(string2funct(assembly_instruction),3);
+    const char* func3_str = int2bin(string2funct3(assembly_instruction),3);
     const char* reg_str = int2bin(string2reg(rd),5);
     const char* reg1_str = int2bin(string2reg(reg1),5);
     const char* reg2_str = int2bin(string2reg(reg2),5);
-    const char* func11_str = "00000000000";
+    const char* func11_str = int2bin(string2funct11(assembly_instruction),11);
 
     size_t totalLength = strlen(opcode_str) + strlen(func3_str) + 
                     strlen(reg_str) + strlen(reg2_str) + 
@@ -278,7 +290,7 @@ char *typeB_assembly2bin(char *assembly_instruction, char *rd, char *reg1, char 
     // Para SUMI, DIFI, ANDI, ORI, XORI, SLLI, SLRI, SARI
     
     const char* opcode_str = "001";
-    const char* func3_str = int2bin(string2funct(assembly_instruction),3);
+    const char* func3_str = int2bin(string2funct3(assembly_instruction),3);
     const char* reg_str = int2bin(string2reg(rd),5);
     const char* reg1_str = int2bin(string2reg(reg1),5);
     //int inmm_int = atoi(inmm);
@@ -311,7 +323,7 @@ char *typeB_assembly2bin(char *assembly_instruction, char *rd, char *reg1, char 
 char *typeC_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, char *inmm){
     // Para STM
     const char* opcode_str = "010";
-    const char* func3_str = int2bin(string2funct(assembly_instruction),3);
+    const char* func3_str = int2bin(string2funct3(assembly_instruction),3);
     const char* reg1_str = int2bin(string2reg(reg1),5);
     const char* reg2_str = int2bin(string2reg(reg2),5);
     //int inmm_int = atoi(inmm);
@@ -348,7 +360,7 @@ char *typeC_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
 char *typeD_assembly2bin(char *assembly_instruction, char *rd, char *inmm){
     // Para CLIR, CUIR, JLL
     const char* opcode_str = "011";
-    const char* func3_str = int2bin(string2funct(assembly_instruction),3);
+    const char* func3_str = int2bin(string2funct3(assembly_instruction),3);
     const char* reg_str = int2bin(string2reg(rd),5);
     const char* inmm_str;
 
@@ -390,7 +402,7 @@ char *typeD_assembly2bin(char *assembly_instruction, char *rd, char *inmm){
 
 char *typeF_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, char *inmm){
     const char* opcode_str = "101";
-    const char* func3_str = int2bin(string2funct(assembly_instruction),3);
+    const char* func3_str = int2bin(string2funct3(assembly_instruction),3);
     const char* reg_str = int2bin(string2reg(reg1),5);
     const char* reg1_str = int2bin(string2reg(reg2),5);
     const char* inmm_str;
@@ -424,7 +436,7 @@ char *typeF_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, cha
 char *typeG_assembly2bin(char *assembly_instruction, char *reg1, char *reg2, char *inmm){
     //Para JIEQ, JINE, JIGT, JILT, JIGE, JILE
     const char* opcode_str = "110";
-    const char* func3_str = int2bin(string2funct(assembly_instruction),3);
+    const char* func3_str = int2bin(string2funct3(assembly_instruction),3);
     const char* reg1_str = int2bin(string2reg(reg1),5);
     const char* reg2_str = int2bin(string2reg(reg2),5);
     int label_pos = find_position_by_tag(inmm);
