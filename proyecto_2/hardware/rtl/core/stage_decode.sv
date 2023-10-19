@@ -18,7 +18,7 @@ module stage_decode (
     output reg ex_jump,
     output reg ex_jump_cond,
     output reg [2:0] ex_jump_cond_type,
-    output reg [2:0] ex_alu_control,
+    output reg [3:0] ex_alu_control,
     output reg ex_alu_src_op1,
     output reg ex_alu_src_op2,
     output reg ex_pc_target_src,
@@ -55,7 +55,7 @@ module stage_decode (
   logic pc_target_src;
   logic [1:0] result_src;
   logic [2:0] jump_cond_type;
-  logic [2:0] alu_control;
+  logic [3:0] alu_control;
 
   logic [4:0] rs1;
   logic [4:0] rs2;

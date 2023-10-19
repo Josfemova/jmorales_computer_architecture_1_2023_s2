@@ -33,7 +33,6 @@ setup:
     CLIR, t0, GPIO0_DIR_BASE;
     CLIR, t1, GPIO0_OUTPUTS_MASK; 
     STM, t1, t0, 0; # configurar pines de salida
-
     CLIR, t0, 1;
     SLLI, t1, t0, ACK_PIN_POS;
 

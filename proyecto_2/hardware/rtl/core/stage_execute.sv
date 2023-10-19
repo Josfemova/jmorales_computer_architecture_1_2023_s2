@@ -8,7 +8,7 @@ module stage_execute (
     input ex_jump,
     input ex_jump_cond,
     input [2:0] ex_jump_cond_type,
-    input [2:0] ex_alu_control,
+    input [3:0] ex_alu_control,
     input ex_alu_src_op1,
     input ex_alu_src_op2,
     input ex_pc_target_src,

@@ -31,7 +31,7 @@ module core_top (
   wire ex_jump;
   wire ex_jump_cond;
   wire [2:0] ex_jump_cond_type;
-  wire [2:0] ex_alu_control;
+  wire [3:0] ex_alu_control;
   wire ex_alu_src_op1;
   wire ex_alu_src_op2;
   wire ex_pc_target_src;

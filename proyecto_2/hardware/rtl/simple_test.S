@@ -6,7 +6,7 @@
 
 #define DELAY_T 6250
 
-CLIR, t0, GPIO0_VAL_BASE;
+/*CLIR, t0, GPIO0_VAL_BASE;
 CLIR, t1, GPIO0_DIR_BASE;
 CLIR, t5, LED_BASE;
 CLIR, t2, 0x3; #solo usar primeros dos pines 
@@ -22,7 +22,7 @@ repeat:
     NOT(lr,lr);
     STM,lr,t0,0;
     STM, t4, t5, 0;
-    JLL, zero, repeat;
+    JLL, zero, repeat;*/
 
 start:
     CLIR,x1,0x56; # semilla ---0

@@ -1,12 +1,16 @@
-typedef enum bit [2:0] {
-  ALU_OP_SUM = 3'b000,  // suma
-  ALU_OP_DIF = 3'b001,  // resta
-  ALU_OP_AND = 3'b010,  // and
-  ALU_OP_ORR = 3'b011,  // or 
-  ALU_OP_XOR = 3'b100,  // xor 
-  ALU_OP_SLL = 3'b101,  // shift logical left
-  ALU_OP_SLR = 3'b110,  // shift logical right
-  ALU_OP_SAR = 3'b111   // shift arithmethical right (no implementado para guardar espacio)
+typedef enum bit [3:0] {
+  ALU_OP_SUM = 4'b0000,  // suma
+  ALU_OP_DIF = 4'b0001,  // resta
+  ALU_OP_AND = 4'b0010,  // and
+  ALU_OP_ORR = 4'b0011,  // or 
+  ALU_OP_XOR = 4'b0100,  // xor 
+  ALU_OP_SLL = 4'b0101,  // shift logical left
+  ALU_OP_SLR = 4'b0110,  // shift logical right
+  ALU_OP_SAR = 4'b0111,  // shift arithmethical right (no implementado para guardar espacio)
+  ALU_OP_MUL = 4'b1000,  // multiplicacion
+  // espacio reservado para otras mul
+  ALU_OP_DIV = 4'b1100   // division
+  // espacio reservado para otras relacionadas a div
 } alu_op;
 
 
@@ -15,7 +19,7 @@ module alu #(
 ) (
     input [WIDTH-1:0] op1,
     input [WIDTH-1:0] op2,
-    input bit [2:0] alu_control,
+    input bit [3:0] alu_control,
     output logic [3:0] flags,
     output logic [WIDTH-1:0] result
 );
@@ -45,7 +49,9 @@ module alu #(
       ALU_OP_XOR: result = op1 ^ op2;
       ALU_OP_SLL: result = op1 << op2;  // barrel shifter 
       ALU_OP_SLR: result = op1 >> op2;  // barrel shifter 
-      default: result = op1 >>> op2; 
+      ALU_OP_SAR: result = op1 >>> op2;
+      ALU_OP_MUL: result = op1 * op2;
+      default: result = 0;  // div no implementada aun 
     endcase
   end
 
