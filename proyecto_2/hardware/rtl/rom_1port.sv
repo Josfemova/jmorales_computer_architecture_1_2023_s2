@@ -8,8 +8,8 @@ module rom_1port #(
     output logic [15:0] rd
 );
 
-  reg [15:0] rom[112000-1:0];  // 7seg
-  //reg [15:0] rom[64000-1:0];  // 4seg
+  //reg [15:0] rom[112000-1:0];  // 7seg
+  reg [15:0] rom[64000-1:0];  // 4seg
 
   initial begin
     $readmemb(INIT_FILE, rom);

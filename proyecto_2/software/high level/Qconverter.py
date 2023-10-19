@@ -9,6 +9,7 @@ Restricciones:
 """
 
 import wave
+import sys
 
 def audio_to_q114(input_file, Qformat_file):
   # Abre el archivo WAV y toma sus datos de audio
@@ -86,8 +87,8 @@ def float_to_binary_and_audio_reconstruction(input_file, reconstructed_file, par
         wav_out.setparams(paramsInput)
         wav_out.writeframes(binary_data)
 
-"""---------------LLAMAR A ESTAS FUNCIONES-------------------------------------"""
 
+"""---------------LLAMAR A ESTAS FUNCIONES-------------------------------------"""
 def generate_txt_Q114():
     input_file = "audio_Mono441k7seg.wav"
     Qformat_file = "audio_Q114.txt"
@@ -98,3 +99,18 @@ def generate_txt_Q114():
 def reconstruct_modified_audios():
   paramsInput = audio_to_q114("audio_Mono441k7seg.wav", "audio_Q114.txt")
   float_to_binary_and_audio_reconstruction("insercion.txt", "reverbed_audio.wav", paramsInput)
+
+
+if __name__ == '__main__':
+  if(sys.argv[1] == "gen"):
+    input_file = sys.argv[2]
+    qformat_file = sys.argv[3]
+    audio_to_q114(input_file, qformat_file)
+  else:
+    ref_file = sys.argv[2]
+    qformat_file = sys.argv[3]
+    reconstructed_file = sys.argv[4]
+    with wave.open(ref_file, 'rb') as wav_in:
+        q114_to_audio(qformat_file, reconstructed_file, wav_in.getparams())
+
+

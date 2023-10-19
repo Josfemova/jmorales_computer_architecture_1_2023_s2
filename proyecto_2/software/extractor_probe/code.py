@@ -3,6 +3,7 @@ import board
 import digitalio
 import time
 from adafruit_ht16k33.segments import Seg7x4
+import usb_cdc
 
 scl = board.GP21
 sda = board.GP20
@@ -61,10 +62,9 @@ def get_binval():
         value |= (bits[i].value << i)
     return value
 
-def print_val(i):
+def print_val():
     value = get_binval()
-    print("#{0}:0x{1:04x}".format(i,value))
-    display.print("{:04x}".format(value))
+    print(f"#:{value:04x}")
 
 def request():
     request_pin.value = False
@@ -84,9 +84,10 @@ while(1):
     counter = 0
     while(not ready_flag.value):
         if(slow_exe_pin.value):
-            time.sleep(1)
+            time.sleep(0.25)
+            display.print(f"{counter:04x}")
         request()
-        print_val(counter)
+        print_val()
         counter +=1
 
     print("@END@")

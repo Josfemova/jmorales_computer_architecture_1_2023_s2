@@ -1,27 +1,10 @@
-#include "REGIONS.S"
-#define NOP SUM,zero,zero,zero
-#define JBA JLRL,zero,lr,0
-#define MOV(rd, rs) SUM,rd,rs,zero
-#define NOT(rd, rs) XORI,rd,rs,-1
-#define CALL JLL,lr
-#define JMP JLL,zero
-#define PUSH(rs) STM, rs, sp, 0; \
-                 SUMI, sp, sp, 4; 
-#define POP(rs)  LDM, rs, sp, 0; \
-                 DIFI, sp, sp, 4; 
-
-/*1ms*/
-#define DELAY_T 6250 
-
-#define GPIO0_OUTPUTS_MASK 0x5FFFF
-#define READY_PIN_MASK 0x10000
-#define DATA_PIN_MASK 0xFFFF
-#define READY_FLAG_PIN_POS 16
-#define REQUEST_PIN_POS 17
-#define ACK_PIN_POS 18 
-#define TRUE 1
-#define FALSE 0
-#define NO_OFFSET 0
+#include "UTIL.S"
+#define MUESTRAS_4SEG 64000
+#define MUESTRAS_7SEG 112000
+#define BUFFER_SIZE 800 
+#define ATENUACION 0x2666
+#define ATENUACION_M 0x1999
+#define ATENUCACION_DIV 0xa000
 
 # variables globales:
 # g7 - puntero a gpio0
@@ -38,55 +21,34 @@ setup:
 
     STM, t1, g7,0; # poner todos los pines de salida en 0, INCLUYE A READY
     CLIR, sp, STACK_START; # inicializar sp
+    JMP, start;
+
+#include "Q114.S"
 
 start:
-    CLIR, g0,0x56; # semilla
-    CLIR, g1,RAM_BASE; # addr 
-    STM,  g0,g1,0; # 
-    CLIR, g2,0; # i 
-    CLIR, g3,100; # iteraciones
-    loop:
-        SUMI, g2,g2,1; # i++
-        SUM,  arg0,zero,g1; # pasar a reg de arg0
-        CALL, gen_numero; # saltar
-        SUMI, g1,g1,4; # addr + 4
-        STM,  arg0,g1,NO_OFFSET; # almacenar palabra en RAM         
+    CLIR, g0, ROM_AUD1_BASE;
+    CLIR, g1, 0; # i = 0
+    CLIR, g2, MUESTRAS_4SEG; # i_max
+    main_loop:
+        SUMI, g1, g1, 1;
 
-        JILT, g2, g3, faltan;
+        LDM, arg0, g0, NO_OFFSET;
+
+        JILT, g1, g2, faltan;
         no_faltan:
             CLIR, arg1, TRUE;
             JMP, end_faltan_check;
         faltan:
             CLIR, arg1, FALSE;
         end_faltan_check:
+
         CALL, send_data;
-        JILT, g2,g3,loop; 
+
+        SUMI, g0, g0, 4;
+        JILT, g1, g2, main_loop;
+
 end:
     JLL,zero,end; 
-
-
-gen_numero:
-    LDM,t0,x24,0; # cargar valor actual 
-
-    ANDI, t1, t0, 0x10; #x^4 
-    SLLI, t1, t1, 0x3;  
-    ANDI, t2, t0, 0x08; #x^5 
-    SLLI, t2, t2, 0x4;
-    ANDI, t3, t0, 0x04; #x^6  
-    SLLI, t3, t3, 0x5;
-    ANDI, t4, t0, 0x01; #x^8  
-    SLLI, t4, t4, 0x7;
-
-    XOR, t5, t1, t2; 
-    XOR, t5, t5, t3;
-    XOR, t5, t5, t4; 
-
-    SLRI, t0, t0, 0x1; 
-    ANDI, t0, t0, 0x7F; 
-    OR,   t0, t0, t5; 
-
-    MOV(arg0,t0); 
-    JBA;
 
 /**
  * Funcion que realiza handshake con el extractor de datos

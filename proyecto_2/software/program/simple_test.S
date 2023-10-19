@@ -1,9 +1,4 @@
-#include "REGIONS.S"
-#define NOP SUM,zero,zero,zero
-#define JBA(lr) JLRL,zero,lr,0
-#define MOV(rd, rs) SUM,rd,rs,zero
-#define NOT(rd, rs) XORI, rd, rs, -1
-
+#include "UTIL.S"
 #define DELAY_T 6250
 
 /*CLIR, t0, GPIO0_VAL_BASE;
@@ -74,6 +69,6 @@ espera_toggle:
         LDM,t1,t0,0x0;
         ANDI,t2,t1,0x1; # Solo quiero el primer bit
         JIEQ,t2,zero,espera_1; #espera 1
-    JBA(x31);
+    JLRL, zero, x31, 0;
 
 

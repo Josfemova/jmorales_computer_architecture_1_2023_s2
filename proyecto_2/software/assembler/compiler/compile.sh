@@ -12,4 +12,4 @@ cpp $1 \
     | sed 's/ //g' \
     | sed 's/\;.*/;/' \
     > $pre 
-./main < $pre 
+../assembler/compiler/build/compiler < $pre 

@@ -149,7 +149,7 @@ module top (
   logic [31:0] pio0_rd;
 
   rom_2port #(
-      .INIT_FILE("../rtl/simple_test.txt")
+      .INIT_FILE("../../software/program/output_files/reverb.txt")
   ) rom0 (
       .clk_a (clk),
       .clk_b (clk),
@@ -162,7 +162,9 @@ module top (
   );
 
   // para audio sin reverb
-  rom_1port rom1 (
+  rom_1port #(
+      .INIT_FILE("/tmp/vitas.txt")
+  ) rom1 (
       .clk (clk),
       //.en  (1'b1),
       .addr(rom1_addr),
