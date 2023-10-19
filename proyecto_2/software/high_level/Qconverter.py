@@ -97,7 +97,7 @@ def generate_txt_Q114():
     q114_to_audio(Qformat_file, reconstructed_file, paramsInput)
 
 def reconstruct_modified_audios():
-  paramsInput = audio_to_q114("audio_Mono441k7seg.wav", "audio_Q114.txt")
+  paramsInput = audio_to_q114("audio_Mono16k.wav", "input.txt")
   float_to_binary_and_audio_reconstruction("insercion.txt", "reverbed_audio.wav", paramsInput)
 
 
