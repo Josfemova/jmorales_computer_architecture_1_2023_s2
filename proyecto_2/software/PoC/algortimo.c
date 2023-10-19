@@ -161,7 +161,7 @@ int32_t reducc_rever_aux(int32_t num, CircularBuffer* buffer) {
     //multiplico la suma por 1/(1-a)
     result = mult_punto_fijo(result, ATENUACION_DIV);
     // Agrega el valor de entrada usado al buffer circular
-    buffer->data[buffer->head] = num;
+    buffer->data[buffer->head] = num; 
     buffer->head = (buffer->head + 1) % BUFFER_SIZE;
 
     return result;

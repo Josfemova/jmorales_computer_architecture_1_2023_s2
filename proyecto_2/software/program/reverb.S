@@ -2,6 +2,7 @@
 #define MUESTRAS_4SEG 64000
 #define MUESTRAS_7SEG 112000
 #define BUFFER_SIZE 800 
+#define BUFFER_HEAD_MAX 799 
 #define ATENUACION 0x2666
 #define ATENUACION_M 0x1999
 #define ATENUCACION_DIV 0xa000
@@ -14,8 +15,8 @@
  * SW1 == 1: indica si ya se puede comenzar 
  * SW2 == 1: insertar reverb
  * SW2 == 0: quitar reverb 
- * SW3: ?
- *
+ * SW3 == 1: PWM out 
+ * SW3 == 0: stream out
 */
 
 # variables globales:
@@ -54,6 +55,7 @@ setup:
     CLIR, t2, ATENUACION;
     STM, t2, t0, -4; # buffer->data[BUFFER_SIZE-1] = ATENUACION;
     MOV(buffer_head, zero); # buffer->head = 0
+    /* Termina inicialización de buffer */
 
     /* Saltar a programa principal */
     JMP, start;
@@ -87,8 +89,52 @@ insertar_reverb:
 
     insertar_loop:
         SUMI, g0, g0, 1; # i++
-        LDM, arg0, g2, NO_OFFSET; # arg0 = *audio_ptr
+        LDM, arg0, g2, NO_OFFSET; # arg0 = *audio_ptr // num
         
+        CLIR, arg1, ATENUACION_M;
+        CALL, mult_punto_fijo; # result = mult_punto_fijo(num, ATENUACION_M)
+        MOV(g3, arg0); # copiar result porque arg0 se necesita pa otra mul
+
+        CLIR, t1, BUFFER_HEAD_MAX;
+        JIEQ, buffer_head, t1, insertar_yn_zero
+        insertar_yn_is_bfh_p1:
+            SUMI, t1, buffer_head, 1; # index = buffer->head + 1
+            JMP, insertar_yn_calc_end;    
+        insertar_yn_zero:
+            MOV(t1, zero); # index = 0
+        insertar_yn_calc_end:  
+
+        /* Desarrolla la parte de y(n-k)*a */
+        /* Calcular &buffer->data[index] */
+        SLLI, t1,t1, 2; // multiplicar index por 4
+        SUM, t0, buffer_data_ptr, t1;
+
+        LDM, arg0, t0, NO_OFFSET;  # arg0 = buffer->data[index]
+        CLIR, arg1, ATENUACION;
+        CALL, mult_punto_fijo; # arg0 =  mult_punto_fijo((buffer->data[index]), ATENUACION);
+
+        /* Suma los resultados de las multiplicaciones */
+        MOV(arg1, g3); # recuperar primer resultado 
+        CALL, suma_punto_fijo;
+
+        /* Agrega el nuevo resultado al buffer circular*/
+        /* Calcular &buffer->data[buffer_head] */
+        SLLI, t0, buffer_head, 2; # multiplicar index por 4
+        SUM, t1, buffer_data_ptr, t0;
+        STM, arg0, t1, NO_OFFSET; # buffer->data[buffer->head] = result;
+
+        /* calcular nuevo valor de buffer_head */
+        CLIR, t0, BUFFER_HEAD_MAX;
+        JIEQ, buffer_head, t0, insertar_bfh_is0;
+        insertar_bfh_plus1:
+            SUMI, buffer_head, buffer_head, 1;
+            JMP, insertar_bfh_calc_end;
+        insertar_bfh_is0:
+            MOV(buffer_head, zero);
+        insertar_bfh_calc_end:        
+
+        /* Acá arg0 sigue siendo el y(n) actual */
+
         /* Inicia envío de dato */
         JILT, g0, g1, faltan;
         insertar_no_faltan:
@@ -108,8 +154,54 @@ reducc_reverb:
     CLIR, g2, ROM_AUD2_BASE;
     reducc_loop:
         SUMI, g0, g0, 1; # i++
-        LDM, arg0, g2, NO_OFFSET; # arg0 = *audio_ptr
-        
+        LDM, g3, g2, NO_OFFSET; # g3 = *audio_ptr // num
+
+        /* Calcular el index en el buffer */
+        CLIR, t1, BUFFER_HEAD_MAX;
+        JIEQ, buffer_head, t1, insertar_xn_zero
+        reducc_xn_is_bfh_p1:
+            SUMI, t1, buffer_head, 1; # index = buffer->head + 1
+            JMP, insertar_yn_calc_end;    
+        reducc_xn_zero:
+            MOV(t1, zero); # index = 0
+        reducc_xn_calc_end:  
+
+
+        /* Desarrolla la parte de x(n-k)*a */
+        /* Calcular &buffer->data[index] */
+        SLLI, t1, t1, 2; // multiplicar index por 4
+        SUM, t0, buffer_data_ptr, t1;
+
+        LDM, arg0, t0, NO_OFFSET;  # arg0 = buffer->data[index]
+        CLIR, arg1, ATENUACION;
+        CALL, mult_punto_fijo; # arg0 =  mult_punto_fijo((buffer->data[index]), ATENUACION);
+
+        /* Convierto a ~a*x(n-k) */
+        NOT(arg1, arg0);
+        /* Realizo la resta (x(n) - ax(n-k)) */
+        MOV(arg0, g3);
+        CALL, suma_punto_fijo;
+        /* Multiplico la suma por 1/(1-a) */
+        CLIR, arg1, ATENUCACION_DIV;
+        CALL, mult_punto_fijo;
+
+        /* Agrega el nuevo resultado al buffer circular*/
+        /* Calcular &buffer->data[buffer_head] */
+        SLLI, t0, buffer_head, 2; # multiplicar index por 4
+        SUM, t1, buffer_data_ptr, t0;
+        STM, g3, t1, NO_OFFSET; # buffer->data[buffer->head] = num, sí, num
+
+        /* calcular nuevo valor de buffer_head */
+        CLIR, t0, BUFFER_HEAD_MAX;
+        JIEQ, buffer_head, t0, insertar_bfh_is0;
+        reducc_bfh_plus1:
+            SUMI, buffer_head, buffer_head, 1;
+            JMP, reducc_bfh_calc_end;
+        reducc_bfh_is0:
+            MOV(buffer_head, zero);
+        reducc_bfh_calc_end:        
+        /* Acá arg0 sigue siendo el x(n) actual */
+
         /* Inicia envío de dato */
         JILT, g0, g1, faltan;
         reducc_no_faltan:
@@ -135,6 +227,16 @@ end:
  * @param arg1 indica si es el último dato. 1 si es verdadero
  */
 send_data:
+
+    CLIR, t0, SW_BASE;
+    LDM, t1, t0, NO_OFFSET;
+    ANDI, t2, t1, SW3_MASK;
+    JIEQ, t2, zero, send_data_stream;
+    send_data_pwm: 
+        /*No implementado aun*/
+        JBA;
+
+    send_data_stream:
     /* si leo un 0 en request, escribo un 0 a ack y espero a un 1 en 
      * request. Apenas recibo el 1, 
      * 1. Escribo arg0 al espacio de datos
