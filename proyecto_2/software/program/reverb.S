@@ -2,12 +2,12 @@
 #define MUESTRAS_2SEG 32000
 #define MUESTRAS_4SEG 64000
 #define MUESTRAS_7SEG 112000
-#define SELECTED_MUESTRAS MUESTRAS_2SEG
+#define SELECTED_MUESTRAS MUESTRAS_7SEG
 #define BUFFER_SIZE 800 
 #define BUFFER_HEAD_MAX 799 
 #define ATENUACION 0x2666
 #define ATENUACION_M 0x1999
-#define ATENUCACION_DIV 0xa000
+#define ATENUACION_DIV 0xa000
 
 #define CIRCULAR_BUFFER_BASE RAM_BASE
 
@@ -209,13 +209,13 @@ reducc_reverb:
         CALL, mult_punto_fijo; # arg0 =  mult_punto_fijo((buffer->data[index]), ATENUACION);
 
         /* Convierto a ~a*x(n-k) */
-        NEG(arg1, arg0);
+        NEG(arg1, arg0); #  result = -result;
         /* Realizo la resta (x(n) - ax(n-k)) */
         MOV(arg0, g3);
-        CALL, suma_punto_fijo;
+        CALL, suma_punto_fijo; # result = suma_punto_fijo(num, result); 
         /* Multiplico la suma por 1/(1-a) */
-        CLIR, arg1, ATENUCACION_DIV;
-        CALL, mult_punto_fijo;
+        CLIR, arg1, ATENUACION_DIV;
+        CALL, mult_punto_fijo; # result = mult_punto_fijo(result, ATENUACION_DIV);
 
         /* Agrega el nuevo resultado al buffer circular*/
         /* Calcular &buffer->data[buffer_head] */
@@ -225,12 +225,12 @@ reducc_reverb:
 
         /* calcular nuevo valor de buffer_head */
         CLIR, t0, BUFFER_HEAD_MAX;
-        JIEQ, buffer_head, t0, reducc_bfh_is0;
+        JILT, buffer_head, t0, reducc_bfh_is0;
         reducc_bfh_plus1:
-            SUMI, buffer_head, buffer_head, 1;
+            MOV(buffer_head, zero);
             JMP, reducc_bfh_calc_end;
         reducc_bfh_is0:
-            MOV(buffer_head, zero);
+            SUMI, buffer_head, buffer_head, 1;
         reducc_bfh_calc_end:        
         /* Acá arg0 sigue siendo el x(n) actual */
 
