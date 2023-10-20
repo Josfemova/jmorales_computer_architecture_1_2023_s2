@@ -14,7 +14,7 @@
 /* 
  * Interacción con el sistema:
  * SW0 es el reset
- * SW1 == 1: indica si ya se puede comenzar 
+ * SW1 == 1: indica audio a procesar
  * SW2 == 1: insertar reverb
  * SW2 == 0: quitar reverb 
  * SW3 == 1: PWM out 
@@ -78,7 +78,13 @@ start:
 
     /* Chequear SW1 */    
     ANDI, t2, t0, SW1_MASK;
-    JIEQ, zero, t2, start; # si no está en 1, me devuelvo
+
+    JIEQ, zero, t2, sel_audio_reverbed; # 1 selecciona audio normal
+    CUIR, g2, ROM_AUD1_BASE_UP21; # audio_ptr 
+    JMP, end_audio_sel;
+    sel_audio_reverbed:
+    CUIR, g2, ROM_AUD2_BASE_UP21;
+    end_audio_sel:
 
     /* Pre cargar variables de loop principal x(n) */
     MOV(g0, zero); # i = 0
@@ -90,7 +96,6 @@ start:
     JMP, insertar_reverb; # SW2 == 1
 
 insertar_reverb:
-    CLIR, g2, ROM_AUD1_BASE; # audio_ptr 
 
     insertar_loop:
         SUMI, g0, g0, 1; # i++
@@ -175,7 +180,6 @@ insertar_reverb:
     JMP, end;
 
 reducc_reverb:
-    CLIR, g2, ROM_AUD2_BASE;
     reducc_loop:
         SUMI, g0, g0, 1; # i++
         LDM, g3, g2, NO_OFFSET; # g3 = *audio_ptr // num

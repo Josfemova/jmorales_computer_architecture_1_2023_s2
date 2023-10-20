@@ -111,7 +111,7 @@ module system_tb;
 
   // para audio con reverb
   rom_1port #(
-      .INIT_FILE("/tmp/vitas.txt")
+      .INIT_FILE("/tmp/vitas_reverbed.txt")
   ) rom2 (
       .clk (clk),
       //.en  (1'b1),
@@ -149,8 +149,8 @@ module system_tb;
       .addr_m(data_memory_addr),
       .wd_m(data_memory_wd),
       .rd_s({rom2_rd, rom1_rd, pio0_rd, ram0_rd, rom0_rd}),
-      .region_base({32'h0005_0000, 32'h0001_0000, 32'h0000_2000, 32'h0000_1000, 32'h0000_0000}),
-      .region_end({32'h0009_0000, 32'h0005_0000, 32'h0000_3000, 32'h0000_2000, 32'h0000_1000}),
+      .region_base({32'h2000_0000, 32'h1000_0000, 32'h0000_2000, 32'h0000_1000, 32'h0000_0000}),
+      .region_end({32'h3000_0000, 32'h2000_0000, 32'h0000_3000, 32'h0000_2000, 32'h0000_1000}),
       .we_s({rom2_we, rom1_we, pio0_we, ram0_we, rom0_we}),
       .addr_s({rom2_addr, rom1_addr, pio0_addr, ram0_addr, rom0_addr}),
       .wd_s({rom2_wd, rom1_wd, pio0_wd, ram0_wd, rom0_wd}),
@@ -172,7 +172,7 @@ module system_tb;
 
 
   always @(posedge clk) begin
-    if (data_memory_addr == 32'h1c7c) begin
+    if (rom1_addr == 32'hc4f3c4) begin
       #100;
       $display("Simulation ended");
       $stop;
