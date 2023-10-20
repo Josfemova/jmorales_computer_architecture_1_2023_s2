@@ -1,0 +1,57 @@
+
+//ENTRADAS: g0 y g1 (numero 1 y numero 2)
+//SALIDA G1 SUMA EN PUNTO FIJO Q1.14
+_suma_punto_fijo:
+    //numero operandos van a estar en g0 y g1
+    //COPIA DE LOS VALORES
+    clir g2, g0;//copia los valores de g0 a g2
+    clir g3, g1;// copia los valores de g1 a g3
+    //PROCESAMIENTO DE LA PARTE FRACCIONAL
+    clir g4, #0x00003FFF; //carga la máscara
+    and g2,g2,g4; //toma los bits de la parte fraccional del numero 1
+    and g3,g3,g4; //toma los bits de la parte fraccional del numero 2
+    sum g4,g2,g3; // suma las bits fraccionarios
+    //PROCESAMIENTO DE LA PARTE ENTERA
+    slr g0, g0, #14; // se eliminan los bits fraccionales para dejar los enteros
+    slr g1, g1, #14; // se eliminan los bits fraccionales para dejar los enteros
+    sum g0, g0, g10; //almaceno el valor de la suma entera en g0
+    //SUMA FINAL
+    sll g0, g0, #14; // mueve 14 bits a la derecha la parte entera
+    sum g1, g0, g4; //suma la parte fracional y la parte entera y los guarda en g1
+    //agregar salto a funcion donde es llamada
+
+
+//ENTRADAS G5 numero 1 y G6 numero 2
+//SALIDA T0
+_mult_punto_fijo:
+    clir t0, g5;//copia el valor de del numero 1 a t0
+    clir t1, g6;//copia el valor de del numero 2 a t1
+    //CALCULO DEL LOW
+    clir t3, #0x00003FFF; //carga la máscara
+    and t0,t0,t3; //toma los bits de la parte fraccional del numero 1
+    and t1,t1,t3; //toma los bits de la parte fraccional del numero 2
+    mul t0,t0,t1; // se obtiene el LOW de la multiplicación, no tocar este registro hasta el final
+    //CALCULO DE HIGH
+    clir t1, g5;//copia el valor de del numero 1 a t1
+    clir t2, g6;//copia el valor de del numero 2 a t2
+    slr t1, t1, #14; // se eliminan los bits fraccionales para dejar los enteros
+    slr t2, t2, #14;
+    mul t1, t2, t1; // Se almacena el valor de high en t1 NO se puede tocar este registro hasta el final de la mult
+    // CALCULO DEL MID
+    clir t2, g5;//copia el valor de del numero 1 a t2
+    clir t4, g6;//copia el valor de del numero 2 a t4
+    and t2,t2,t3; //toma los bits de la parte fraccional del numero 1
+    and t4,t4,t3; //toma los bits de la parte fraccional del numero 2
+    slr g5, g5, #14; // se eliminan los bits fraccionales para dejar los enteros
+    slr g6, g6, #14;
+    mul g5, g5, t4; //multiplica entero del numero 1 con fraccional del 2
+    mul g6, g6, t2; //multiplica entero del numero 2 con fraccional del 1
+    sum g5, g5, g6; // Se obtiene el valor de MID NO tocar hasta el final de la multiplicacion
+    //OBTENCION DE LA MULTIPLICACION FINAL
+    slr t0, t0, #14; //SHift a la derecha del low
+    sll t1, t1, #14; //shift a la izquierda del high
+    sum t0, t0, t1; //high + low
+    sum t0, t0, g5; // high + low+ mid
+    //SE agrega el salto a la parte del algoritmo que se necesite
+
+
