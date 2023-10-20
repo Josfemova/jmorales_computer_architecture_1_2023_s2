@@ -139,7 +139,9 @@ unsigned int string2reg(char* regName) {
       return regs[i].val;
     }
   }
-
+  fprintf(stderr, "Invalid register value '%s' at line %d\n", regName,
+          lineCounter);
+  exit(1);
   return (unsigned int)-1;
 }
 
@@ -149,6 +151,9 @@ unsigned int string2funct3(char* funcName) {
       return inst[i].func3;
     }
   }
+  fprintf(stderr, "Invalid function name '%s' at line %d\n", funcName,
+          lineCounter);
+  exit(1);
   return (unsigned int)-1;
 }
 
@@ -158,6 +163,9 @@ unsigned int string2funct11(char* funcName) {
       return inst[i].func11;
     }
   }
+  fprintf(stderr, "Invalid function name '%s' at line %d\n", funcName,
+          lineCounter);
+  exit(1);
   return (unsigned int)-1;
 }
 
@@ -167,7 +175,8 @@ unsigned int string2op(char* funcName) {
       return inst[i].op;
     }
   }
-
+  fprintf(stderr, "Invalid op name '%s' at line %d\n", funcName, lineCounter);
+  exit(1);
   return (unsigned int)-1;
 }
 
@@ -235,9 +244,8 @@ char* handle_instruction(char* parts[], int token_counter) {
     binaryString = typeG_assembly2bin(parts[0], parts[1], parts[2], parts[3]);
     // printf("Type G \n");
   } else {
-    fprintf(stderr,
-            "No se pudo interpretar esta instruccion %s en la linea %d\n",
-            parts[0], lineCounter);
+    fprintf(stderr, "Invalid instruction '%s' at line %d\n", parts[0],
+            lineCounter);
     exit(1);
   }
   // printf("%d %s\n", lineCounter,binaryString);
@@ -289,7 +297,8 @@ char* typeB_assembly2bin(char* assembly_instruction, char* rd, char* reg1,
   // int inmm_int = atoi(inmm);
   int inmm_int = (int)strtol(inmm, dummy_ptr, 0);
   if ((inmm_int == 0) && strcmp(inmm, "0") && strcmp(inmm, "0x0")) {
-    fprintf(stderr, "Unrecognized symbol as inmediate %s line %d \n", inmm, lineCounter);
+    fprintf(stderr, "Unrecognized symbol as inmediate '%s' line %d \n", inmm,
+            lineCounter);
     exit(1);
   }
   const char* inmm_str = int2bin(inmm_int, 16);
@@ -323,7 +332,8 @@ char* typeC_assembly2bin(char* assembly_instruction, char* reg1, char* reg2,
   // int inmm_int = atoi(inmm);
   int inmm_int = (int)strtol(inmm, dummy_ptr, 0);
   if ((inmm_int == 0) && strcmp(inmm, "0") && strcmp(inmm, "0x0")) {
-    fprintf(stderr, "Unrecognized symbol as inmediate %s line %d \n", inmm, lineCounter);
+    fprintf(stderr, "Unrecognized symbol as inmediate '%s' line %d \n", inmm,
+            lineCounter);
     exit(1);
   }
   char* inmm_str = int2bin(inmm_int, 16);
@@ -362,7 +372,8 @@ char* typeD_assembly2bin(char* assembly_instruction, char* rd, char* inmm) {
     // const int inmm_int = atoi(inmm);
     int inmm_int = (int)strtol(inmm, dummy_ptr, 0);
     if ((inmm_int == 0) && strcmp(inmm, "0") && strcmp(inmm, "0x0")) {
-      fprintf(stderr, "Unrecognized symbol as inmediate %s line %d \n", inmm, lineCounter);
+      fprintf(stderr, "Unrecognized symbol as inmediate '%s' line %d \n", inmm,
+              lineCounter);
       exit(1);
     }
     inmm_str = int2bin(inmm_int, 21);
@@ -403,7 +414,8 @@ char* typeF_assembly2bin(char* assembly_instruction, char* reg1, char* reg2,
   // const int inmm_int = atoi(inmm);
   int inmm_int = (int)strtol(inmm, dummy_ptr, 0);
   if ((inmm_int == 0) && strcmp(inmm, "0") && strcmp(inmm, "0x0")) {
-    fprintf(stderr, "Unrecognized symbol as inmediate %s line %d \n", inmm, lineCounter);
+    fprintf(stderr, "Unrecognized symbol as inmediate '%s' line %d \n", inmm,
+            lineCounter);
     exit(1);
   }
   inmm_str = int2bin(inmm_int, 16);
@@ -483,6 +495,8 @@ int find_position_by_tag(char* tag) {
       return tagPositions[i];
     }
   }
+  fprintf(stderr, "Label not recognized: '%s' at line %d\n", tag, lineCounter);
+  exit(1);
   // Return a sentinel value to indicate that the tag was not found
   return -1;
 }

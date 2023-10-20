@@ -1,6 +1,8 @@
 #include "UTIL.S"
+#define MUESTRAS_2SEG 32000
 #define MUESTRAS_4SEG 64000
 #define MUESTRAS_7SEG 112000
+#define SELECTED_MUESTRAS MUESTRAS_2SEG
 #define BUFFER_SIZE 800 
 #define BUFFER_HEAD_MAX 799 
 #define ATENUACION 0x2666
@@ -43,18 +45,22 @@ setup:
     CLIR, buffer_data_ptr, CIRCULAR_BUFFER_BASE;
     MOV(t0, buffer_data_ptr);
 
+    
     CLIR, t1, BUFFER_SIZE;
     MOV(t2, zero); # i = 0
     buffer_init_loop:
         STM, zero, t0, NO_OFFSET; # buffer->data[i] = 0;
-        SUM, t2, t2, 1; # i ++
-        SUM, t0, t0, 4; # buffer_ptr++
+        SUMI, t2, t2, 1; # i ++
+        SUMI, t0, t0, 4; # buffer_ptr++
         JILT, t2, t1, buffer_init_loop;
+    
     CLIR, t1, 1;
     STM, t1, buffer_data_ptr, NO_OFFSET; # buffer->data[i] = 1
     CLIR, t2, ATENUACION;
     STM, t2, t0, -4; # buffer->data[BUFFER_SIZE-1] = ATENUACION;
     MOV(buffer_head, zero); # buffer->head = 0
+    
+
     /* Termina inicialización de buffer */
 
     /* Saltar a programa principal */
@@ -77,11 +83,11 @@ start:
 
     /* Pre cargar variables de loop principal x(n) */
     MOV(g0, zero); # i = 0
-    CLIR, g1, MUESTRAS_4SEG; # i_max
+    CLIR, g1, SELECTED_MUESTRAS; # i_max
     
     /* Chequear SW2 */
     ANDI, t2, t0, SW2_MASK;
-    JIEQ, zero, t2, quitar_reverb;  # SW2 == 0  
+    JIEQ, zero, t2, reducc_reverb;  # SW2 == 0  
     JMP, insertar_reverb; # SW2 == 1
 
 insertar_reverb:
@@ -90,13 +96,21 @@ insertar_reverb:
     insertar_loop:
         SUMI, g0, g0, 1; # i++
         LDM, arg0, g2, NO_OFFSET; # arg0 = *audio_ptr // num
-        
+
+        /* Pasar a complemento a dos */
+        ANDI, t0, arg0, Q_SIGN_MASK;
+        ANDI, arg0, arg0, Q_NUM_MASK;
+        JIEQ, t0, zero, insertar_cmpl2_end0;
+        NOT(arg0, arg0);
+        insertar_cmpl2_end0:
+        /* Fin de pasar a complemento 2*/
+
         CLIR, arg1, ATENUACION_M;
         CALL, mult_punto_fijo; # result = mult_punto_fijo(num, ATENUACION_M)
         MOV(g3, arg0); # copiar result porque arg0 se necesita pa otra mul
 
         CLIR, t1, BUFFER_HEAD_MAX;
-        JIEQ, buffer_head, t1, insertar_yn_zero
+        JIEQ, buffer_head, t1, insertar_yn_zero;
         insertar_yn_is_bfh_p1:
             SUMI, t1, buffer_head, 1; # index = buffer->head + 1
             JMP, insertar_yn_calc_end;    
@@ -135,8 +149,20 @@ insertar_reverb:
 
         /* Acá arg0 sigue siendo el y(n) actual */
 
+        /* Pasar de complemento a dos */
+        ANDI, t0, arg0, Q_SIGN_MASK; # extraer signo
+        ANDI, arg0, arg0, Q_NUM_MASK; # preservar parte entera
+        JIEQ, t0, zero, insertar_cmpl2x; # si no tiene signo bye
+        NOT(arg0, arg0);
+        OR, arg0, arg0, t0; 
+        insertar_cmpl2x:
+        CLIR, t1, Q_ALL_MASK;
+        AND, arg0, arg0, t1; // asegurarse de no mandar mas de 16 bits
+
+        /* Fin de pasar a complemento 2*/
+
         /* Inicia envío de dato */
-        JILT, g0, g1, faltan;
+        JILT, g0, g1, insertar_faltan;
         insertar_no_faltan:
             CLIR, arg1, TRUE;
             JMP, insertar_end_faltan;
@@ -156,12 +182,20 @@ reducc_reverb:
         SUMI, g0, g0, 1; # i++
         LDM, g3, g2, NO_OFFSET; # g3 = *audio_ptr // num
 
+        /* Pasar a complemento a dos */
+        ANDI, t0, g3, Q_SIGN_MASK;
+        ANDI, g3, g3, Q_NUM_MASK;
+        JIEQ, t0, zero, reducc_cmpl2_end0;
+        NOT(g3, g3);
+        reducc_cmpl2_end0:
+        /* Fin de pasar a complemento 2*/
+        
         /* Calcular el index en el buffer */
         CLIR, t1, BUFFER_HEAD_MAX;
-        JIEQ, buffer_head, t1, insertar_xn_zero
+        JIEQ, buffer_head, t1, reducc_xn_zero;
         reducc_xn_is_bfh_p1:
             SUMI, t1, buffer_head, 1; # index = buffer->head + 1
-            JMP, insertar_yn_calc_end;    
+            JMP, reducc_xn_calc_end;    
         reducc_xn_zero:
             MOV(t1, zero); # index = 0
         reducc_xn_calc_end:  
@@ -193,7 +227,7 @@ reducc_reverb:
 
         /* calcular nuevo valor de buffer_head */
         CLIR, t0, BUFFER_HEAD_MAX;
-        JIEQ, buffer_head, t0, insertar_bfh_is0;
+        JIEQ, buffer_head, t0, reducc_bfh_is0;
         reducc_bfh_plus1:
             SUMI, buffer_head, buffer_head, 1;
             JMP, reducc_bfh_calc_end;
@@ -202,8 +236,19 @@ reducc_reverb:
         reducc_bfh_calc_end:        
         /* Acá arg0 sigue siendo el x(n) actual */
 
+        /* Pasar de complemento a dos */
+        ANDI, t0, arg0, Q_SIGN_MASK;
+        ANDI, arg0, arg0, Q_NUM_MASK;
+        JIEQ, t0, zero, reducc_cmpl2_end1;
+        NOT(arg0, arg0);
+        OR, arg0, arg0, t0
+        reducc_cmpl2_end1:
+        CLIR, t1, Q_ALL_MASK;
+        AND, arg0, arg0, t1; // asegurarse de no mandar mas de 16 bits
+        /* Fin de pasar a complemento 2*/
+        
         /* Inicia envío de dato */
-        JILT, g0, g1, faltan;
+        JILT, g0, g1, reducc_faltan;
         reducc_no_faltan:
             CLIR, arg1, TRUE;
             JMP, reducc_end_faltan;
@@ -227,13 +272,11 @@ end:
  * @param arg1 indica si es el último dato. 1 si es verdadero
  */
 send_data:
-
     CLIR, t0, SW_BASE;
     LDM, t1, t0, NO_OFFSET;
     ANDI, t2, t1, SW3_MASK;
     JIEQ, t2, zero, send_data_stream;
     send_data_pwm: 
-        /*No implementado aun*/
         JBA;
 
     send_data_stream:

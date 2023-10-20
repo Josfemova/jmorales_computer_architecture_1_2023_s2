@@ -14,9 +14,9 @@
 #define GPIO1_DIR_BASE 0x2018
 #define ROM_AUD1_BASE 0x10000
 #define ROM_AUD2_BASE 0x50000
-#define SW1_MASK 0x1
-#define SW2_MASK 0x2
-#define SW3_MASK 0x4
+#define SW1_MASK 0x2
+#define SW2_MASK 0x4
+#define SW3_MASK 0x8
 
 
 /* Funciones de utilidad */
@@ -24,6 +24,7 @@
 #define JBA JLRL,zero,lr,0
 #define MOV(rd, rs) SUM,rd,rs,zero
 #define NOT(rd, rs) XORI,rd,rs,-1
+#define NEG(rd, rs) DIF,rd,zero,rs
 #define CALL JLL,lr
 #define JMP JLL,zero
 #define PUSH(rs) SUMI sp, sp, -4; \

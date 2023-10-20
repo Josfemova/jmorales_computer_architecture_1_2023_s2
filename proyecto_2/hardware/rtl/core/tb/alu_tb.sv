@@ -68,7 +68,6 @@ module alu_tb;
     UC = -7;
     #10;
 
-
     A  = 3;
     B  = 1;
     UC = 4'B0;
@@ -77,12 +76,25 @@ module alu_tb;
       #10 B += 1;
     end
 
+    A  = 32'h80000000;
+    B  = 1;
+    UC = 4'b0111;
+    repeat (10) begin
+      #10 B += 1;
+    end
+
     A  = 32'h7000;
     B  = 32'hFFF;
-    UC = 4'B0;
     UC = 4'b1000;
     repeat (10) begin
       #10 A += 32'h100;
+    end
+
+    A  = 32'hF0F0F0F0;
+    B  = -1;
+    UC = 4'B100;
+    repeat (10) begin
+      #10 A += 32'hF;
     end
     $stop;
   end

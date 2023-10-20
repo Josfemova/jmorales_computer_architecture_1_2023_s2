@@ -185,19 +185,15 @@ void int16ToBinary(int32_t num, int flag) {
     if (num <0)
     {
         fprintf(file, "%d", 1);
+        num = -num; // deshacer complemento a dos
     }else{
         fprintf(file, "%d", 0);
     }
     for (int i = 14; i >= 0; i--) {
         int32_t mask = 1 << i;
-        if (num<0)
-        {
-            int32_t bit = (num & mask) ? 0 : 1;
-            fprintf(file, "%d", bit); 
-        }else{
-            int32_t bit = (num & mask) ? 1 : 0;
-            fprintf(file, "%d", bit); 
-        }
+        int32_t bit = (num & mask) ? 1 : 0;
+        fprintf(file, "%d", bit); 
+        
     }
     fprintf(file, "%s", "\n");
 
@@ -238,7 +234,7 @@ void escribir_salida(double salida, int flag){
  * Desde aqui se hace el procesamiento del archivo para la insercion
 */
 void insercion_reverberacion(){
-    FILE *file_ = fopen("input.txt", "r");
+    FILE *file_ = fopen("/tmp/vitas.txt", "r");
     if (file_ == NULL) {
         perror("No se puede abrir el archivo");
         return 1;
@@ -255,7 +251,7 @@ void insercion_reverberacion(){
             int32_t mascara = 0x7FFF;
             q1_14 = q1_14 & mascara;
             if (line[0] == '1') {
-                q1_14 = (~q1_14); // Complemento a dos
+                q1_14 = (-q1_14); // Complemento a dos
             }
             // AQUI SE ENVIA GENERAR EL ALGORTIMO ESTO SE GUARDA EN LA SALIDA 
             int32_t resultado = insertar_rever_aux(q1_14,&buffer);
@@ -290,7 +286,7 @@ void reduccion_reverberacion(){
             int32_t mascara = 0x7FFF;
             q1_14 = q1_14 & mascara;
             if (line[0] == '1') {
-                q1_14 = (~q1_14); // Complemento a dos
+                q1_14 = (-q1_14); // Complemento a dos
             }
             // AQUI SE ENVIA GENERAR EL ALGORTIMO
             int32_t resultado = reducc_rever_aux(q1_14, &buffer);
