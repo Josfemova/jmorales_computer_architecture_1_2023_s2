@@ -14,15 +14,24 @@ module system_tb;
 
   initial begin
     LED = 0;
-    SW = 0;
+    SW = 4'b0110;
     KEY = 0;
     GPIO0_drv = 1;
     GPIO1_drv = 1;
   end
 
+  logic request;
+  assign GPIO0[17] = request;
+
   //assign GPIO0 = 1'bz;
   //assign GPIO1 = 1'bz;
-
+  always begin
+    request = 1;
+    #50;
+    request = 0;
+    #50;
+  end
+  
   always begin
     KEY <= 2'b11;
     #50;
@@ -59,11 +68,13 @@ module system_tb;
   logic [31:0] rom1_addr;
   logic [31:0] rom1_wd;  // dummy
   logic [31:0] rom1_rd;
+  assign rom1_rd[31:16] = 16'b0;
 
   logic rom2_we;  // dummy
   logic [31:0] rom2_addr;
   logic [31:0] rom2_wd;  // dummy
   logic [31:0] rom2_rd;
+  assign rom2_rd[31:16] = 16'b0;
 
   logic ram0_we;
   logic [31:0] ram0_addr;
@@ -90,22 +101,22 @@ module system_tb;
 
   // para audio sin reverb
   rom_1port #(
-      .INIT_FILE("../../../rtl/simple_test.txt")
+      .INIT_FILE("/tmp/vitas.txt")
   ) rom1 (
       .clk (clk),
-      .en  (1'b1),
+      //.en  (1'b1),
       .addr(rom1_addr),
-      .rd  (rom1_rd)
+      .rd  (rom1_rd[15:0])
   );
 
   // para audio con reverb
   rom_1port #(
-      .INIT_FILE("../../../rtl/simple_test.txt")
+      .INIT_FILE("/tmp/vitas.txt")
   ) rom2 (
       .clk (clk),
-      .en  (1'b1),
+      //.en  (1'b1),
       .addr(rom2_addr),
-      .rd  (rom2_rd)
+      .rd  (rom2_rd[15:0])
   );
 
   // para buffer circular

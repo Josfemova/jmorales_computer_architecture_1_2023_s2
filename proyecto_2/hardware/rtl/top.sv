@@ -168,11 +168,13 @@ module top (
       .clk (clk),
       //.en  (1'b1),
       .addr(rom1_addr),
-      .rd  (rom1_rd)
+      .rd  (rom1_rd[15:0])
   );
 
   // para audio con reverb
-  rom_1port rom2 (
+  rom_1port #(
+      .INIT_FILE("/tmp/vitas_reverbed.txt")
+  ) rom2 (
       .clk (clk),
       //.en  (1'b1),
       .addr(rom2_addr),
