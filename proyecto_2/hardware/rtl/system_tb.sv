@@ -31,7 +31,7 @@ module system_tb;
     request = 0;
     #50;
   end
-  
+
   always begin
     KEY <= 2'b11;
     #50;
@@ -172,7 +172,7 @@ module system_tb;
 
 
   always @(posedge clk) begin
-    if (data_memory_addr == 32'h1190) begin
+    if (data_memory_addr == 32'h1c7c) begin
       #100;
       $display("Simulation ended");
       $stop;

@@ -50,7 +50,7 @@ module alu #(
       ALU_OP_SLL: result = op1 << op2;  // barrel shifter 
       ALU_OP_SLR: result = op1 >> op2;  // barrel shifter 
       ALU_OP_SAR: result = $signed(op1) >>> op2;
-      ALU_OP_MUL: result = $signed(op1) * $signed(op2);
+      ALU_OP_MUL: result = op1 * op2;
       default: result = 0;  // div no implementada aun 
     endcase
   end

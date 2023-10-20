@@ -44,18 +44,17 @@ setup:
     /* Inicializar buffer */ 
     CLIR, buffer_data_ptr, CIRCULAR_BUFFER_BASE;
     MOV(t0, buffer_data_ptr);
-
-    
     CLIR, t1, BUFFER_SIZE;
     MOV(t2, zero); # i = 0
+
     buffer_init_loop:
         STM, zero, t0, NO_OFFSET; # buffer->data[i] = 0;
         SUMI, t2, t2, 1; # i ++
         SUMI, t0, t0, 4; # buffer_ptr++
         JILT, t2, t1, buffer_init_loop;
     
-    CLIR, t1, 1;
-    STM, t1, buffer_data_ptr, NO_OFFSET; # buffer->data[i] = 1
+    CLIR, t3, 1;
+    STM, t3, buffer_data_ptr, NO_OFFSET; # buffer->data[0] = 1
     CLIR, t2, ATENUACION;
     STM, t2, t0, -4; # buffer->data[BUFFER_SIZE-1] = ATENUACION;
     MOV(buffer_head, zero); # buffer->head = 0
@@ -101,7 +100,7 @@ insertar_reverb:
         ANDI, t0, arg0, Q_SIGN_MASK;
         ANDI, arg0, arg0, Q_NUM_MASK;
         JIEQ, t0, zero, insertar_cmpl2_end0;
-        NOT(arg0, arg0);
+        NEG(arg0, arg0);
         insertar_cmpl2_end0:
         /* Fin de pasar a complemento 2*/
 
@@ -139,21 +138,20 @@ insertar_reverb:
 
         /* calcular nuevo valor de buffer_head */
         CLIR, t0, BUFFER_HEAD_MAX;
-        JIEQ, buffer_head, t0, insertar_bfh_is0;
+        JILT, buffer_head, t0, insertar_bfh_is0;
         insertar_bfh_plus1:
-            SUMI, buffer_head, buffer_head, 1;
+            MOV(buffer_head, zero);
             JMP, insertar_bfh_calc_end;
         insertar_bfh_is0:
-            MOV(buffer_head, zero);
+            SUMI, buffer_head, buffer_head, 1;
         insertar_bfh_calc_end:        
 
         /* Acá arg0 sigue siendo el y(n) actual */
 
-        /* Pasar de complemento a dos */
+        /* Pasar de complemento a dos al formato custom */
         ANDI, t0, arg0, Q_SIGN_MASK; # extraer signo
-        ANDI, arg0, arg0, Q_NUM_MASK; # preservar parte entera
         JIEQ, t0, zero, insertar_cmpl2x; # si no tiene signo bye
-        NOT(arg0, arg0);
+        NEG(arg0, arg0);
         OR, arg0, arg0, t0; 
         insertar_cmpl2x:
         CLIR, t1, Q_ALL_MASK;
@@ -186,7 +184,7 @@ reducc_reverb:
         ANDI, t0, g3, Q_SIGN_MASK;
         ANDI, g3, g3, Q_NUM_MASK;
         JIEQ, t0, zero, reducc_cmpl2_end0;
-        NOT(g3, g3);
+        NEG(g3, g3);
         reducc_cmpl2_end0:
         /* Fin de pasar a complemento 2*/
         
@@ -211,7 +209,7 @@ reducc_reverb:
         CALL, mult_punto_fijo; # arg0 =  mult_punto_fijo((buffer->data[index]), ATENUACION);
 
         /* Convierto a ~a*x(n-k) */
-        NOT(arg1, arg0);
+        NEG(arg1, arg0);
         /* Realizo la resta (x(n) - ax(n-k)) */
         MOV(arg0, g3);
         CALL, suma_punto_fijo;
@@ -238,9 +236,8 @@ reducc_reverb:
 
         /* Pasar de complemento a dos */
         ANDI, t0, arg0, Q_SIGN_MASK;
-        ANDI, arg0, arg0, Q_NUM_MASK;
         JIEQ, t0, zero, reducc_cmpl2_end1;
-        NOT(arg0, arg0);
+        NEG(arg0, arg0);
         OR, arg0, arg0, t0
         reducc_cmpl2_end1:
         CLIR, t1, Q_ALL_MASK;

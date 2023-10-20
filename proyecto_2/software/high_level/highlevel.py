@@ -95,11 +95,15 @@ if __name__ == '__main__':
   elif (sys.argv[1] == "rec"):
     ref_file = sys.argv[2] # original
     reconstructed_file = sys.argv[3]
-    
+    if len(sys.argv) < 5:
+      input_file = "input.txt"
+    else:
+      input_file  = sys.argv[4]
+  
     with wave.open(ref_file, 'rb') as wav_in:
       params = wav_in.getparams()
       
-    q114_to_audio("input.txt", reconstructed_file, params)
+    q114_to_audio(input_file, reconstructed_file, params)
   
   elif (sys.argv[1] == "ejec"):
     ref_file = sys.argv[2]

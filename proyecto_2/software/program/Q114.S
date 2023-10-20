@@ -25,7 +25,7 @@ suma_punto_fijo:
     /* Suma entera */ 
     SARI, t0, t0, Q_FACTOR;
     SARI, t1, t1, Q_FACTOR;
-    SUM, t0, t0, t1;
+    SUM, t0, t0, t1; #suma entero
     SLLI, t0, t0, Q_FACTOR;
     /* Finalizar suma */
     SUM, arg0, arg0, t0;
@@ -56,11 +56,11 @@ mult_punto_fijo:
     ANDI, t3, t3, Q_FRAC_MASK; #num2
     MUL, t3, t3, arg0; # a*num2 
     MUL, t2, t2, arg1; # c*num1 
-    SUM, t2, t2, t3; # mid_ en t3
+    SUM, t2, t2, t3; # mid_ en t2
     /* FIN */
     SLLI, t4, t4, Q_FACTOR; #high_ = high_ << 14;
     SARI, t0, t0, Q_FACTOR; #low_ = low_ >> 14;
-    SUM, arg0, t4, t0;  # high_ + mid_
-    SUM, arg0, arg0, t3; # + low_
+    SUM, arg0, t4, t2;  # high_ + mid_
+    SUM, arg0, arg0, t0; # + low_
     JBA;
 

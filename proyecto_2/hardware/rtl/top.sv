@@ -187,7 +187,7 @@ module top (
       .we  (ram0_we),
       .addr(ram0_addr),
       .wd  (ram0_wd),
-      .rd  (ram0_rd[15:0])
+      .rd  (ram0_rd)
   );
 
   de10nano_pio pio (
