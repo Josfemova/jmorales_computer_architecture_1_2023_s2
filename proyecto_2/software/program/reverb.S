@@ -1,4 +1,5 @@
 #include "UTIL.S"
+#define MUESTRAS_1SEG 16000
 #define MUESTRAS_2SEG 32000
 #define MUESTRAS_4SEG 64000
 #define MUESTRAS_7SEG 112000
@@ -161,7 +162,6 @@ insertar_reverb:
         insertar_cmpl2x:
         CLIR, t1, Q_ALL_MASK;
         AND, arg0, arg0, t1; // asegurarse de no mandar mas de 16 bits
-
         /* Fin de pasar a complemento 2*/
 
         /* Inicia envío de dato */
@@ -242,7 +242,7 @@ reducc_reverb:
         ANDI, t0, arg0, Q_SIGN_MASK;
         JIEQ, t0, zero, reducc_cmpl2_end1;
         NEG(arg0, arg0);
-        OR, arg0, arg0, t0
+        OR, arg0, arg0, t0;
         reducc_cmpl2_end1:
         CLIR, t1, Q_ALL_MASK;
         AND, arg0, arg0, t1; // asegurarse de no mandar mas de 16 bits
