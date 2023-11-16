@@ -1,4 +1,6 @@
 import tkinter
+import time
+import threading
 from tkinter import PhotoImage
 from tkinter import scrolledtext
 
@@ -29,7 +31,7 @@ class App:
         self.console.pack(expand=True, fill="both")
 
         #Crear los 4 botones de movimiento
-        self.up_btn =tkinter.Button(self.left_frame, width=4, height=3, bg="#c41061",  relief=tkinter.RAISED)
+        self.up_btn =tkinter.Button(self.left_frame, width=4, height=3, bg="#c41061")
         self.down_btn =tkinter.Button(self.left_frame, width=4, height=3,bg="#c41061")
         self.left_btn =tkinter.Button(self.left_frame, width=6, height=2, bg="#c41061")
         self.right_btn =tkinter.Button(self.left_frame, width=6, height=2, bg="#c41061")
@@ -37,17 +39,20 @@ class App:
         self.down_btn.place(x=89,y=475)
         self.left_btn.place(x=37,y=436)
         self.right_btn.place(x=126,y=436)
+        
+        self.start_btn = tkinter.Button(self.left_frame, width=6, height=2, bg="Grey", text="START", command= lambda: self.startListening() )
+        self.start_btn.place(x=280,y= 320)
 
         #funciones de los botones
         self.is_pressed = False
-        self.up_btn.bind("<ButtonRelease-1>", lambda event: self.mov_var.configure(text=""))
-        self.up_btn.bind("<ButtonPress-1>", lambda event: self.mov_var.configure(text="moviendo adelante"))
-        self.down_btn.bind("<ButtonRelease-1>", lambda event: self.mov_var.configure(text=""))
-        self.down_btn.bind("<ButtonPress-1>", lambda event: self.mov_var.configure(text="moviendo atras"))
-        self.left_btn.bind("<ButtonRelease-1>", lambda event: self.mov_var.configure(text=""))
-        self.left_btn.bind("<ButtonPress-1>", lambda event: self.mov_var.configure(text="doblando izquierda"))
-        self.right_btn.bind("<ButtonRelease-1>", lambda event: self.mov_var.configure(text=""))
-        self.right_btn.bind("<ButtonPress-1>", lambda event: self.mov_var.configure(text="doblando derecha"))
+        self.up_btn.bind("<ButtonRelease-1>", lambda event: self.moveDirection(button=""))
+        self.up_btn.bind("<ButtonPress-1>", lambda event: self.moveDirection(button="up"))
+        self.down_btn.bind("<ButtonRelease-1>", lambda event: self.moveDirection(button=""))
+        self.down_btn.bind("<ButtonPress-1>", lambda event: self.moveDirection(button="down"))
+        self.left_btn.bind("<ButtonRelease-1>", lambda event: self.moveDirection(button=""))
+        self.left_btn.bind("<ButtonPress-1>", lambda event: self.moveDirection(button="left"))
+        self.right_btn.bind("<ButtonRelease-1>", lambda event:self.moveDirection(button=""))
+        self.right_btn.bind("<ButtonPress-1>", lambda event:self.moveDirection(button="right"))
         #Etiqueta de pantalla
         self.mov_label = tkinter.Label(self.left_frame,text="Estado:", font=("Castellar",12), bg="#9fa738", fg="white")
         self.mov_var = tkinter.Label(self.left_frame,text="", font=("Castellar",12), bg="#9fa738", fg="white")
@@ -69,13 +74,49 @@ class App:
         self.acel_var.place(x=225,y=100)
         self.ori_var.place(x=225,y=130)
         self.prox_var.place(x=225,y=160)
-
-    def no_press(self):
-        self.mov_var.configure(text="")
-
-    def mod_state(self):
-        self.mov_var.configure(text="Moviendo adelante")
-
+        #Funciones de las teclas
+        self.window.bind("<Up>",lambda event: self.moveDirection("up"))
+        self.window.bind("<KeyRelease-Up>",lambda event:self.moveDirection(""))
+        self.window.bind("<Down>",lambda event: self.moveDirection("down"))
+        self.window.bind("<KeyRelease-Down>",lambda event:self.moveDirection(""))
+        self.window.bind("<Right>",lambda event: self.moveDirection("right"))
+        self.window.bind("<KeyRelease-Right>",lambda event:self.moveDirection(""))
+        self.window.bind("<Left>",lambda event: self.moveDirection("left"))
+        self.window.bind("<KeyRelease-Left>",lambda event:self.moveDirection(""))
+        #Flag para activar comunicacion
+        self.active=False
+    #Activa el flag de escritura
+    def startListening(self):
+        if not self.active:
+            self.active = True
+            self.start_btn.configure(text="STOP")
+            self.writeConsole()
+        else:
+            self.active = False
+            self.start_btn.configure(text="START")
+    #Escribe los datos del carro en consola
+    def writeConsole(self):
+        #Se ejucuta el listening del API
+        self.console.insert(tkinter.END, "14/11/23 \n datos del API \n") 
+        if self.active:
+            self.window.after(1000, self.writeConsole)
+    #Envia los comandos de movimiento al carrito
+    def moveDirection(self,button):
+        if button == "up":
+            self.mov_var.configure(text="moviendo adelante")
+            #Escribir los comandos de envio al API
+        elif button == "down":
+            self.mov_var.configure(text="moviendo abajo")
+            #Escribir los comandos de envio al API
+        elif button == "right":
+            self.mov_var.configure(text="doblando derecha")
+            #Escribir los comandos de envio al API
+        elif button == "left":
+            self.mov_var.configure(text="doblando izquierda")
+            #Escribir los comandos de envio al API
+        else:
+            self.mov_var.configure(text="")
+            #Escribir los comandos de envio al API
 
 
 if __name__ == "__main__":
