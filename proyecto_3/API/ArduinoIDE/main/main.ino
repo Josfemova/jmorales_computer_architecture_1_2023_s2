@@ -75,26 +75,16 @@ void setup_routing() {
   server.on("/env", getEnv);
   //server.on("/postAceleracion", HTTP_POST, postAceleracion);
 }
-
-void setup_task() {
-  xTaskCreate(
-    postAceleracion,    
-    "Leer variables",   // Name of the task (for debugging)
-    1000,            // Stack size (bytes)
-    NULL,            // Parameter to pass
-    1,               // Task priority
-    NULL             // Task handle
-  );
-}
  
  // Conecta el WiFi 
 void setup() {
   Serial.begin(9600);
+  Serial.println("Hola desde setup");
   connectToWiFi();
-  setup_task();
   setup_routing();
 }
  
 void loop() {
+  Serial.println("Hola desde loop");
   server.handleClient();
 }
