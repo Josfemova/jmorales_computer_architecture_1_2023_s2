@@ -1,6 +1,5 @@
 import tkinter
-import time
-import threading
+import requests
 from tkinter import PhotoImage
 from tkinter import scrolledtext
 
@@ -45,13 +44,13 @@ class App:
 
         #funciones de los botones
         self.is_pressed = False
-        self.up_btn.bind("<ButtonRelease-1>", lambda event: self.moveDirection(button=""))
+        self.up_btn.bind("<ButtonRelease-1>", lambda event: self.moveDirection(button="u"))
         self.up_btn.bind("<ButtonPress-1>", lambda event: self.moveDirection(button="up"))
-        self.down_btn.bind("<ButtonRelease-1>", lambda event: self.moveDirection(button=""))
+        self.down_btn.bind("<ButtonRelease-1>", lambda event: self.moveDirection(button="d"))
         self.down_btn.bind("<ButtonPress-1>", lambda event: self.moveDirection(button="down"))
-        self.left_btn.bind("<ButtonRelease-1>", lambda event: self.moveDirection(button=""))
+        self.left_btn.bind("<ButtonRelease-1>", lambda event: self.moveDirection(button="l"))
         self.left_btn.bind("<ButtonPress-1>", lambda event: self.moveDirection(button="left"))
-        self.right_btn.bind("<ButtonRelease-1>", lambda event:self.moveDirection(button=""))
+        self.right_btn.bind("<ButtonRelease-1>", lambda event:self.moveDirection(button="r"))
         self.right_btn.bind("<ButtonPress-1>", lambda event:self.moveDirection(button="right"))
         #Etiqueta de pantalla
         self.mov_label = tkinter.Label(self.left_frame,text="Estado:", font=("Castellar",12), bg="#9fa738", fg="white")
@@ -76,15 +75,22 @@ class App:
         self.prox_var.place(x=225,y=160)
         #Funciones de las teclas
         self.window.bind("<Up>",lambda event: self.moveDirection("up"))
-        self.window.bind("<KeyRelease-Up>",lambda event:self.moveDirection(""))
+        self.window.bind("<KeyRelease-Up>",lambda event:self.moveDirection("u"))
         self.window.bind("<Down>",lambda event: self.moveDirection("down"))
-        self.window.bind("<KeyRelease-Down>",lambda event:self.moveDirection(""))
+        self.window.bind("<KeyRelease-Down>",lambda event:self.moveDirection("d"))
         self.window.bind("<Right>",lambda event: self.moveDirection("right"))
-        self.window.bind("<KeyRelease-Right>",lambda event:self.moveDirection(""))
+        self.window.bind("<KeyRelease-Right>",lambda event:self.moveDirection("r"))
         self.window.bind("<Left>",lambda event: self.moveDirection("left"))
-        self.window.bind("<KeyRelease-Left>",lambda event:self.moveDirection(""))
+        self.window.bind("<KeyRelease-Left>",lambda event:self.moveDirection("l"))
         #Flag para activar comunicacion
         self.active=False
+
+        #Flags de comunicacion
+        self.up = False
+        self.down = False
+        self.right = False
+        self.left = False
+
     #Activa el flag de escritura
     def startListening(self):
         if not self.active:
@@ -97,6 +103,7 @@ class App:
     #Escribe los datos del carro en consola
     def writeConsole(self):
         #Se ejucuta el listening del API
+        #datos =self.readParams()
         self.console.insert(tkinter.END, "14/11/23 \n datos del API \n") 
         if self.active:
             self.window.after(1000, self.writeConsole)
@@ -104,20 +111,72 @@ class App:
     def moveDirection(self,button):
         if button == "up":
             self.mov_var.configure(text="moviendo adelante")
-            #Escribir los comandos de envio al API
+            self.up = True
         elif button == "down":
             self.mov_var.configure(text="moviendo abajo")
-            #Escribir los comandos de envio al API
+            self.down = True
         elif button == "right":
             self.mov_var.configure(text="doblando derecha")
-            #Escribir los comandos de envio al API
+            self.right = True
         elif button == "left":
             self.mov_var.configure(text="doblando izquierda")
-            #Escribir los comandos de envio al API
+            self.left = True
         else:
             self.mov_var.configure(text="")
-            #Escribir los comandos de envio al API
-
+            if button == "u":
+                self.up = False
+            elif button == "d":
+                self.down = False
+            elif button == "r":
+                self.right = False
+            else:
+                self.left = False
+        self.sendPost()
+    #Crea el json para enviar al API
+    def makeJson(self):
+        json ={}
+        if self.right and self.up:
+            self.mov_var.configure(text="Moviendo en diagonal")
+            json = {"command":1, "x": 255, "y":255 }
+        elif self.right and self.down:
+            self.mov_var.configure(text="Moviendo en diagonal")
+            json = {"command":1, "x": 255, "y":-255 }
+        elif self.left and self.up:
+            self.mov_var.configure(text="Moviendo en diagonal")
+            json = {"command":1, "x": -255, "y":255 }
+        elif self.left and self.down:
+            self.mov_var.configure(text="Moviendo en diagonal")
+            json = {"command":1, "x": -255, "y":-255 }
+        elif self.up:
+            json = {"command":1, "x": 0, "y":255 }
+        elif self.down:
+            json = {"command":1, "x": 0, "y":-255 }
+        else:
+            json = {"command":0, "x": 0, "y":0 }
+            
+    #Envia los comandos de movimiento al API
+    def sendPost(self):
+        url = "http//:localhost:27017/move"
+        json = self.makeJson()
+        """try:
+            response = requests.post(url,json)
+            if response.status_code // 100 ==2:
+                print("moviendo a la derecha")
+            else:
+                print("error")
+        except Exception as e:
+            print(e)"""
+    #Obtener los datos de los sensores al API
+    def readParams(self):
+        url= "http//:localhost:27017/move"
+        try:
+            response = requests.get(url)
+            if response.status_code ==200:
+                self.console.insert(tkinter.END, "14/11/23 \n datos del API \n")
+            else:
+                self.console.insert(tkinter.END, "Error al obtener los datos")
+        except Exception as e:
+            print(e)
 
 if __name__ == "__main__":
     window = tkinter.Tk()
