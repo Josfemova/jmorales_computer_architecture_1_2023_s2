@@ -1,11 +1,9 @@
-#include <Arduino.h>
 #include <WiFi.h>
+#include <ArduinoJson.h> 
 #include <WebServer.h>
-#include <ArduinoJson.h>
-#include <FreeRTOS.h>
 
-const char *SSID = "your_wifi-ssid";
-const char *PWD = "your_wifi_password";
+const char *SSID = "FAMILIA MORALES";
+const char *PWD = "japipajopri";
 WebServer server(80);
 StaticJsonDocument<250> jsonDocument;
 char buffer[250];
@@ -19,13 +17,13 @@ void connectToWiFi() {
   Serial.println(SSID);
   WiFi.begin(SSID, PWD);
   
-  while (WiFi.status() != WL_CONNECTED) {
-    Serial.print(".");
+  while (WiFi.status() == WL_CONNECTED) {
+    Serial.print("Conectado");
     delay(500); // we can even make the ESP32 to sleep
   }
- 
   Serial.print("Connected. IP: ");
   Serial.println(WiFi.localIP());
+  server.begin();
 }
  
 void create_json(char *tag, float value, char *unit) { 
@@ -57,7 +55,7 @@ void getEnv() {
 }
 
 // Envia datos (buffer) al cliente
-void postAceleracion() {
+void postAceleracion(void * parameter) {
   if (server.hasArg("plain") == false) {
     //handle error here
   }
@@ -75,13 +73,12 @@ void postAceleracion() {
 // Establece las rutas del API
 void setup_routing() {
   server.on("/env", getEnv);
-  server.on("/postAceleracion", HTTP_POST, postAceleracion);
-  server.begin();
+  //server.on("/postAceleracion", HTTP_POST, postAceleracion);
 }
 
 void setup_task() {
   xTaskCreate(
-    getEnv,    
+    postAceleracion,    
     "Leer variables",   // Name of the task (for debugging)
     1000,            // Stack size (bytes)
     NULL,            // Parameter to pass
