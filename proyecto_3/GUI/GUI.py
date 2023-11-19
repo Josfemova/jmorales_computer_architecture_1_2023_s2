@@ -1,5 +1,6 @@
 import tkinter
 import requests
+import json
 from tkinter import PhotoImage
 from tkinter import scrolledtext
 
@@ -165,7 +166,7 @@ class App:
             json = {"command":1, "x": 0, "y":-255 }
         else:
             json = {"command":0, "x": 0, "y":0 }
-        return json
+        return json.dumps(json, indent=2)
             
     #Envia los comandos de movimiento al API
     def sendPost(self):
