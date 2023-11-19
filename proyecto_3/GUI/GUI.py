@@ -103,8 +103,20 @@ class App:
     #Escribe los datos del carro en consola
     def writeConsole(self):
         #Se ejucuta el listening del API
-        #datos =self.readParams()
-        self.console.insert(tkinter.END, "14/11/23 \n datos del API \n") 
+        datos =self.readParams()
+        if (datos != None):
+        
+            print(datos)
+            self.console.insert(tkinter.END, "Timestamp: "+str(datos[0]["timestamp"])+ "\n") 
+            self.console.insert(tkinter.END, "Aceleracion en X: "+str(datos[0]["aceleracion_x"])+ "\n")
+            self.console.insert(tkinter.END, "Aceleracion en Y: "+str(datos[0]["aceleracion_y"])+ "\n")
+            self.console.insert(tkinter.END, "Aceleracion en Z: "+str(datos[0]["aceleracion_z"])+ "\n")
+            self.console.insert(tkinter.END, "Orientacion en X: "+str(datos[0]["orientacion_x"])+ "\n")
+            self.console.insert(tkinter.END, "Orientacion en Y: "+str(datos[0]["orientacion_y"])+ "\n")
+            self.console.insert(tkinter.END, "Orientacion en Z: "+str(datos[0]["orientacion_z"])+ "\n")
+            self.console.insert(tkinter.END, "Proximidad: "+str(datos[0]["proximidad"])+ "\n")    
+        else:
+            self.console.insert(tkinter.END, "14/11/23 \n error")
         if self.active:
             self.window.after(1000, self.writeConsole)
     #Envia los comandos de movimiento al carrito
@@ -156,7 +168,7 @@ class App:
             
     #Envia los comandos de movimiento al API
     def sendPost(self):
-        url = "http//:localhost:27017/move"
+        url = "http://192.168.43.191:80/env"
         json = self.makeJson()
         """try:
             response = requests.post(url,json)
@@ -168,15 +180,19 @@ class App:
             print(e)"""
     #Obtener los datos de los sensores al API
     def readParams(self):
-        url= "http//:localhost:27017/move"
+        url= "http://192.168.43.191:80/env"
         try:
             response = requests.get(url)
             if response.status_code ==200:
                 self.console.insert(tkinter.END, "14/11/23 \n datos del API \n")
+                print(response.json())
+                return response.json()
             else:
                 self.console.insert(tkinter.END, "Error al obtener los datos")
+                return None
         except Exception as e:
             print(e)
+
 
 if __name__ == "__main__":
     window = tkinter.Tk()

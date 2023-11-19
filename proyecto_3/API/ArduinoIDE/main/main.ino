@@ -2,15 +2,23 @@
 #include <ArduinoJson.h> 
 #include <WebServer.h>
 
-const char *SSID = "FAMILIA MORALES";
-const char *PWD = "japipajopri";
+const char *SSID = "zebas";
+const char *PWD = "manzana1234";
 WebServer server(80);
 StaticJsonDocument<250> jsonDocument;
+StaticJsonDocument<250> jsonPost;
 char buffer[250];
 float aceleracion = 1;
 float orientacion = 2;
-float proximidad = 3;
-int timestamp = 4;
+unsigned int timestamp;
+float aceleracion_x;
+float aceleracion_y;
+float aceleracion_z;
+float orientacion_x;
+float orientacion_y;
+float orientacion_z;
+float proximidad;
+
  
 void connectToWiFi() {
   Serial.print("Connecting to ");
@@ -26,30 +34,25 @@ void connectToWiFi() {
   server.begin();
 }
  
-void create_json(char *tag, float value, char *unit) { 
-  jsonDocument.clear(); 
-  jsonDocument["type"] = tag;
-  jsonDocument["value"] = value;
-  jsonDocument["unit"] = unit;
-  serializeJson(jsonDocument, buffer);
-  Serial.println("Buffer:");
-  Serial.println(buffer);  
-}
  
-void add_json_object(char *tag, float value, char *unit) {
+void add_json_object() {
   JsonObject obj = jsonDocument.createNestedObject();
-  obj["type"] = tag;
-  obj["value"] = value;
-  obj["unit"] = unit; 
+  obj["timestamp"] = timestamp;
+  obj["aceleracion_x"] = aceleracion_x;
+  obj["aceleracion_y"] = aceleracion_y; 
+  obj["aceleracion_z"] = aceleracion_z; 
+  obj["orientacion_x"] = orientacion_x;
+  obj["orientacion_y"] = orientacion_y;
+  obj["orientacion_z"] = orientacion_z; 
+  obj["proximidad"] = proximidad; 
+  
 }
  
 // Obtiene todas las variables globales cuyo valor se consiguio con WiFi
 void getEnv() {
   Serial.println("Get env");
   jsonDocument.clear();
-  add_json_object("Aceleracion", aceleracion, "u");
-  add_json_object("Orientacion", orientacion, "u");
-  add_json_object("Proximidad", proximidad, "cm");
+  add_json_object();
   serializeJson(jsonDocument, buffer);
   server.send(200, "application/json", buffer);
 }
@@ -61,10 +64,14 @@ void postAceleracion() {
   }
   String body = server.arg("plain");
   Serial.println(body);
-  deserializeJson(jsonDocument, body);
+  deserializeJson(jsonPost, body);
 
-  float acelPost= jsonDocument["Aceleracion"];
-  Serial.println(acelPost);
+  int command= jsonPost["command"];
+  Serial.println(command);
+  int x= jsonPost["x"];
+  Serial.println(x);
+  int y= jsonPost["y"];
+  Serial.println(y);
 
   // Respond to the client
   server.send(200, "application/json", "{}");
@@ -87,6 +94,10 @@ void setup() {
 }
  
 void loop() {
-  Serial.println("Hola desde loop");
+  aceleracion++;
+  orientacion++;
+  proximidad++;
+  timestamp++;
+  delay(300);
   server.handleClient();
 }
