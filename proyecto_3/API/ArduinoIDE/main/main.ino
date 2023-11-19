@@ -61,8 +61,10 @@ void getEnv() {
 void postAceleracion() {
   if (server.hasArg("plain") == false) {
     //handle error here
+    Serial.println("error");
   }
   String body = server.arg("plain");
+  Serial.println("body");
   Serial.println(body);
   deserializeJson(jsonPost, body);
 
