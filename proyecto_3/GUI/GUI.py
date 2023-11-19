@@ -168,16 +168,16 @@ class App:
             
     #Envia los comandos de movimiento al API
     def sendPost(self):
-        url = "http://192.168.43.191:80/env"
+        url = "http://192.168.43.191:80/postMovimiento"
         json = self.makeJson()
-        """try:
+        try:
             response = requests.post(url,json)
             if response.status_code // 100 ==2:
                 print("moviendo a la derecha")
             else:
                 print("error")
         except Exception as e:
-            print(e)"""
+            print(e)
     #Obtener los datos de los sensores al API
     def readParams(self):
         url= "http://192.168.43.191:80/env"
