@@ -80,7 +80,7 @@ void postAceleracion() {
 // Establece las rutas del API
 void setup_routing() {
   server.on("/env", getEnv);
-  server.on("/postAceleracion", HTTP_POST, postAceleracion);
+  server.on("/postMovimiento", HTTP_POST, postAceleracion);
 }
  
  // Conecta el WiFi 
