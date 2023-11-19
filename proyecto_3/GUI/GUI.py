@@ -165,15 +165,17 @@ class App:
             json = {"command":1, "x": 0, "y":-255 }
         else:
             json = {"command":0, "x": 0, "y":0 }
+        return json
             
     #Envia los comandos de movimiento al API
     def sendPost(self):
         url = "http://192.168.43.191:80/postMovimiento"
         json = self.makeJson()
+        print(json)
         try:
             response = requests.post(url,json)
             if response.status_code // 100 ==2:
-                print("moviendo a la derecha")
+                print(response)
             else:
                 print("error")
         except Exception as e:
