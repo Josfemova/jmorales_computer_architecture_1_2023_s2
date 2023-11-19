@@ -168,6 +168,10 @@ class App:
             json_ = {"command":1, "x": 0, "y":255 }
         elif self.down:
             json_ = {"command":1, "x": 0, "y":-255 }
+        elif self.left:
+            json_ = {"command":1, "x": -255, "y":0 }
+        elif self.right:
+            json_ = {"command":1, "x": 255, "y":0 }
         else:
             json_ = {"command":0, "x": 0, "y":0 }
         return json.dumps(json_, indent=2)
