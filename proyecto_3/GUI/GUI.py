@@ -1,6 +1,7 @@
 import tkinter
 import requests
 import json
+import math
 from tkinter import PhotoImage
 from tkinter import scrolledtext
 
@@ -106,8 +107,6 @@ class App:
         #Se ejucuta el listening del API
         datos =self.readParams()
         if (datos != None):
-        
-            print(datos)
             self.console.insert(tkinter.END, "Timestamp: "+str(datos[0]["timestamp"])+ "\n") 
             self.console.insert(tkinter.END, "Aceleracion en X: "+str(datos[0]["aceleracion_x"])+ "\n")
             self.console.insert(tkinter.END, "Aceleracion en Y: "+str(datos[0]["aceleracion_y"])+ "\n")
@@ -116,6 +115,11 @@ class App:
             self.console.insert(tkinter.END, "Orientacion en Y: "+str(datos[0]["orientacion_y"])+ "\n")
             self.console.insert(tkinter.END, "Orientacion en Z: "+str(datos[0]["orientacion_z"])+ "\n")
             self.console.insert(tkinter.END, "Proximidad: "+str(datos[0]["proximidad"])+ "\n")    
+            magnitudAcel = math.sqrt(((datos[0]["aceleracion_x"]**2)+(datos[0]["aceleracion_y"]**2)+(datos[0]["aceleracion_z"]**2)))
+            magnitudOri = math.sqrt(((datos[0]["orientacion_x"]**2)+(datos[0]["orientacion_z"]**2)+(datos[0]["orientacion_y"]**2)))
+            self.acel_var.configure(text=magnitudAcel)
+            self.ori_var.configure(text=magnitudOri)
+            self.prox_var.configure(text=datos[0]["proximidad"])
         else:
             self.console.insert(tkinter.END, "14/11/23 \n error")
         if self.active:
@@ -147,32 +151,31 @@ class App:
         self.sendPost()
     #Crea el json para enviar al API
     def makeJson(self):
-        json ={}
+        json_ ={}
         if self.right and self.up:
             self.mov_var.configure(text="Moviendo en diagonal")
-            json = {"command":1, "x": 255, "y":255 }
+            json_ = {"command":1, "x": 255, "y":255 }
         elif self.right and self.down:
             self.mov_var.configure(text="Moviendo en diagonal")
-            json = {"command":1, "x": 255, "y":-255 }
+            json_ = {"command":1, "x": 255, "y":-255 }
         elif self.left and self.up:
             self.mov_var.configure(text="Moviendo en diagonal")
-            json = {"command":1, "x": -255, "y":255 }
+            json_ = {"command":1, "x": -255, "y":255 }
         elif self.left and self.down:
             self.mov_var.configure(text="Moviendo en diagonal")
-            json = {"command":1, "x": -255, "y":-255 }
+            json_ = {"command":1, "x": -255, "y":-255 }
         elif self.up:
-            json = {"command":1, "x": 0, "y":255 }
+            json_ = {"command":1, "x": 0, "y":255 }
         elif self.down:
-            json = {"command":1, "x": 0, "y":-255 }
+            json_ = {"command":1, "x": 0, "y":-255 }
         else:
-            json = {"command":0, "x": 0, "y":0 }
-        return json.dumps(json, indent=2)
+            json_ = {"command":0, "x": 0, "y":0 }
+        return json.dumps(json_, indent=2)
             
     #Envia los comandos de movimiento al API
     def sendPost(self):
         url = "http://192.168.43.191:80/postMovimiento"
         json = self.makeJson()
-        print(json)
         try:
             response = requests.post(url,json)
             if response.status_code // 100 ==2:
@@ -188,7 +191,6 @@ class App:
             response = requests.get(url)
             if response.status_code ==200:
                 self.console.insert(tkinter.END, "14/11/23 \n datos del API \n")
-                print(response.json())
                 return response.json()
             else:
                 self.console.insert(tkinter.END, "Error al obtener los datos")
