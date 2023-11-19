@@ -7,10 +7,10 @@ const char *PWD = "japipajopri";
 WebServer server(80);
 StaticJsonDocument<250> jsonDocument;
 char buffer[250];
-float aceleracion;
-float orientacion;
-float proximidad;
-int timestamp;
+float aceleracion = 1;
+float orientacion = 2;
+float proximidad = 3;
+int timestamp = 4;
  
 void connectToWiFi() {
   Serial.print("Connecting to ");
@@ -55,7 +55,7 @@ void getEnv() {
 }
 
 // Envia datos (buffer) al cliente
-void postAceleracion(void * parameter) {
+void postAceleracion() {
   if (server.hasArg("plain") == false) {
     //handle error here
   }
@@ -73,7 +73,7 @@ void postAceleracion(void * parameter) {
 // Establece las rutas del API
 void setup_routing() {
   server.on("/env", getEnv);
-  //server.on("/postAceleracion", HTTP_POST, postAceleracion);
+  server.on("/postAceleracion", HTTP_POST, postAceleracion);
 }
  
  // Conecta el WiFi 
@@ -82,6 +82,8 @@ void setup() {
   Serial.println("Hola desde setup");
   connectToWiFi();
   setup_routing();
+  getEnv();
+  //buffer.printTo(Serial);
 }
  
 void loop() {
