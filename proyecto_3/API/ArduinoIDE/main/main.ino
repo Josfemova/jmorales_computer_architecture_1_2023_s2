@@ -25,8 +25,8 @@ void connectToWiFi() {
   Serial.println(SSID);
   WiFi.begin(SSID, PWD);
   
-  while (WiFi.status() == WL_CONNECTED) {
-    Serial.print("Conectado");
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print("Trying to connect\r\n");
     delay(500); // we can even make the ESP32 to sleep
   }
   Serial.print("Connected. IP: ");
@@ -55,6 +55,7 @@ void getEnv() {
   add_json_object();
   serializeJson(jsonDocument, buffer);
   server.send(200, "application/json", buffer);
+  delay(2);
 }
 
 // Envia datos (buffer) al cliente
@@ -87,7 +88,7 @@ void setup_routing() {
  
  // Conecta el WiFi 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(921600);
   Serial.println("Hola desde setup");
   connectToWiFi();
   setup_routing();
@@ -100,6 +101,5 @@ void loop() {
   orientacion++;
   proximidad++;
   timestamp++;
-  delay(300);
   server.handleClient();
 }

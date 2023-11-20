@@ -5,6 +5,7 @@ import math
 from tkinter import PhotoImage
 from tkinter import scrolledtext
 
+server = "192.168.4.2:80"
 
 class App:
     def __init__(self,window):
@@ -178,7 +179,7 @@ class App:
             
     #Envia los comandos de movimiento al API
     def sendPost(self):
-        url = "http://192.168.43.191:80/postMovimiento"
+        url = f"http://{server}/postMovimiento"
         json = self.makeJson()
         try:
             response = requests.post(url,json)
@@ -190,7 +191,7 @@ class App:
             print(e)
     #Obtener los datos de los sensores al API
     def readParams(self):
-        url= "http://192.168.43.191:80/env"
+        url= f"http://{server}/env"
         try:
             response = requests.get(url)
             if response.status_code ==200:
