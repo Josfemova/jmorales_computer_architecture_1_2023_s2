@@ -5,7 +5,7 @@ import math
 from tkinter import PhotoImage
 from tkinter import scrolledtext
 
-server = "192.168.4.2:80"
+server = "192.168.4.3:80"
 
 class App:
     def __init__(self,window):

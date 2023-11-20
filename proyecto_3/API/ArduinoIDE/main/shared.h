@@ -57,7 +57,10 @@ typedef enum {
 
 /*===============     Datos     =============== */
 extern imu_data_t imu_data;
+extern SemaphoreHandle_t imu_data_mutex;
+
 extern float proximity_val;
+extern SemaphoreHandle_t proximity_val_mutex;
 
 /*===============   Funciones   =============== */
 void setup_imu();
@@ -65,7 +68,8 @@ void setup_proximidad();
 void setup_motores();
 void loop_imu();
 void loop_proximidad();
-void loop_motores();
+void car_cmd_apply();
+void loop_api();
 
 #define LOG(tag, f, ...) printf("[ " tag " ]: " f "\r\n", ##__VA_ARGS__)
 

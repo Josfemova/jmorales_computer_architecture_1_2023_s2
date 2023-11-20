@@ -10,6 +10,7 @@ typedef enum {
 
 proximity_state_t proximity_state;
 int64_t proximity_echo_start_timestamp;
+SemaphoreHandle_t proximity_val_mutex = NULL;
 float proximity_val = 10000.0;
 
 void isr_prox() {
@@ -21,7 +22,10 @@ void isr_prox() {
       break;
     case ECHO_STARTED:
       delta = esp_timer_get_time() - proximity_echo_start_timestamp;
-      proximity_val = (delta * 0.0343) / 2; // cm
+      if (xSemaphoreTakeFromISR(proximity_val_mutex, NULL) == pdTRUE) {
+        proximity_val = (delta * 0.0343) / 2;  // cm
+        xSemaphoreGiveFromISR(proximity_val_mutex, NULL);
+      }
       proximity_state = ECHO_ENDED;
       break;
     case ECHO_ENDED:
@@ -33,23 +37,36 @@ void isr_prox() {
 void setup_proximidad() {
   pinMode(TRIG, OUTPUT);
   pinMode(ECHO, INPUT_PULLDOWN);
+  proximity_val_mutex = xSemaphoreCreateMutex();
   attachInterrupt(ECHO, isr_prox, CHANGE);
 }
 
-void loop_proximidad() {
-  // trigger
-  digitalWrite(TRIG, LOW);
-  delayMicroseconds(2);
-  proximity_val = 1000; // 10 metros
-  proximity_state = TRIGGERED;
-  digitalWrite(TRIG, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(TRIG, LOW);
-  // wait 60ms
-  delay(200);
-  if (proximity_state != ECHO_ENDED) {
-    LOG("proximity", "max distance detected");
-  } else {
-    LOG("proximity", "read distance: ", proximity_val);
+void loop_proximidad(void* args) {
+  (void)args;
+  while (true) {
+    // trigger
+    digitalWrite(TRIG, LOW);
+    delayMicroseconds(2);
+    if (xSemaphoreTake(proximity_val_mutex, portMAX_DELAY) != pdTRUE) {
+      continue;
+    }
+    proximity_val = 1000;  // 10 metros
+    xSemaphoreGive(proximity_val_mutex);
+
+    proximity_state = TRIGGERED;
+    digitalWrite(TRIG, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIG, LOW);
+    // wait 60ms
+    vTaskDelay(170);
+    if (proximity_state != ECHO_ENDED) {
+      LOG("proximity", "max distance detected");
+    } else {
+      if (xSemaphoreTake(proximity_val_mutex, portMAX_DELAY) != pdTRUE) {
+        continue;
+      }
+      LOG("proximity", "read distance: %f", proximity_val);
+      xSemaphoreGive(proximity_val_mutex);
+    }
   }
 }
