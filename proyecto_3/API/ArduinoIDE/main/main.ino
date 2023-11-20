@@ -1,6 +1,7 @@
 #include <WiFi.h>
 #include <ArduinoJson.h> 
 #include <WebServer.h>
+#include "shared.h"
 
 const char *SSID = "zebas";
 const char *PWD = "manzana1234";
@@ -8,18 +9,8 @@ WebServer server(80);
 StaticJsonDocument<250> jsonDocument;
 StaticJsonDocument<250> jsonPost;
 char buffer[250];
-float aceleracion = 1;
-float orientacion = 2;
 unsigned int timestamp;
-float aceleracion_x;
-float aceleracion_y;
-float aceleracion_z;
-float orientacion_x;
-float orientacion_y;
-float orientacion_z;
-float proximidad;
 
- 
 void connectToWiFi() {
   Serial.print("Connecting to ");
   Serial.println(SSID);
@@ -34,21 +25,21 @@ void connectToWiFi() {
   server.begin();
 }
  
- 
+#include "esp_cpu.h"
 void add_json_object() {
   JsonObject obj = jsonDocument.createNestedObject();
-  obj["timestamp"] = timestamp;
-  obj["aceleracion_x"] = aceleracion_x;
-  obj["aceleracion_y"] = aceleracion_y; 
-  obj["aceleracion_z"] = aceleracion_z; 
-  obj["orientacion_x"] = orientacion_x;
-  obj["orientacion_y"] = orientacion_y;
-  obj["orientacion_z"] = orientacion_z; 
-  obj["proximidad"] = proximidad; 
+  obj["timestamp"] = esp_timer_get_time();
+  obj["aceleracion_x"] = imu_data.ax;
+  obj["aceleracion_y"] = imu_data.ay; 
+  obj["aceleracion_z"] = imu_data.az; 
+  obj["orientacion_x"] = imu_data.gx;
+  obj["orientacion_y"] = imu_data.gy;
+  obj["orientacion_z"] = imu_data.gz; 
+  obj["proximidad"] = proximity_val; 
   
 }
  
-// Obtiene todas las variables globales cuyo valor se consiguio con WiFi
+// Obtiene todas las variables globales cuyo valor se consiguió con WiFi
 void getEnv() {
   Serial.println("Get env");
   jsonDocument.clear();
@@ -89,17 +80,14 @@ void setup_routing() {
  // Conecta el WiFi 
 void setup() {
   Serial.begin(921600);
+  while(!Serial){
+    delay(10);
+  }
   Serial.println("Hola desde setup");
   connectToWiFi();
   setup_routing();
-  getEnv();
-  //buffer.printTo(Serial);
 }
  
 void loop() {
-  aceleracion++;
-  orientacion++;
-  proximidad++;
-  timestamp++;
   server.handleClient();
 }
