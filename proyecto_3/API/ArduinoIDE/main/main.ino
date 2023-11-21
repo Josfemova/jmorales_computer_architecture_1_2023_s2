@@ -33,7 +33,7 @@ void add_json_object() {
   if (xSemaphoreTake(imu_data_mutex, portMAX_DELAY) == pdTRUE) {
     obj["aceleracion_x"] = imu_data.ax;
     obj["aceleracion_y"] = imu_data.ay;
-    obj["aceleracion_z"] = imu_data.az + 10.9;  // quitar gravedad
+    obj["aceleracion_z"] = imu_data.az;
     obj["orientacion_x"] = imu_data.gx;
     obj["orientacion_y"] = imu_data.gy;
     obj["orientacion_z"] = imu_data.gz;
@@ -113,7 +113,7 @@ void loop_api(void *args) {
   (void)args;
   while (true) {
     server.handleClient();
-    vTaskDelay(15);
+    vTaskDelay(7);
   }
 }
 

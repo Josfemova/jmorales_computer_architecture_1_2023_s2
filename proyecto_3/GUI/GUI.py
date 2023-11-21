@@ -8,7 +8,7 @@ from tkinter import scrolledtext
 from collections import OrderedDict
 import datetime
 
-server = "192.168.4.3:80"
+server = "192.168.4.2:80"
 
 class App:
     def __init__(self,window):

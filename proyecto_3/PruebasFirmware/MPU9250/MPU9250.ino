@@ -51,22 +51,10 @@ void isr_mpu() {
   }
 }
 
-void isr_proximidad() {
-}
-
 void setup() {
   Serial.begin(115200);
   pinMode(INTMPU, INPUT_PULLDOWN);
-  pinMode(MOTOR_IN1, OUTPUT);
-  pinMode(MOTOR_IN2, OUTPUT);
-  pinMode(MOTOR_IN3, OUTPUT);
-  pinMode(MOTOR_IN4, OUTPUT);
-  pinMode(MOTOR_ENA, OUTPUT);
-  pinMode(MOTOR_ENB, OUTPUT);
-  pinMode(TRIG, OUTPUT);
-  pinMode(ECHO, INPUT_PULLDOWN);
   attachInterrupt(INTMPU, isr_mpu, RISING);
-  attachInterrupt(ECHO, isr_mpu, RISING);
   while (!Serial) {
     delay(10);
   }
