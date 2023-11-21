@@ -65,7 +65,7 @@ void loop_proximidad(void* args) {
       if (xSemaphoreTake(proximity_val_mutex, portMAX_DELAY) != pdTRUE) {
         continue;
       }
-      LOG("proximity", "read distance: %f", proximity_val);
+      //LOG("proximity", "read distance: %f", proximity_val);
       xSemaphoreGive(proximity_val_mutex);
     }
   }

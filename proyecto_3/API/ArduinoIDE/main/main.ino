@@ -33,12 +33,13 @@ void add_json_object() {
   if (xSemaphoreTake(imu_data_mutex, portMAX_DELAY) == pdTRUE) {
     obj["aceleracion_x"] = imu_data.ax;
     obj["aceleracion_y"] = imu_data.ay;
-    obj["aceleracion_z"] = imu_data.az;
+    obj["aceleracion_z"] = imu_data.az + 10.9;  // quitar gravedad
     obj["orientacion_x"] = imu_data.gx;
     obj["orientacion_y"] = imu_data.gy;
     obj["orientacion_z"] = imu_data.gz;
     xSemaphoreGive(imu_data_mutex);
   } else {
+    obj["aceleracion_x"] = 0;
     obj["aceleracion_y"] = 0;
     obj["aceleracion_z"] = 0;
     obj["orientacion_x"] = 0;
@@ -75,7 +76,7 @@ void postAceleracion() {
   car_cmd_info.car_cmd = jsonPost["command"];
   car_cmd_info.x = jsonPost["x"];
   car_cmd_info.y = jsonPost["y"];
-  car_cmd_apply();
+  car_cmd_apply(car_cmd_info.x, car_cmd_info.y, car_cmd_info.car_cmd);
   // Respond to the client
   server.send(200, "application/json", "{}");
 }

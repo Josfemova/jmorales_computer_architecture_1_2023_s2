@@ -22,12 +22,7 @@ void setup_motores() {
   LOG("motores", "setup listo");
 }
 
-void car_cmd_apply() {
-
-    int x = car_cmd_info.x;
-    int y = car_cmd_info.y;
-    car_cmd_t car_cmd = car_cmd_info.car_cmd;
-  
+void car_cmd_apply(int x, int y, car_cmd_t car_cmd) {
     // motor primario es el de la derecha
     // motor secundario es el de la izquierda
 
@@ -35,7 +30,6 @@ void car_cmd_apply() {
     LOG("motor", "datos: x=%d y=%d", x, y);
     switch (car_cmd) {
       case CAR_CMD_DISABLE_MOTOR:
-        LOG("motor", "freno sin fuerza");
         if (x == 0 && y == 0) {
           analogWrite(MOTOR_ENA, 0);
           analogWrite(MOTOR_ENB, 0);
@@ -57,19 +51,19 @@ void car_cmd_apply() {
           change_dir(MOTOR_IN3, MOTOR_IN4, DIR_REVERSE);
         }
         if (angle >= 0 && angle < (PI / 6)) {  // derecha
-          change_dir(MOTOR_IN1, MOTOR_IN2, DIR_REVERSE);
-          change_dir(MOTOR_IN3, MOTOR_IN4, DIR_FORWARD);
+          change_dir(MOTOR_IN1, MOTOR_IN2, DIR_FORWARD);
+          change_dir(MOTOR_IN3, MOTOR_IN4, DIR_REVERSE);
           analogWrite(MOTOR_ENA, 255);
           analogWrite(MOTOR_ENB, 255);
         } else if (angle >= (PI / 6) && angle < (PI / 3)) {  // diagonal derecha
-          analogWrite(MOTOR_ENA, 128);
-          analogWrite(MOTOR_ENB, 255);
-        } else if (angle >= TWO_PI / 3 && angle < (5 * PI / 6)) {  // diagonal izquierda
           analogWrite(MOTOR_ENA, 255);
           analogWrite(MOTOR_ENB, 128);
+        } else if (angle >= TWO_PI / 3 && angle < (5 * PI / 6)) {  // diagonal izquierda
+          analogWrite(MOTOR_ENA, 128);
+          analogWrite(MOTOR_ENB, 255);
         } else if (angle >= (5 * PI / 6)) {  // izquierda
-          change_dir(MOTOR_IN1, MOTOR_IN2, DIR_FORWARD);
-          change_dir(MOTOR_IN3, MOTOR_IN4, DIR_REVERSE);
+          change_dir(MOTOR_IN1, MOTOR_IN2, DIR_REVERSE);
+          change_dir(MOTOR_IN3, MOTOR_IN4, DIR_FORWARD);
           analogWrite(MOTOR_ENA, 255);
           analogWrite(MOTOR_ENB, 255);
         } else {  // directo

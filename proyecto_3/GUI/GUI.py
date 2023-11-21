@@ -6,6 +6,7 @@ import math
 from tkinter import PhotoImage
 from tkinter import scrolledtext
 from collections import OrderedDict
+import datetime
 
 server = "192.168.4.3:80"
 
@@ -60,8 +61,8 @@ class App:
         #Etiqueta de pantalla
         self.mov_label = tkinter.Label(self.left_frame,text="Estado:", font=("Castellar",12), bg="#9fa738", fg="white")
         self.mov_var = tkinter.Label(self.left_frame,text="", font=("Castellar",12), bg="#9fa738", fg="white")
-        self.vel_label = tkinter.Label(self.left_frame,text="KM/H:", font=("Castellar",12), bg="#9fa738", fg="white")
-        self.vel_var = tkinter.Label(self.left_frame,text="0", font=("Castellar",12), bg="#9fa738", fg="white")
+        #self.vel_label = tkinter.Label(self.left_frame,text="KM/H:", font=("Castellar",12), bg="#9fa738", fg="white")
+        #self.vel_var = tkinter.Label(self.left_frame,text="0", font=("Castellar",12), bg="#9fa738", fg="white")
         self.acel_label = tkinter.Label(self.left_frame,text="Aceleracion:", font=("Castellar",12), bg="#9fa738", fg="white")
         self.acel_var = tkinter.Label(self.left_frame,text="0", font=("Castellar",12), bg="#9fa738", fg="white")
         self.ori_label = tkinter.Label(self.left_frame,text="Orientacion:", font=("Castellar",12), bg="#9fa738", fg="white")
@@ -69,12 +70,12 @@ class App:
         self.prox_label = tkinter.Label(self.left_frame,text="Proximidad:", font=("Castellar",12), bg="#9fa738", fg="white")
         self.prox_var = tkinter.Label(self.left_frame,text="0", font=("Castellar",12), bg="#9fa738", fg="white")
         self.mov_label.place(x=80,y=40)
-        self.vel_label.place(x=80,y=70)
+        #self.vel_label.place(x=80,y=70)
         self.acel_label.place(x=80,y=100)
         self.ori_label.place(x=80,y=130)
         self.prox_label.place(x=80,y=160)
         self.mov_var.place(x=165,y=40)
-        self.vel_var.place(x=143,y=70)
+        #self.vel_var.place(x=143,y=70)
         self.acel_var.place(x=225,y=100)
         self.ori_var.place(x=225,y=130)
         self.prox_var.place(x=225,y=160)
@@ -95,10 +96,17 @@ class App:
         self.down = False
         self.right = False
         self.left = False
+        
+        #archivo
+        self.file_name_csv = "sumary.csv"
 
     #Activa el flag de escritura
     def startListening(self):
         if not self.active:
+            self.file_name_csv = f"datos_{datetime.datetime.now()}.csv"
+            header ="timestamp,aceleracion_x,aceleracion_y,aceleracion_z,orientacion_x,orientacion_y,orientacion_z,proximidad\r\n"
+            with open(self.file_name_csv, mode="a", newline="", encoding="utf-8") as doc:
+                doc.write(header)
             self.active = True
             self.start_btn.configure(text="STOP")
             self.writeConsole()
@@ -125,9 +133,9 @@ class App:
             self.ori_var.configure(text=magnitudOri)
             self.prox_var.configure(text=datos[0]["proximidad"])
         else:
-            self.console.insert(tkinter.END, "14/11/23 \n error")
+            self.console.insert(tkinter.END, f"{datetime.datetime.now()} \n error")
         if self.active:
-            self.window.after(1000, self.writeConsole)
+            self.window.after(100, self.writeConsole)
     #Envia los comandos de movimiento al carrito
     def moveDirection(self,button):
         if button == "up":
@@ -198,7 +206,7 @@ class App:
         try:
             response = requests.get(url)
             if response.status_code ==200:
-                self.console.insert(tkinter.END, "14/11/23 \n datos del API \n")
+                self.console.insert(tkinter.END, f"{datetime.datetime.now()} \n datos del API \n")
                 return response.json()
             else:
                 self.console.insert(tkinter.END, "Error al obtener los datos")
@@ -206,8 +214,8 @@ class App:
         except Exception as e:
             print(e)
     def writeInCSV(self,json_):
-        header ={"Timestamp", "aceleracion_x",  "aceleracion_y",  "aceleracion_z", "orientacion_x", "orientacion_y", "orientacion_z", "proximidad"}
-        with open("sumary.csv", mode="a", newline="", encoding="utf-8") as doc:
+        header ={"timestamp", "aceleracion_x",  "aceleracion_y",  "aceleracion_z", "orientacion_x", "orientacion_y", "orientacion_z", "proximidad"}
+        with open(self.file_name_csv, mode="a", newline="", encoding="utf-8") as doc:
             writter = csv.DictWriter(doc, fieldnames=header)
             writter.writerow(OrderedDict(json_[0]))
 

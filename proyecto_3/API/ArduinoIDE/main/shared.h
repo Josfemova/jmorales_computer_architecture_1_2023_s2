@@ -68,7 +68,7 @@ void setup_proximidad();
 void setup_motores();
 void loop_imu();
 void loop_proximidad();
-void car_cmd_apply();
+void car_cmd_apply(int x, int y, car_cmd_t car_cmd);
 void loop_api();
 
 #define LOG(tag, f, ...) printf("[ " tag " ]: " f "\r\n", ##__VA_ARGS__)

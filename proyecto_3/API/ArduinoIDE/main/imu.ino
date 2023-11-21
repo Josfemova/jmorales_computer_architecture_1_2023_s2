@@ -60,8 +60,8 @@ void loop_imu(void* args) {
       if (xSemaphoreTake(imu_data_mutex, portMAX_DELAY) != pdTRUE) {
         continue;
       }
-      LOG("imu", "| ax: %.2f | ay: %.2f | az: %.2f | gx: %.2f | gy: %.2f | gz: %.2f|", imu_data.ax, imu_data.ay, imu_data.az, imu_data.gx, imu_data.gy,
-          imu_data.gz);
+      /*LOG("imu", "| ax: %.2f | ay: %.2f | az: %.2f | gx: %.2f | gy: %.2f | gz: %.2f|", imu_data.ax, imu_data.ay, imu_data.az, imu_data.gx, imu_data.gy,
+          imu_data.gz);*/
       xSemaphoreGive(imu_data_mutex);
       vTaskDelay(11);
       imu_state = REQUEST;
