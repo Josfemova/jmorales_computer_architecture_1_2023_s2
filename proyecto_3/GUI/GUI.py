@@ -1,9 +1,11 @@
 import tkinter
 import requests
+import csv
 import json
 import math
 from tkinter import PhotoImage
 from tkinter import scrolledtext
+from collections import OrderedDict
 
 
 class App:
@@ -107,6 +109,7 @@ class App:
         #Se ejucuta el listening del API
         datos =self.readParams()
         if (datos != None):
+            self.writeInCSV(datos)
             self.console.insert(tkinter.END, "Timestamp: "+str(datos[0]["timestamp"])+ "\n") 
             self.console.insert(tkinter.END, "Aceleracion en X: "+str(datos[0]["aceleracion_x"])+ "\n")
             self.console.insert(tkinter.END, "Aceleracion en Y: "+str(datos[0]["aceleracion_y"])+ "\n")
@@ -201,7 +204,11 @@ class App:
                 return None
         except Exception as e:
             print(e)
-
+    def writeInCSV(self,json_):
+        header ={"Timestamp", "aceleracion_x",  "aceleracion_y",  "aceleracion_z", "orientacion_x", "orientacion_y", "orientacion_z", "proximidad"}
+        with open("sumary.csv", mode="a", newline="", encoding="utf-8") as doc:
+            writter = csv.DictWriter(doc, fieldnames=header)
+            writter.writerow(OrderedDict(json_[0]))
 
 if __name__ == "__main__":
     window = tkinter.Tk()
